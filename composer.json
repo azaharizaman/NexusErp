@@ -9,6 +9,7 @@
         "php": "^8.2",
         "akaunting/laravel-money": "^6.0",
         "ariaieboy/filament-currency": "^2.0",
+        "azaharizaman/laravel-backoffice": "^1.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.1",
         "flowframe/laravel-trend": "^0.4.0",
