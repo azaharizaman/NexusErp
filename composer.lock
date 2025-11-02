@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "058b5f65742479ded3ecf5405b3723d8",
+    "content-hash": "7fbac33a723e8cd3a6a1fedde4acca06",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -288,6 +288,70 @@
                 "source": "https://github.com/azaharizaman/laravel-backoffice/tree/v1.0.1"
             },
             "time": "2025-10-31T12:55:11+00:00"
+        },
+        {
+            "name": "azaharizaman/laravel-uom-management",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/azaharizaman/laravel-uom-management.git",
+                "reference": "e1475e0c3030657f97198dec1bddb00be0e1f10c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/azaharizaman/laravel-uom-management/zipball/e1475e0c3030657f97198dec1bddb00be0e1f10c",
+                "reference": "e1475e0c3030657f97198dec1bddb00be0e1f10c",
+                "shasum": ""
+            },
+            "require": {
+                "brick/math": "^0.11|^0.12|^0.13|^0.14",
+                "illuminate/support": "^10.24|^11.0|^12.0",
+                "nesbot/carbon": "^3.0@dev",
+                "php": "^8.2",
+                "symfony/polyfill-mbstring": "^1.27"
+            },
+            "require-dev": {
+                "composer/installers": "^2.2",
+                "doctrine/dbal": "^3.7",
+                "fakerphp/faker": "^1.21",
+                "league/fractal": "^1.0",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "*",
+                "phpunit/phpunit": "^10.5 || ^12.0",
+                "ramsey/uuid": "^4.7",
+                "spatie/laravel-package-tools": "dev-main"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Azaharizaman\\LaravelUomManagement\\LaravelUomManagementServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Azaharizaman\\LaravelUomManagement\\": "src/",
+                    "Azaharizaman\\LaravelUomManagement\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Azahari Zaman",
+                    "email": "azaharizaman@gmail.com"
+                }
+            ],
+            "description": "Sophisticated UOM Management for Laravel",
+            "support": {
+                "issues": "https://github.com/azaharizaman/laravel-uom-management/issues",
+                "source": "https://github.com/azaharizaman/laravel-uom-management/tree/main"
+            },
+            "time": "2025-11-02T12:46:30+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -1153,29 +1217,28 @@
         },
         {
             "name": "dragonmantank/cron-expression",
-            "version": "v3.4.0",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dragonmantank/cron-expression.git",
-                "reference": "8c784d071debd117328803d86b2097615b457500"
+                "reference": "d61a8a9604ec1f8c3d150d09db6ce98b32675013"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/8c784d071debd117328803d86b2097615b457500",
-                "reference": "8c784d071debd117328803d86b2097615b457500",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/d61a8a9604ec1f8c3d150d09db6ce98b32675013",
+                "reference": "d61a8a9604ec1f8c3d150d09db6ce98b32675013",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2|^8.0",
-                "webmozart/assert": "^1.0"
+                "php": "^8.2|^8.3|^8.4|^8.5"
             },
             "replace": {
                 "mtdowling/cron-expression": "^1.0"
             },
             "require-dev": {
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1.0",
-                "phpunit/phpunit": "^7.0|^8.0|^9.0"
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^1.12.32|^2.1.31",
+                "phpunit/phpunit": "^8.5.48|^9.0"
             },
             "type": "library",
             "extra": {
@@ -1206,7 +1269,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dragonmantank/cron-expression/issues",
-                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.4.0"
+                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.6.0"
             },
             "funding": [
                 {
@@ -1214,7 +1277,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-10-09T13:47:03+00:00"
+            "time": "2025-10-31T18:51:33+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -9450,64 +9513,6 @@
                 }
             ],
             "time": "2024-11-21T01:49:47+00:00"
-        },
-        {
-            "name": "webmozart/assert",
-            "version": "1.12.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozarts/assert.git",
-                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/9be6926d8b485f55b9229203f962b51ed377ba68",
-                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-date": "*",
-                "ext-filter": "*",
-                "php": "^7.2 || ^8.0"
-            },
-            "suggest": {
-                "ext-intl": "",
-                "ext-simplexml": "",
-                "ext-spl": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.10-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webmozart\\Assert\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "Assertions to validate method input/output with nice error messages.",
-            "keywords": [
-                "assert",
-                "check",
-                "validate"
-            ],
-            "support": {
-                "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.12.1"
-            },
-            "time": "2025-10-29T15:56:20+00:00"
         }
     ],
     "packages-dev": [
@@ -11875,7 +11880,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "azaharizaman/laravel-uom-management": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
