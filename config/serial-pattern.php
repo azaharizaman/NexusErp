@@ -60,6 +60,30 @@ return [
             'interval' => 1,
             'delimiters' => ['-'],
         ],
+        'purchaseorder' => [
+            'pattern' => 'PO-{year}-{number}',
+            'start' => 1,
+            'digits' => 4,
+            'reset' => 'yearly',
+            'interval' => 1,
+            'delimiters' => ['-'],
+        ],
+        'purchasecontract' => [
+            'pattern' => 'PC-{year}-{number}',
+            'start' => 1,
+            'digits' => 4,
+            'reset' => 'yearly',
+            'interval' => 1,
+            'delimiters' => ['-'],
+        ],
+        'deliveryschedule' => [
+            'pattern' => 'DS-{year}-{number}',
+            'start' => 1,
+            'digits' => 4,
+            'reset' => 'yearly',
+            'interval' => 1,
+            'delimiters' => ['-'],
+        ],
     ],
 
     /*
