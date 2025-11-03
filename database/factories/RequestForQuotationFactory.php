@@ -17,7 +17,12 @@ class RequestForQuotationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'rfq_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'expiry_date' => $this->faker->dateTimeBetween('now', '+1 month'),
+            'status' => $this->faker->randomElement(['draft', 'sent', 'received', 'evaluated', 'closed']),
+            'description' => $this->faker->sentence(),
+            'terms_and_conditions' => $this->faker->paragraph(),
+            'notes' => $this->faker->optional()->paragraph(),
         ];
     }
 }

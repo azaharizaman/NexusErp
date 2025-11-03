@@ -1,5 +1,10 @@
 # Architectural Decisions
 
+## 2025-11-03 Serial Numbering Implementation
+- Currently using simple max(id) + 1 approach for auto-numbering (RFQ-XXXXXX, QT-XXXXXX, PR-REC-XXXXXX) to maintain consistency with existing PurchaseRequest implementation
+- **Future Enhancement**: Migrate to azaharizaman/laravel-serial-numbering package's HasSerialNumbering trait for thread-safe, database-backed serial generation with proper locking and void management
+- Package is already installed and ready for integration when needed
+
 ## 2025-11-03 Panel Switching via User Menu
 - Added Filament user menu actions in both `nexus` and `purchase-module` panels to generate deep links with `Filament::getPanel()->getUrl()`, providing the recommended panel-switching experience in v4.
 - Restored the Nexus panel topbar so the shared user menu (and panel switcher action) remains accessible in the default location.

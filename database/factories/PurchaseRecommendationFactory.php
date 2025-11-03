@@ -17,7 +17,11 @@ class PurchaseRecommendationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'recommendation_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'status' => $this->faker->randomElement(['draft', 'submitted', 'approved', 'rejected']),
+            'justification' => $this->faker->paragraph(),
+            'comparison_notes' => $this->faker->optional()->paragraph(),
+            'recommended_total' => $this->faker->randomFloat(2, 5000, 100000),
         ];
     }
 }
