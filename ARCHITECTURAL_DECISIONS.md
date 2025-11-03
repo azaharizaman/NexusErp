@@ -1,9 +1,15 @@
 # Architectural Decisions
 
-## 2025-11-03 Serial Numbering Implementation
-- Currently using simple max(id) + 1 approach for auto-numbering (RFQ-XXXXXX, QT-XXXXXX, PR-REC-XXXXXX) to maintain consistency with existing PurchaseRequest implementation
+## 2025-11-03 Serial Numbering Implementation - Updated
+- Updated to year-based auto-numbering format: RFQ-YYYY-XXXX, QT-YYYY-XXXX, PR-REC-YYYY-XXXX
+- Uses `whereYear('created_at', $year)->count() + 1` approach for sequential numbering per year
 - **Future Enhancement**: Migrate to azaharizaman/laravel-serial-numbering package's HasSerialNumbering trait for thread-safe, database-backed serial generation with proper locking and void management
 - Package is already installed and ready for integration when needed
+
+## 2025-11-03 Standard Fields Implementation
+- Added standard fields to all transactional models: `requested_by`, `approved_by`, `approved_at`, `remarks`
+- All models now include complete audit trail: `created_by`, `updated_by`, `requested_by`, `approved_by` with corresponding User relationships
+- Relationships: `requester()`, `approver()`, `creator()`, `updater()` methods added for audit tracking
 
 ## 2025-11-03 Panel Switching via User Menu
 - Added Filament user menu actions in both `nexus` and `purchase-module` panels to generate deep links with `Filament::getPanel()->getUrl()`, providing the recommended panel-switching experience in v4.

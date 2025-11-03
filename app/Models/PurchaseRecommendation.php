@@ -23,10 +23,12 @@ class PurchaseRecommendation extends Model
         'status',
         'justification',
         'comparison_notes',
+        'remarks',
         'recommended_total',
         'currency_id',
         'created_by',
         'updated_by',
+        'requested_by',
         'approved_by',
         'approved_at',
     ];
@@ -38,7 +40,7 @@ class PurchaseRecommendation extends Model
     ];
 
     /**
-     * Boot method to generate recommendation number.
+     * Boot method to generate recommendation number with year.
      */
     protected static function boot()
     {
@@ -46,9 +48,11 @@ class PurchaseRecommendation extends Model
 
         static::creating(function ($model) {
             if (empty($model->recommendation_number)) {
-                $model->recommendation_number = 'PR-REC-' . str_pad(
-                    self::max('id') + 1,
-                    6,
+                $year = now()->format('Y');
+                $count = self::whereYear('created_at', $year)->count() + 1;
+                $model->recommendation_number = 'PR-REC-' . $year . '-' . str_pad(
+                    $count,
+                    4,
                     '0',
                     STR_PAD_LEFT
                 );
@@ -94,6 +98,30 @@ class PurchaseRecommendation extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Requester relationship.
+     */
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    /**
+     * Creator relationship.
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Updater relationship.
+     */
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**

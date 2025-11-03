@@ -26,17 +26,22 @@ class RequestForQuotation extends Model
         'terms_and_conditions',
         'currency_id',
         'notes',
+        'remarks',
         'created_by',
         'updated_by',
+        'requested_by',
+        'approved_by',
+        'approved_at',
     ];
 
     protected $casts = [
         'rfq_date' => 'date',
         'expiry_date' => 'date',
+        'approved_at' => 'datetime',
     ];
 
     /**
-     * Boot method to generate RFQ number.
+     * Boot method to generate RFQ number with year.
      */
     protected static function boot()
     {
@@ -44,9 +49,11 @@ class RequestForQuotation extends Model
 
         static::creating(function ($model) {
             if (empty($model->rfq_number)) {
-                $model->rfq_number = 'RFQ-' . str_pad(
-                    self::max('id') + 1,
-                    6,
+                $year = now()->format('Y');
+                $count = self::whereYear('created_at', $year)->count() + 1;
+                $model->rfq_number = 'RFQ-' . $year . '-' . str_pad(
+                    $count,
+                    4,
                     '0',
                     STR_PAD_LEFT
                 );
@@ -103,6 +110,38 @@ class RequestForQuotation extends Model
     public function purchaseRecommendations(): HasMany
     {
         return $this->hasMany(PurchaseRecommendation::class);
+    }
+
+    /**
+     * Requester relationship.
+     */
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    /**
+     * Approver relationship.
+     */
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Creator relationship.
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Updater relationship.
+     */
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**

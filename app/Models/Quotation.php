@@ -28,11 +28,15 @@ class Quotation extends Model
         'status',
         'terms_and_conditions',
         'notes',
+        'remarks',
         'delivery_lead_time_days',
         'payment_terms',
         'is_recommended',
         'created_by',
         'updated_by',
+        'requested_by',
+        'approved_by',
+        'approved_at',
     ];
 
     protected $casts = [
@@ -42,10 +46,11 @@ class Quotation extends Model
         'tax_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'is_recommended' => 'boolean',
+        'approved_at' => 'datetime',
     ];
 
     /**
-     * Boot method to generate quotation number.
+     * Boot method to generate quotation number with year.
      */
     protected static function boot()
     {
@@ -53,9 +58,11 @@ class Quotation extends Model
 
         static::creating(function ($model) {
             if (empty($model->quotation_number)) {
-                $model->quotation_number = 'QT-' . str_pad(
-                    self::max('id') + 1,
-                    6,
+                $year = now()->format('Y');
+                $count = self::whereYear('created_at', $year)->count() + 1;
+                $model->quotation_number = 'QT-' . $year . '-' . str_pad(
+                    $count,
+                    4,
                     '0',
                     STR_PAD_LEFT
                 );
@@ -117,6 +124,38 @@ class Quotation extends Model
     public function scopeAccepted($query)
     {
         return $query->where('status', 'accepted');
+    }
+
+    /**
+     * Requester relationship.
+     */
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    /**
+     * Approver relationship.
+     */
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Creator relationship.
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Updater relationship.
+     */
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**
