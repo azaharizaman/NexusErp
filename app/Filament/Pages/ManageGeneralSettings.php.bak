@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Filament\Pages;
+
+use App\Settings\GeneralSettings;
+use Filament\Forms;
+use Filament\Schemas\Schema;
+use Filament\Pages\SettingsPage;
+
+class ManageGeneralSettings extends SettingsPage
+{
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+
+    protected static string $settings = GeneralSettings::class;
+
+    protected static ?string $navigationGroup = 'Settings';
+
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $title = 'General Settings';
+
+    protected static ?string $navigationLabel = 'General';
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Forms\Components\Section::make('Application Settings')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('app_name')
+                                    ->label('Application Name')
+                                    ->required()
+                                    ->maxLength(255),
+                                
+                                Forms\Components\TextInput::make('app_description')
+                                    ->label('Application Description')
+                                    ->maxLength(500),
+                            ]),
+                        
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\FileUpload::make('app_logo')
+                                    ->label('Application Logo')
+                                    ->image()
+                                    ->directory('settings/logos')
+                                    ->visibility('public'),
+                                
+                                Forms\Components\FileUpload::make('app_favicon')
+                                    ->label('Application Favicon')
+                                    ->image()
+                                    ->directory('settings/favicons')
+                                    ->visibility('public'),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Localization Settings')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('timezone')
+                                    ->label('Default Timezone')
+                                    ->options(collect(timezone_identifiers_list())->mapWithKeys(fn ($tz) => [$tz => $tz]))
+                                    ->searchable()
+                                    ->required(),
+                                
+                                Forms\Components\Select::make('default_language')
+                                    ->label('Default Language')
+                                    ->options([
+                                        'en' => 'English',
+                                        'ms' => 'Bahasa Malaysia',
+                                        'zh' => 'Chinese',
+                                        'ta' => 'Tamil',
+                                    ])
+                                    ->required(),
+                            ]),
+                        
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\TextInput::make('date_format')
+                                    ->label('Date Format')
+                                    ->placeholder('Y-m-d')
+                                    ->required(),
+                                
+                                Forms\Components\TextInput::make('time_format')
+                                    ->label('Time Format')
+                                    ->placeholder('H:i:s')
+                                    ->required(),
+                                
+                                Forms\Components\TextInput::make('datetime_format')
+                                    ->label('DateTime Format')
+                                    ->placeholder('Y-m-d H:i:s')
+                                    ->required(),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Maintenance Settings')
+                    ->schema([
+                        Forms\Components\Toggle::make('maintenance_mode')
+                            ->label('Enable Maintenance Mode')
+                            ->helperText('When enabled, only administrators can access the application'),
+                        
+                        Forms\Components\Textarea::make('maintenance_message')
+                            ->label('Maintenance Message')
+                            ->placeholder('The application is currently under maintenance. Please check back later.')
+                            ->rows(3)
+                            ->visible(fn (Forms\Get $get) => $get('maintenance_mode')),
+                    ]),
+            ]);
+    }
+}

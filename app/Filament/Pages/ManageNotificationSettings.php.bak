@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Filament\Pages;
+
+use App\Settings\NotificationSettings;
+use Filament\Forms;
+use Filament\Schemas\Schema;
+use Filament\Pages\SettingsPage;
+
+class ManageNotificationSettings extends SettingsPage
+{
+    protected static ?string $navigationIcon = 'heroicon-o-bell';
+
+    protected static string $settings = NotificationSettings::class;
+
+    protected static ?string $navigationGroup = 'Settings';
+
+    protected static ?int $navigationSort = 5;
+
+    protected static ?string $title = 'Notification Settings';
+
+    protected static ?string $navigationLabel = 'Notifications';
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Forms\Components\Section::make('Notification Methods')
+                    ->schema([
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\Toggle::make('email_notifications')
+                                    ->label('Email Notifications'),
+                                
+                                Forms\Components\Toggle::make('sms_notifications')
+                                    ->label('SMS Notifications'),
+                                
+                                Forms\Components\Toggle::make('browser_notifications')
+                                    ->label('Browser Notifications'),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Notification Types')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Toggle::make('notify_on_low_inventory')
+                                    ->label('Low Inventory Notifications'),
+                                
+                                Forms\Components\Toggle::make('notify_on_order_updates')
+                                    ->label('Order Update Notifications'),
+                            ]),
+                        
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Toggle::make('notify_on_payment_received')
+                                    ->label('Payment Received Notifications'),
+                                
+                                Forms\Components\Toggle::make('notify_on_invoice_overdue')
+                                    ->label('Invoice Overdue Notifications'),
+                            ]),
+                        
+                        Forms\Components\Toggle::make('notify_on_system_errors')
+                            ->label('System Error Notifications'),
+                    ]),
+
+                Forms\Components\Section::make('Contact Information')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('admin_email')
+                                    ->label('Admin Email')
+                                    ->email()
+                                    ->required()
+                                    ->helperText('Primary email for system notifications'),
+                                
+                                Forms\Components\TextInput::make('admin_phone')
+                                    ->label('Admin Phone')
+                                    ->tel()
+                                    ->helperText('Phone number for SMS notifications'),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Notification Configuration')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('notification_batch_size')
+                                    ->label('Notification Batch Size')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(1000)
+                                    ->required()
+                                    ->helperText('Number of notifications to process at once'),
+                                
+                                Forms\Components\Select::make('notification_frequency')
+                                    ->label('Notification Frequency')
+                                    ->options([
+                                        'immediate' => 'Immediate',
+                                        'hourly' => 'Hourly',
+                                        'daily' => 'Daily',
+                                        'weekly' => 'Weekly',
+                                    ])
+                                    ->required(),
+                            ]),
+                    ]),
+            ]);
+    }
+}

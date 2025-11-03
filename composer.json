@@ -10,6 +10,7 @@
         "akaunting/laravel-money": "*",
         "ariaieboy/filament-currency": "^2.0",
         "azaharizaman/laravel-backoffice": "^1.0",
+        "azaharizaman/laravel-serial-numbering": "*",
         "azaharizaman/laravel-uom-management": "dev-main",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.1",
@@ -22,7 +23,8 @@
         "predis/predis": "^3.2",
         "spatie/eloquent-sortable": "^4.5",
         "spatie/laravel-collection-macros": "^8.0",
-        "spatie/laravel-model-status": "^1.18"
+        "spatie/laravel-model-status": "^1.18",
+    "spatie/laravel-permission": "^6.22"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -38,7 +40,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

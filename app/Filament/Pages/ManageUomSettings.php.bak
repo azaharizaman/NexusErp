@@ -1,0 +1,135 @@
+<?php
+
+namespace App\Filament\Pages;
+
+use App\Settings\UomSettings;
+use Filament\Forms;
+use Filament\Schemas\Schema;
+use Filament\Pages\SettingsPage;
+
+class ManageUomSettings extends SettingsPage
+{
+    protected static ?string $navigationIcon = 'heroicon-o-scale';
+
+    protected static string $settings = UomSettings::class;
+
+    protected static ?string $navigationGroup = 'Settings';
+
+    protected static ?int $navigationSort = 4;
+
+    protected static ?string $title = 'UOM Settings';
+
+    protected static ?string $navigationLabel = 'Units of Measure';
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Forms\Components\Section::make('Default Units')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('default_weight_unit')
+                                    ->label('Default Weight Unit')
+                                    ->options([
+                                        'G' => 'Gram (G)',
+                                        'KG' => 'Kilogram (KG)',
+                                        'LB' => 'Pound (LB)',
+                                        'OZ' => 'Ounce (OZ)',
+                                        'MG' => 'Milligram (MG)',
+                                    ])
+                                    ->required(),
+                                
+                                Forms\Components\Select::make('default_length_unit')
+                                    ->label('Default Length Unit')
+                                    ->options([
+                                        'MM' => 'Millimetre (MM)',
+                                        'CM' => 'Centimetre (CM)',
+                                        'M' => 'Metre (M)',
+                                        'KM' => 'Kilometre (KM)',
+                                        'IN' => 'Inch (IN)',
+                                        'FT' => 'Foot (FT)',
+                                    ])
+                                    ->required(),
+                            ]),
+                        
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('default_volume_unit')
+                                    ->label('Default Volume Unit')
+                                    ->options([
+                                        'ML' => 'Millilitre (ML)',
+                                        'L' => 'Litre (L)',
+                                        'GAL' => 'Gallon (GAL)',
+                                        'PT' => 'Pint (PT)',
+                                    ])
+                                    ->required(),
+                                
+                                Forms\Components\Select::make('default_area_unit')
+                                    ->label('Default Area Unit')
+                                    ->options([
+                                        'MM2' => 'Square Millimetre',
+                                        'CM2' => 'Square Centimetre',
+                                        'M2' => 'Square Metre',
+                                        'KM2' => 'Square Kilometre',
+                                        'IN2' => 'Square Inch',
+                                        'FT2' => 'Square Foot',
+                                    ])
+                                    ->required(),
+                            ]),
+                        
+                        Forms\Components\Select::make('default_temperature_unit')
+                            ->label('Default Temperature Unit')
+                            ->options([
+                                'C' => 'Celsius (°C)',
+                                'F' => 'Fahrenheit (°F)',
+                                'K' => 'Kelvin (K)',
+                            ])
+                            ->required(),
+                    ]),
+
+                Forms\Components\Section::make('UOM Features')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Toggle::make('enable_compound_units')
+                                    ->label('Enable Compound Units')
+                                    ->helperText('Allow creation of compound units (e.g., kg/m³)'),
+                                
+                                Forms\Components\Toggle::make('enable_custom_units')
+                                    ->label('Enable Custom Units')
+                                    ->helperText('Allow users to create custom units'),
+                            ]),
+                        
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Toggle::make('auto_convert_units')
+                                    ->label('Auto Convert Units')
+                                    ->helperText('Automatically convert between compatible units'),
+                                
+                                Forms\Components\TextInput::make('conversion_precision')
+                                    ->label('Conversion Precision')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(10)
+                                    ->required()
+                                    ->helperText('Number of decimal places for conversions'),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Display Settings')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Toggle::make('show_unit_codes')
+                                    ->label('Show Unit Codes')
+                                    ->helperText('Display unit codes (e.g., KG, M, L)'),
+                                
+                                Forms\Components\Toggle::make('show_unit_names')
+                                    ->label('Show Unit Names')
+                                    ->helperText('Display full unit names (e.g., Kilogram, Metre, Litre)'),
+                            ]),
+                    ]),
+            ]);
+    }
+}
