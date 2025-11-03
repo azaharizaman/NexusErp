@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // Price list name (e.g., "Standard Supplier Prices", "Preferred Vendor Rates")
             $table->foreignId('currency_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('supplier_id')->nullable()->constrained('business_partners')->nullOnDelete();
+            $table->unsignedBigInteger('supplier_id')->nullable(); // FK will be added after business_partners migration
             $table->date('effective_from'); // Start date for this price list
             $table->date('effective_to')->nullable(); // Optional end date
             $table->boolean('is_active')->default(true);
