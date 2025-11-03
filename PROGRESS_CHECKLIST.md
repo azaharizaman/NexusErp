@@ -99,10 +99,10 @@
 
 | Submodule                       | Tasks                                                                                                           |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Payment Vouchers**            | [x] Model: `PaymentVoucher` (serial prefix `PV-`) — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: Approval workflow — ✅ Completed on 2025-11-03                  |
-| **Payment Schedules**           | [x] Model: `PaymentSchedule` (due dates, milestones) — ✅ Completed on 2025-11-03 <br>[ ] Auto-generate based on PO or Invoice terms (deferred for future enhancement)         |
-| **Multi-Currency Ledger View**  | [x] `PayableLedger` model — ✅ Completed on 2025-11-03 <br>[x] Show base + foreign currency totals — ✅ Completed on 2025-11-03 <br>[x] Integrate exchange rate snapshots — ✅ Completed on 2025-11-03 |
-| **Outstanding Payables Report** | [x] Report page showing overdue payments and status — ✅ Implemented via PaymentAgingWidget (2025-11-03)                                                             |
+| **Payment Vouchers**            | [ ] Model: `PaymentVoucher` (serial prefix `PV-`) <br>[ ] Filament Resource: Approval workflow                  |
+| **Payment Schedules**           | [ ] Model: `PaymentSchedule` (due dates, milestones) <br>[ ] Auto-generate based on PO or Invoice terms         |
+| **Multi-Currency Ledger View**  | [ ] `PayableLedger` model <br>[ ] Show base + foreign currency totals <br>[ ] Integrate exchange rate snapshots |
+| **Outstanding Payables Report** | [ ] Report page showing overdue payments and status                                                             |
 
 ---
 
@@ -110,11 +110,11 @@
 
 | Submodule                       | Tasks                                                                     |
 | ------------------------------- | ------------------------------------------------------------------------- |
-| **Spend Analysis**              | [x] Filament ChartWidget: Spend by Supplier, Spend by Month — ✅ Completed on 2025-11-03               |
-| **Supplier Performance**        | [x] Widget: On-time delivery, average rating — ✅ Completed on 2025-11-03                              |
-| **Open PR/PO Tracker**          | [x] Widget: Pending PRs and unclosed POs — ✅ Completed on 2025-11-03 (ProcurementStatsWidget)                                  |
-| **Aging & Payment Analysis**    | [x] TableWidget: Aging by due date — ✅ Completed on 2025-11-03                                        |
-| **Audit Logs / Activity Trail** | [ ] Integrate with Filament Activity plugin or custom `ActivityLog` model (deferred for future enhancement) |
+| **Spend Analysis**              | [ ] Filament ChartWidget: Spend by Supplier, Spend by Month               |
+| **Supplier Performance**        | [ ] Widget: On-time delivery, average rating                              |
+| **Open PR/PO Tracker**          | [ ] Widget: Pending PRs and unclosed POs                                  |
+| **Aging & Payment Analysis**    | [ ] TableWidget: Aging by due date                                        |
+| **Audit Logs / Activity Trail** | [ ] Integrate with Filament Activity plugin or custom `ActivityLog` model |
 
 ---
 

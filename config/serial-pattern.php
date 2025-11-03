@@ -84,14 +84,6 @@ return [
             'interval' => 1,
             'delimiters' => ['-'],
         ],
-        'paymentvoucher' => [
-            'pattern' => 'PV-{year}-{number}',
-            'start' => 1,
-            'digits' => 4,
-            'reset' => 'yearly',
-            'interval' => 1,
-            'delimiters' => ['-'],
-        ],
     ],
 
     /*
