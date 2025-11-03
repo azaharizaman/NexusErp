@@ -56,7 +56,7 @@ class QuotationItem extends Model implements Sortable
     {
         if ($this->unit_price && $this->quantity) {
             $this->line_total = $this->unit_price * $this->quantity;
-            $this->tax_amount = $this->line_total * ($this->tax_rate / 100);
+            $this->tax_amount = $this->line_total * (($this->tax_rate ?? 0) / 100);
             $this->save();
         }
     }
