@@ -93,9 +93,9 @@ class PurchaseRecommendationForm
                 
                 Section::make('Approval Information')
                     ->schema([
-                        TextInput::make('approved_by')
+                        Select::make('approved_by')
+                            ->relationship('approver', 'name')
                             ->label('Approved By')
-                            ->numeric()
                             ->disabled(),
                         DateTimePicker::make('approved_at')
                             ->label('Approved At')
