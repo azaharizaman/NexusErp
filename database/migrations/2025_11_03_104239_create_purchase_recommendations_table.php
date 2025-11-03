@@ -25,9 +25,9 @@ return new class extends Migration
             $table->foreignId('currency_id')->nullable()->constrained('currencies')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('approved_by')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
         });
     }
