@@ -31,10 +31,6 @@ class TaxRuleForm
                     ->required(),
                 Toggle::make('is_compound')
                     ->required(),
-                TextInput::make('created_by')
-                    ->numeric(),
-                TextInput::make('updated_by')
-                    ->numeric(),
             ]);
     }
 }
