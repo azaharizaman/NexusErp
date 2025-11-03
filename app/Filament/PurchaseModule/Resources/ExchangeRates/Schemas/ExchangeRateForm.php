@@ -28,10 +28,6 @@ class ExchangeRateForm
                 DatePicker::make('expiry_date'),
                 Toggle::make('is_active')
                     ->required(),
-                TextInput::make('created_by')
-                    ->numeric(),
-                TextInput::make('updated_by')
-                    ->numeric(),
             ]);
     }
 }
