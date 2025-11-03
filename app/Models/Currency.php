@@ -31,11 +31,19 @@ class Currency extends Model
     ];
 
     /**
-     * Exchange rates for this currency.
+     * Exchange rates for this currency (as source currency).
      */
     public function exchangeRates(): HasMany
     {
         return $this->hasMany(ExchangeRate::class, 'from_currency_id');
+    }
+
+    /**
+     * Inverse exchange rates for this currency (as target currency).
+     */
+    public function inverseExchangeRates(): HasMany
+    {
+        return $this->hasMany(ExchangeRate::class, 'to_currency_id');
     }
 
     /**
