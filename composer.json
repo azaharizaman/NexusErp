@@ -24,7 +24,7 @@
         "spatie/eloquent-sortable": "^4.5",
         "spatie/laravel-collection-macros": "^8.0",
         "spatie/laravel-model-status": "^1.18",
-    "spatie/laravel-permission": "^6.22"
+        "spatie/laravel-permission": "^6.22"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

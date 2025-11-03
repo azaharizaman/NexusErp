@@ -3,9 +3,7 @@
 namespace App\Actions\Utils;
 
 use App\Helpers\SettingsHelper;
-use App\Settings\FinancialSettings;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Spatie\LaravelSettings\Exceptions\MissingSettings;
 
 class FormatCurrency
 {
@@ -16,21 +14,14 @@ class FormatCurrency
      */
     public function handle(float $amount, ?string $currency = null): string
     {
-        $config = FinancialSettings::defaults();
-
-        try {
-            $financial = SettingsHelper::financial();
-
-            $config = [
-                'decimal_places' => $financial->decimal_places,
-                'decimal_separator' => $financial->decimal_separator,
-                'thousands_separator' => $financial->thousands_separator,
-                'currency_symbol' => $financial->currency_symbol,
-                'currency_position' => $financial->currency_position,
-            ];
-        } catch (MissingSettings $exception) {
-            // Fallback to defaults when settings are not yet persisted
-        }
+        $financial = SettingsHelper::financial();
+        $config = [
+            'decimal_places' => (int) data_get($financial, 'decimal_places', 2),
+            'decimal_separator' => (string) data_get($financial, 'decimal_separator', '.'),
+            'thousands_separator' => (string) data_get($financial, 'thousands_separator', ','),
+            'currency_symbol' => (string) data_get($financial, 'currency_symbol', '$'),
+            'currency_position' => (string) data_get($financial, 'currency_position', 'before'),
+        ];
 
         $formattedAmount = number_format(
             $amount,

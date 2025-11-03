@@ -1,4 +1,183 @@
-# Progress Checklist
+# 🧭 **PURCHASE MANAGEMENT MODULE – DEVELOPMENT CHECKLIST**
 
-- [x] Enable panel switching between `nexus` and `purchase-module` via Filament user menu actions (2025-11-03). Future: align action visibility with forthcoming module-level authorization rules.
-- [x] Display module-aware branding by calling `brandName()` per panel (2025-11-03). Future: pull brand label from localization once module catalogue is finalized.
+> **Objective:** Implement a complete Purchase Management suite in FilamentPHP with modular architecture, reusable models, and enterprise-grade UX.
+
+---
+
+## ⚙️ PHASE 1 — CORE FOUNDATIONS & SETUP
+
+### 🧩 1.1 Package Integrations
+
+* [ ] Integrate **`azaharizaman/laravel-inventory-management`** for items catalog.
+* [ ] Integrate **`azaharizaman/laravel-uom-management`** for UOM.
+* [ ] Integrate **`azaharizaman/laravel-serial-numbering`** for controlled numbering.
+* [ ] Add optional dependency hooks for future package **`azaharizaman/laravel-status-transitions`** (DOA workflow).
+* [ ] Register **custom service providers** and boot configuration under `/Modules/PurchaseManagement/Providers/`.
+
+### 🧱 1.2 Database & Models
+
+* [ ] Create models (with migrations and factories) for:
+
+  * [ ] `Vendor` (filtered subset of Business Partner where `is_supplier = true`)
+  * [ ] `Item` (extend existing model)
+  * [ ] `PriceList`
+  * [ ] `Currency` & `ExchangeRate`
+  * [ ] `TaxRule`
+  * [ ] `TermsTemplate`
+* [ ] Add **Soft Deletes**, **Audit fields** (`created_by`, `approved_by`, etc.).
+* [ ] Implement `ControlledSerialNumbering` trait for transactional models.
+* [ ] Define all **foreign key relationships** and cascade rules.
+
+### 🧩 1.3 Filament Panel Setup
+
+* [ ] Create `PurchasePanelProvider` under `/Modules/PurchaseManagement/Filament/`.
+* [ ] Define navigation groups:
+
+  ```php
+  ->navigationGroups([
+      'Procurement Setup',
+      'Requisition Management',
+      'Sourcing & Ordering',
+      'Receiving & Invoicing',
+      'Payments & Settlements',
+      'Procurement Insights',
+      'Administration & Policy',
+  ])
+  ```
+* [ ] Configure global color theme, icons, and compact navigation mode.
+* [ ] Register role-based middleware for Filament panel (`can:viewPurchasePanel`).
+
+---
+
+## 📑 PHASE 2 — PROCUREMENT SETUP MODULES
+
+| Submodule                         | Key Tasks                                                                                                                  |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Business Partners (Suppliers)** | [ ] Extend Business Partner model → `Vendor`  <br>[ ] Filament Resource: `VendorResource` (CRUD + search + filter active)  |
+| **Items / Materials Catalog**     | [ ] Extend `Item` from inventory package <br>[ ] Add supplier link and purchase price field                                |
+| **UOM & Price Lists**             | [ ] Integrate with UOM package <br>[ ] Create `PriceList` model/resource <br>[ ] Allow tiered pricing by supplier/currency |
+| **Currencies & Exchange Rates**   | [ ] Create `Currency` & `ExchangeRate` models/resources <br>[ ] Add daily auto-sync job (using scheduler)                  |
+| **Tax & Charge Rules**            | [ ] Create `TaxRule` model/resource <br>[ ] Assignable to PR, PO, and Invoice                                              |
+| **Terms & Conditions Templates**  | [ ] `TermsTemplate` model/resource <br>[ ] Add WYSIWYG editor for reusable terms                                           |
+
+---
+
+## 📦 PHASE 3 — REQUISITION MANAGEMENT
+
+| Submodule                             | Tasks                                                                                                                                                                                                                                           |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Purchase Requests (PR)**            | [ ] Create model `PurchaseRequest` with serial prefix `PR-` <br>[ ] Filament Resource: Create/Edit/List views <br>[ ] Fields: Requester, Dept, Items (Repeater), Total, Status <br>[ ] Workflow states: Draft → Submitted → Approved → Rejected |
+| **Request for Quotation (RFQ)**       | [ ] Model: `RequestForQuotation` (extends serial numbering) <br>[ ] Fields: Linked PRs, Suppliers invited, Expiry date <br>[ ] Filament Resource with subform for supplier quotations                                                           |
+| **Quotation Comparison / Evaluation** | [ ] Model: `Quotation` <br>[ ] Comparison page (custom Filament Page) <br>[ ] Add “Select Recommended Supplier” button                                                                                                                          |
+| **Purchase Recommendation**           | [ ] Model: `PurchaseRecommendation` <br>[ ] Auto-generate from selected RFQ quotations                                                                                                                                                          |
+
+---
+
+## 📑 PHASE 4 — SOURCING & ORDERING
+
+| Submodule                      | Tasks                                                                                                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Purchase Orders (PO)**       | [ ] Model: `PurchaseOrder` <br>[ ] Implement serial prefix `PO-` <br>[ ] Filament Resource: Form with vendor, items, total, taxes <br>[ ] Status transitions: Draft → Approved → Issued → Closed |
+| **PO Revisions / Amendments**  | [ ] `PurchaseOrderRevision` model (linked to original PO) <br>[ ] Auto-track old vs new values                                                                                                   |
+| **Contracts & Blanket Orders** | [ ] `PurchaseContract` model <br>[ ] Link multiple POs under contract                                                                                                                            |
+| **Delivery Schedules**         | [ ] `DeliverySchedule` model <br>[ ] Link to PO items and expected dates <br>[ ] Optional integration with calendar widget                                                                       |
+
+---
+
+## 📦 PHASE 5 — RECEIVING & INVOICE PROCESSING
+
+| Submodule                      | Tasks                                                                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Goods Received Notes (GRN)** | [ ] `GRN` model <br>[ ] Linked to PO <br>[ ] Capture delivered quantity, batch, date <br>[ ] Auto-update stock if inventory package exists |
+| **Supplier Invoices**          | [ ] `SupplierInvoice` model <br>[ ] Link PO + GRN <br>[ ] Tax & currency handling                                                          |
+| **Three-way Matching**         | [ ] `InvoiceMatching` model <br>[ ] Automated validation: PO vs GRN vs Invoice totals <br>[ ] Report mismatches                            |
+| **Debit / Credit Notes**       | [ ] `DebitNote` / `CreditNote` models <br>[ ] Allow linking to Invoice and Vendor account                                                  |
+
+---
+
+## 💳 PHASE 6 — PAYMENTS & SETTLEMENTS
+
+| Submodule                       | Tasks                                                                                                           |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Payment Vouchers**            | [ ] Model: `PaymentVoucher` (serial prefix `PV-`) <br>[ ] Filament Resource: Approval workflow                  |
+| **Payment Schedules**           | [ ] Model: `PaymentSchedule` (due dates, milestones) <br>[ ] Auto-generate based on PO or Invoice terms         |
+| **Multi-Currency Ledger View**  | [ ] `PayableLedger` model <br>[ ] Show base + foreign currency totals <br>[ ] Integrate exchange rate snapshots |
+| **Outstanding Payables Report** | [ ] Report page showing overdue payments and status                                                             |
+
+---
+
+## 📊 PHASE 7 — PROCUREMENT INSIGHTS & REPORTS
+
+| Submodule                       | Tasks                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| **Spend Analysis**              | [ ] Filament ChartWidget: Spend by Supplier, Spend by Month               |
+| **Supplier Performance**        | [ ] Widget: On-time delivery, average rating                              |
+| **Open PR/PO Tracker**          | [ ] Widget: Pending PRs and unclosed POs                                  |
+| **Aging & Payment Analysis**    | [ ] TableWidget: Aging by due date                                        |
+| **Audit Logs / Activity Trail** | [ ] Integrate with Filament Activity plugin or custom `ActivityLog` model |
+
+---
+
+## 🧑‍💼 PHASE 8 — ADMINISTRATION & POLICY
+
+| Submodule                            | Tasks                                                                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| **Approval Matrix & Workflow Rules** | [ ] Model: `ApprovalRule` (multi-level) <br>[ ] Integrate with Spatie Roles <br>[ ] Define per-document type |
+| **Procurement Policies**             | [ ] Model: `ProcurementPolicy` <br>[ ] CRUD in Filament with WYSIWYG editor                                  |
+| **Delegation of Authority (DOA)**    | [ ] Placeholder model `DelegationAuthority` <br>[ ] To be linked with future Status Transitions package      |
+| **Notification Templates**           | [ ] Model: `NotificationTemplate` <br>[ ] Support Email & In-App placeholders                                |
+| **Role-Based Access Control (RBAC)** | [ ] Configure roles: Requester, Buyer, Finance, Manager <br>[ ] Assign Filament resource permissions         |
+
+---
+
+## 🧠 PHASE 9 — SYSTEM INTEGRATION & SCALABILITY
+
+* [ ] Implement **API endpoints** for external ERP sync (future financial module).
+* [ ] Define **event listeners** (`PurchaseOrderApproved`, `InvoiceCreated`, etc.).
+* [ ] Create a **Command Bus pattern** to handle document transitions.
+* [ ] Implement background jobs for rate sync, reporting cache, and email dispatch.
+* [ ] Support modular installation (via `PurchaseManagementServiceProvider`).
+
+---
+
+## 🧪 PHASE 10 — TESTING & DEPLOYMENT
+
+* [ ] Write **Pest/PHPUnit tests** for all models and Filament resources.
+* [ ] Create **seeders** for sample vendors, currencies, and documents.
+* [ ] Add **feature tests** for document approval flows.
+* [ ] Implement **code coverage tracking** (via GitHub Actions + badges).
+* [ ] Document setup steps in `/docs/purchase-management.md`.
+
+---
+
+## 📈 PHASE 11 — DASHBOARD & UX POLISH
+
+* [ ] Design dashboard layout for key widgets (PR, PO, Invoices summary).
+* [ ] Add icons to navigation and compact layout toggles.
+* [ ] Implement quick search + shortcuts for PR/PO/Invoice creation.
+* [ ] Add conditional visibility (e.g., “Check Budget” button only when PO not finalized).
+* [ ] Include responsive design for small screens.
+
+---
+
+## ✅ PHASE 12 — DELIVERY & FINAL QA
+
+* [ ] Verify all navigation groups correctly appear in Filament.
+* [ ] Check serial numbering uniqueness across modules.
+* [ ] Validate approval and role restrictions.
+* [ ] Review currency calculations & tax formulas.
+* [ ] Conduct user acceptance testing (UAT).
+* [ ] Prepare migration script for production.
+
+---
+
+### 🔄 Progress Tracking Convention for GitHub Copilot Agent
+
+Each item should be tracked via:
+
+```markdown
+- [x] Task Name — ✅ Completed on YYYY-MM-DD by @username
+```
+
+Or updated automatically in the project README or issue tracker using Copilot Agent automation workflows.
+

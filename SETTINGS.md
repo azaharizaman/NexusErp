@@ -1,254 +1,109 @@
-# Settings Management System
+# Application Settings Overview
 
-This NexusERP application includes a comprehensive settings management system built with Spatie Laravel Settings and Filament.
+NexusERP centralizes default application configuration in `config/nexus-settings.php`. Each setting group (general, company, financial, unit of measure, notifications) exposes sensible defaults that can be overridden with environment variables or by publishing a custom config file.
 
-## Available Settings Categories
+## Configuration Structure
 
-### 1. General Settings (`App\Settings\GeneralSettings`)
-- Application name and description
-- Logo and favicon
-- Timezone and localization settings
-- Date/time formats
-- Maintenance mode settings
+```php
+return [
+    'general' => [...],
+    'company' => [...],
+    'financial' => [...],
+    'uom' => [...],
+    'notifications' => [...],
+];
+```
 
-### 2. Company Settings (`App\Settings\CompanySettings`)
-- Company information (name, registration number, tax number)
-- Contact details (phone, email, website)
-- Company address
-- Company logo and branding
+Key defaults align with the former Spatie settings seeder, ensuring continuity during the migration to config-based storage.
 
-### 3. Financial Settings (`App\Settings\FinancialSettings`)
-- Default currency and formatting
-- Tax settings
-- Document numbering (invoices, quotes, POs)
-- Financial year configuration
+## Access Patterns
 
-### 4. UOM Settings (`App\Settings\UomSettings`)
-- Default units for weight, length, volume, area, temperature
-- UOM features (compound units, custom units, auto-conversion)
-- Display preferences for units
-
-### 5. Notification Settings (`App\Settings\NotificationSettings`)
-- Notification methods (email, SMS, browser)
-- Notification types and triggers
-- Admin contact information
-- Notification configuration
-
-## Accessing Settings in Code
-
-### Using the Settings Helper Class
+### Helper Class
 
 ```php
 use App\Helpers\SettingsHelper;
 
-// Get settings instances
-$general = SettingsHelper::general();
-$company = SettingsHelper::company();
-$financial = SettingsHelper::financial();
-$uom = SettingsHelper::uom();
-$notifications = SettingsHelper::notifications();
-
-// Use convenience methods
-$appName = SettingsHelper::appName();
-$companyName = SettingsHelper::companyName();
-$currency = SettingsHelper::defaultCurrency();
-$formattedPrice = SettingsHelper::formatCurrency(100.50); // $100.50
+SettingsHelper::appName();
+SettingsHelper::companyName();
+SettingsHelper::defaultCurrency();
+SettingsHelper::currencySymbol();
+SettingsHelper::formatCurrency(199.99);
 ```
 
-### Using Global Helper Functions
+### Global Helpers
 
 ```php
-// Get settings helper instance
-$settings = settings();
-
-// Convenience functions
-$appName = app_name();
-$companyName = company_name();
-$currency = default_currency();
-$formattedPrice = format_currency(100.50);
-$isMaintenanceMode = is_maintenance_mode();
+app_name();
+company_name();
+default_currency();
+format_currency(199.99);
+is_maintenance_mode();
 ```
 
-### Direct Access to Settings Classes
+### Resolving Arrays
 
 ```php
-use App\Settings\GeneralSettings;
-use App\Settings\CompanySettings;
+settings()->general();
+settings()->financial();
+settings()->notifications();
 
-// Direct access
-$generalSettings = app(GeneralSettings::class);
-$appName = $generalSettings->app_name;
-
-$companySettings = app(CompanySettings::class);
-$companyName = $companySettings->company_name;
+settings()->get('financial.invoice_prefix'); // "INV-"
 ```
 
-## Managing Settings via Filament Admin Panel
+Returned values are associative arrays, making them straightforward to pass into view models, Livewire components, or actions.
 
-The settings can be managed through the Filament admin panel under the "Settings" navigation group:
+## Customization
 
-1. **General Settings** - Application and localization settings
-2. **Company Settings** - Company information and branding
-3. **Financial Settings** - Currency and financial configuration
-4. **Units of Measure** - UOM defaults and preferences
-5. **Notifications** - Notification configuration
+1. Override specific keys via `.env`:
+   ```env
+   APP_DEFAULT_CURRENCY=MYR
+   APP_CURRENCY_SYMBOL=RM
+   APP_MAINTENANCE_MODE=true
+   APP_MAINTENANCE_MESSAGE="Scheduled update in progress"
+   ```
+2. For more involved changes, publish the config file and adjust values directly.
 
-## Example Usage Patterns
+After changing environment variables or the config file, clear the configuration cache with `php artisan config:clear` (and re-cache with `php artisan config:cache` in production).
 
-### In Controllers
+## Usage Examples
 
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Helpers\SettingsHelper;
-
-class DashboardController extends Controller
-{
-    public function index()
-    {
-        return view('dashboard', [
-            'appName' => SettingsHelper::appName(),
-            'companyName' => SettingsHelper::companyName(),
-            'isMaintenanceMode' => SettingsHelper::isMaintenanceMode(),
-        ]);
-    }
-}
-```
-
-### In Blade Templates
+### Blade Templates
 
 ```blade
-{{-- Using helper functions --}}
 <h1>{{ app_name() }}</h1>
-<p>Welcome to {{ company_name() }}</p>
+<p>{{ company_name() }}</p>
+<span class="price">{{ format_currency($price) }}</span>
 
-{{-- Formatting currency --}}
-<span class="price">{{ format_currency(product.price) }}</span>
-
-{{-- Using settings helper --}}
-@if(settings()->general()->maintenance_mode)
+@if (settings()->isMaintenanceMode())
     <div class="alert alert-warning">
-        {{ settings()->general()->maintenance_message }}
+        {{ settings()->maintenanceMessage() ?? 'Maintenance in progress.' }}
     </div>
 @endif
 ```
 
-### In Livewire Components
+### Actions & Services
 
 ```php
-<?php
-
-namespace App\Livewire;
-
 use App\Helpers\SettingsHelper;
-use Livewire\Component;
 
-class ProductList extends Component
-{
-    public function render()
-    {
-        return view('livewire.product-list', [
-            'defaultCurrency' => SettingsHelper::defaultCurrency(),
-            'defaultWeightUnit' => SettingsHelper::defaultWeightUnit(),
-        ]);
-    }
-}
+$invoicePrefix = data_get(SettingsHelper::financial(), 'invoice_prefix', 'INV-');
+$adminEmail = SettingsHelper::adminEmail();
 ```
 
-### In Actions (Business Logic)
+### Livewire Components
 
 ```php
-<?php
-
-namespace App\Actions;
-
-use App\Helpers\SettingsHelper;
-use Lorisleiva\Actions\Concerns\AsAction;
-
-class CreateInvoice
+public function render()
 {
-    use AsAction;
-
-    public function handle(array $data)
-    {
-        $invoicePrefix = SettingsHelper::financial()->invoice_prefix;
-        $invoiceNumber = $this->generateInvoiceNumber($invoicePrefix);
-        
-        // Create invoice with settings-based configuration...
-    }
+    return view('livewire.product-list', [
+        'defaultCurrency' => SettingsHelper::defaultCurrency(),
+        'defaultWeightUnit' => SettingsHelper::defaultWeightUnit(),
+    ]);
 }
 ```
 
-## Adding New Settings
+## Migration Notes
 
-To add new settings:
-
-1. **Create a new Settings class**:
-```php
-<?php
-
-namespace App\Settings;
-
-use Spatie\LaravelSettings\Settings;
-
-class MyNewSettings extends Settings
-{
-    public string $my_setting;
-    public bool $enable_feature;
-
-    public static function group(): string
-    {
-        return 'my_new_settings';
-    }
-
-    public static function defaults(): array
-    {
-        return [
-            'my_setting' => 'default_value',
-            'enable_feature' => false,
-        ];
-    }
-}
-```
-
-2. **Create a Filament settings page**:
-```bash
-php artisan make:filament-settings-page ManageMyNewSettings MyNewSettings --generate
-```
-
-3. **Add methods to SettingsHelper** (optional):
-```php
-public static function myNewSettings(): MyNewSettings
-{
-    return app(MyNewSettings::class);
-}
-```
-
-4. **Discover the new settings**:
-```bash
-php artisan settings:discover
-```
-
-## Best Practices
-
-1. **Use the Helper Class**: Always use `SettingsHelper` or global functions for consistent access
-2. **Cache Settings**: Settings are automatically cached by Spatie Laravel Settings
-3. **Provide Defaults**: Always provide sensible defaults in your settings classes
-4. **Validate Input**: Use Filament form validation to ensure data integrity
-5. **Document Settings**: Keep this documentation updated when adding new settings
-6. **Environment Overrides**: Some settings might need environment-specific overrides during development
-
-## Environment Configuration
-
-Some settings can be overridden by environment variables for development:
-
-```env
-# .env file
-APP_NAME="NexusERP Development"
-APP_TIMEZONE="Asia/Kuala_Lumpur"
-DEFAULT_CURRENCY="MYR"
-```
-
-These will be used as defaults when the settings are first initialized.
+- The `settings` database table and related seeders have been removed.
+- No Spatie `Settings` classes remain; configuration is fully declarative.
+- Existing helper APIs remain available to minimize downstream changes.

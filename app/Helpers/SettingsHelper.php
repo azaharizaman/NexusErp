@@ -2,174 +2,178 @@
 
 namespace App\Helpers;
 
-use App\Settings\GeneralSettings;
-use App\Settings\CompanySettings;
-use App\Settings\FinancialSettings;
-use App\Settings\UomSettings;
-use App\Settings\NotificationSettings;
-
 class SettingsHelper
 {
     /**
-     * Get general settings instance
+     * Resolve the singleton instance from the container.
      */
-    public static function general(): GeneralSettings
+    protected static function instance(): self
     {
-        return app(GeneralSettings::class);
+        return app(self::class);
     }
 
     /**
-     * Get company settings instance
+     * Forward static calls to the singleton instance for backwards compatibility.
      */
-    public static function company(): CompanySettings
+    public static function __callStatic(string $name, array $arguments): mixed
     {
-        return app(CompanySettings::class);
+        return self::instance()->$name(...$arguments);
     }
 
     /**
-     * Get financial settings instance
+     * Retrieve a configuration subset by key.
      */
-    public static function financial(): FinancialSettings
+    public function get(string $key, mixed $default = null): mixed
     {
-        return app(FinancialSettings::class);
+        return config("nexus-settings.$key", $default);
     }
 
     /**
-     * Get UOM settings instance
+     * Retrieve all settings grouped by category.
      */
-    public static function uom(): UomSettings
+    public function all(): array
     {
-        return app(UomSettings::class);
+        return config('nexus-settings', []);
     }
 
     /**
-     * Get notification settings instance
+     * Retrieve general settings as an associative array.
      */
-    public static function notifications(): NotificationSettings
+    public function general(): array
     {
-        return app(NotificationSettings::class);
+        return $this->get('general', []);
     }
 
     /**
-     * Get application name from settings
+     * Retrieve company settings as an associative array.
      */
-    public static function appName(): string
+    public function company(): array
     {
-        return self::general()->app_name;
+        return $this->get('company', []);
     }
 
     /**
-     * Get application description from settings
+     * Retrieve financial settings as an associative array.
      */
-    public static function appDescription(): string
+    public function financial(): array
     {
-        return self::general()->app_description;
+        return $this->get('financial', []);
     }
 
     /**
-     * Get default currency from settings
+     * Retrieve unit of measurement settings as an associative array.
      */
-    public static function defaultCurrency(): string
+    public function uom(): array
     {
-        return self::financial()->default_currency;
+        return $this->get('uom', []);
     }
 
     /**
-     * Get currency symbol from settings
+     * Retrieve notification settings as an associative array.
      */
-    public static function currencySymbol(): string
+    public function notifications(): array
     {
-        return self::financial()->currency_symbol;
+        return $this->get('notifications', []);
     }
 
     /**
-     * Format currency amount
+     * Derived general settings helpers.
      */
-    public static function formatCurrency(float $amount): string
+    public function appName(): string
     {
-        $settings = self::financial();
-        
+        return (string) data_get($this->general(), 'app_name', config('app.name', 'NexusERP'));
+    }
+
+    public function appDescription(): string
+    {
+        return (string) data_get($this->general(), 'app_description', '');
+    }
+
+    public function timezone(): string
+    {
+        return (string) data_get($this->general(), 'timezone', config('app.timezone', 'UTC'));
+    }
+
+    public function isMaintenanceMode(): bool
+    {
+        return (bool) data_get($this->general(), 'maintenance_mode', false);
+    }
+
+    public function maintenanceMessage(): ?string
+    {
+        $message = data_get($this->general(), 'maintenance_message');
+
+        return $message === '' ? null : $message;
+    }
+
+    /**
+     * Derived company settings helpers.
+     */
+    public function companyName(): string
+    {
+        return (string) data_get($this->company(), 'company_name', '');
+    }
+
+    /**
+     * Derived financial settings helpers.
+     */
+    public function defaultCurrency(): string
+    {
+        return (string) data_get($this->financial(), 'default_currency', 'USD');
+    }
+
+    public function currencySymbol(): string
+    {
+        return (string) data_get($this->financial(), 'currency_symbol', '$');
+    }
+
+    public function formatCurrency(float $amount): string
+    {
+        $financial = $this->financial();
+
         $formattedAmount = number_format(
             $amount,
-            $settings->decimal_places,
-            $settings->decimal_separator,
-            $settings->thousands_separator
+            (int) data_get($financial, 'decimal_places', 2),
+            (string) data_get($financial, 'decimal_separator', '.'),
+            (string) data_get($financial, 'thousands_separator', ',')
         );
 
-        return $settings->currency_position === 'before'
-            ? $settings->currency_symbol . $formattedAmount
-            : $formattedAmount . $settings->currency_symbol;
+        $position = data_get($financial, 'currency_position', 'before');
+        $symbol = (string) data_get($financial, 'currency_symbol', '$');
+
+        return $position === 'before'
+            ? $symbol . $formattedAmount
+            : $formattedAmount . $symbol;
     }
 
     /**
-     * Get company name from settings
+     * Derived unit of measurement helpers.
      */
-    public static function companyName(): string
+    public function defaultWeightUnit(): string
     {
-        return self::company()->company_name;
+        return (string) data_get($this->uom(), 'default_weight_unit', 'KG');
+    }
+
+    public function defaultLengthUnit(): string
+    {
+        return (string) data_get($this->uom(), 'default_length_unit', 'M');
+    }
+
+    public function defaultVolumeUnit(): string
+    {
+        return (string) data_get($this->uom(), 'default_volume_unit', 'L');
     }
 
     /**
-     * Get default timezone from settings
+     * Derived notification helpers.
      */
-    public static function timezone(): string
+    public function emailNotificationsEnabled(): bool
     {
-        return self::general()->timezone;
+        return (bool) data_get($this->notifications(), 'email_notifications', true);
     }
 
-    /**
-     * Check if maintenance mode is enabled
-     */
-    public static function isMaintenanceMode(): bool
+    public function adminEmail(): string
     {
-        return self::general()->maintenance_mode;
-    }
-
-    /**
-     * Get maintenance message
-     */
-    public static function maintenanceMessage(): ?string
-    {
-        return self::general()->maintenance_message;
-    }
-
-    /**
-     * Get default weight unit
-     */
-    public static function defaultWeightUnit(): string
-    {
-        return self::uom()->default_weight_unit;
-    }
-
-    /**
-     * Get default length unit
-     */
-    public static function defaultLengthUnit(): string
-    {
-        return self::uom()->default_length_unit;
-    }
-
-    /**
-     * Get default volume unit
-     */
-    public static function defaultVolumeUnit(): string
-    {
-        return self::uom()->default_volume_unit;
-    }
-
-    /**
-     * Check if email notifications are enabled
-     */
-    public static function emailNotificationsEnabled(): bool
-    {
-        return self::notifications()->email_notifications;
-    }
-
-    /**
-     * Get admin email for notifications
-     */
-    public static function adminEmail(): string
-    {
-        return self::notifications()->admin_email;
+        return (string) data_get($this->notifications(), 'admin_email', 'admin@example.com');
     }
 }

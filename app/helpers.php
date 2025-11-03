@@ -4,13 +4,11 @@ use App\Helpers\SettingsHelper;
 
 if (!function_exists('settings')) {
     /**
-     * Get settings helper instance
-     *
-     * @return SettingsHelper
+     * Get the settings helper instance.
      */
     function settings(): SettingsHelper
     {
-        return app('settings');
+        return app(SettingsHelper::class);
     }
 }
 

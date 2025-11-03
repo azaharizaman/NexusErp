@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use Azaharizaman\LaravelUomManagement\Models\UomAlias;
-use Azaharizaman\LaravelUomManagement\Models\UomPackaging;
-use Azaharizaman\LaravelUomManagement\Models\UomType;
-use Azaharizaman\LaravelUomManagement\Models\UomUnit;
-use Azaharizaman\LaravelUomManagement\Models\UomUnitGroup;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
+use Azaharizaman\LaravelUomManagement\Models\UomType;
+use Azaharizaman\LaravelUomManagement\Models\UomUnit;
+use Azaharizaman\LaravelUomManagement\Models\UomAlias;
+use Azaharizaman\LaravelUomManagement\Models\UomPackaging;
+use Azaharizaman\LaravelUomManagement\Models\UomUnitGroup;
 
 class UomDatabaseSeeder extends Seeder
 {
