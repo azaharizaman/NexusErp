@@ -4,10 +4,10 @@ namespace App\Filament\PurchaseModule\Resources\PurchaseRecommendations\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class PurchaseRecommendationForm
@@ -75,7 +75,7 @@ class PurchaseRecommendationForm
                             ->default('draft'),
                     ])
                     ->columns(2),
-                
+
                 Section::make('Justification')
                     ->schema([
                         Textarea::make('justification')
@@ -90,7 +90,7 @@ class PurchaseRecommendationForm
                             ->helperText('Notes from quotation comparison')
                             ->columnSpanFull(),
                     ]),
-                
+
                 Section::make('Approval Information')
                     ->schema([
                         Select::make('approved_by')

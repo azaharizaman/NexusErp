@@ -56,7 +56,7 @@ class CompaniesTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                
+
                 // Toggle Company Status Action
                 Action::make('toggleStatus')
                     ->label(fn ($record) => $record->is_active ? 'Deactivate' : 'Activate')
@@ -64,17 +64,17 @@ class CompaniesTable
                     ->color(fn ($record) => $record->is_active ? 'danger' : 'success')
                     ->requiresConfirmation()
                     ->modalHeading(fn ($record) => $record->is_active ? 'Deactivate Company' : 'Activate Company')
-                    ->modalDescription(fn ($record) => $record->is_active 
+                    ->modalDescription(fn ($record) => $record->is_active
                         ? "Are you sure you want to deactivate '{$record->name}'?"
                         : "Are you sure you want to activate '{$record->name}'?"
                     )
                     ->action(function ($record) {
                         $company = ToggleCompanyStatus::run($record);
-                        
-                        $message = $company->is_active 
+
+                        $message = $company->is_active
                             ? "Company '{$company->name}' has been activated successfully."
                             : "Company '{$company->name}' has been deactivated successfully.";
-                        
+
                         Notification::make()
                             ->title($message)
                             ->success()
@@ -86,7 +86,7 @@ class CompaniesTable
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                    
+
                     // Bulk activate companies
                     BulkAction::make('activateCompanies')
                         ->label('Activate Selected')
@@ -98,12 +98,12 @@ class CompaniesTable
                         ->action(function (Collection $records) {
                             $count = 0;
                             foreach ($records as $record) {
-                                if (!$record->is_active) {
+                                if (! $record->is_active) {
                                     ToggleCompanyStatus::run($record, true);
                                     $count++;
                                 }
                             }
-                            
+
                             if ($count > 0) {
                                 \Filament\Notifications\Notification::make()
                                     ->title("Successfully activated {$count} companies")
@@ -111,7 +111,7 @@ class CompaniesTable
                                     ->send();
                             }
                         }),
-                    
+
                     // Bulk deactivate companies
                     BulkAction::make('deactivateCompanies')
                         ->label('Deactivate Selected')
@@ -128,7 +128,7 @@ class CompaniesTable
                                     $count++;
                                 }
                             }
-                            
+
                             if ($count > 0) {
                                 \Filament\Notifications\Notification::make()
                                     ->title("Successfully deactivated {$count} companies")

@@ -77,10 +77,10 @@
 
 | Submodule                      | Tasks                                                                                                                                                                                            |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Purchase Orders (PO)**       | [ ] Model: `PurchaseOrder` <br>[ ] Implement serial prefix `PO-` <br>[ ] Filament Resource: Form with vendor, items, total, taxes <br>[ ] Status transitions: Draft → Approved → Issued → Closed |
-| **PO Revisions / Amendments**  | [ ] `PurchaseOrderRevision` model (linked to original PO) <br>[ ] Auto-track old vs new values                                                                                                   |
-| **Contracts & Blanket Orders** | [ ] `PurchaseContract` model <br>[ ] Link multiple POs under contract                                                                                                                            |
-| **Delivery Schedules**         | [ ] `DeliverySchedule` model <br>[ ] Link to PO items and expected dates <br>[ ] Optional integration with calendar widget                                                                       |
+| **Purchase Orders (PO)**       | [x] Model: `PurchaseOrder` — ✅ Completed on 2025-11-03 <br>[x] Implement serial prefix `PO-` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: Form with vendor, items, total, taxes — ✅ Completed on 2025-11-03 <br>[x] Status transitions: Draft → Approved → Issued → Closed — ✅ Model supports status transitions (2025-11-03) |
+| **PO Revisions / Amendments**  | [x] `PurchaseOrderRevision` model (linked to original PO) — ✅ Completed on 2025-11-03 <br>[x] Auto-track old vs new values — ✅ Completed on 2025-11-03                                                                                                   |
+| **Contracts & Blanket Orders** | [x] `PurchaseContract` model — ✅ Completed on 2025-11-03 <br>[x] Link multiple POs under contract — ✅ Completed on 2025-11-03 <br>[x] Filament Resource for contracts — ✅ Completed on 2025-11-03                                                                                                                            |
+| **Delivery Schedules**         | [x] `DeliverySchedule` model — ✅ Completed on 2025-11-03 <br>[x] Link to PO items and expected dates — ✅ Completed on 2025-11-03 <br>[x] Filament Resource for delivery schedules — ✅ Completed on 2025-11-03 <br>[ ] Optional integration with calendar widget (deferred for future enhancement)                                                                       |
 
 ---
 

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Companies\Pages;
 
-use App\Filament\Resources\Companies\CompanyResource;
 use App\Actions\Company\CreateCompany as CreateCompanyAction;
+use App\Filament\Resources\Companies\CompanyResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateCompany extends CreateRecord

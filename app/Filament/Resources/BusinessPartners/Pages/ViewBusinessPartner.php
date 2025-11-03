@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\BusinessPartners\Pages;
 
 use App\Filament\Resources\BusinessPartners\BusinessPartnerResource;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewBusinessPartner extends ViewRecord

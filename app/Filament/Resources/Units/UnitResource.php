@@ -2,22 +2,22 @@
 
 namespace App\Filament\Resources\Units;
 
-use UnitEnum;
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
-use AzahariZaman\BackOffice\Models\Unit;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\Units\Pages\EditUnit;
-use App\Filament\Resources\Units\Pages\ViewUnit;
-use App\Filament\Resources\Units\Pages\ListUnits;
 use App\Filament\Resources\Units\Pages\CreateUnit;
+use App\Filament\Resources\Units\Pages\EditUnit;
+use App\Filament\Resources\Units\Pages\ListUnits;
+use App\Filament\Resources\Units\Pages\ViewUnit;
 use App\Filament\Resources\Units\Schemas\UnitForm;
-use App\Filament\Resources\Units\Tables\UnitsTable;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Units\Schemas\UnitInfolist;
+use App\Filament\Resources\Units\Tables\UnitsTable;
+use AzahariZaman\BackOffice\Models\Unit;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class UnitResource extends Resource
 {
@@ -26,6 +26,7 @@ class UnitResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
     protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|UnitEnum|null $navigationGroup = 'Organization';
 
     public static function form(Schema $schema): Schema

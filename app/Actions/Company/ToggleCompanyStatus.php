@@ -3,9 +3,9 @@
 namespace App\Actions\Company;
 
 use App\Models\Company;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class ToggleCompanyStatus
 {
@@ -18,7 +18,7 @@ class ToggleCompanyStatus
     {
         return DB::transaction(function () use ($company, $status) {
             // If status is not provided, toggle current status
-            $newStatus = $status ?? !$company->is_active;
+            $newStatus = $status ?? ! $company->is_active;
 
             if (! $newStatus) {
                 $activeChildCount = $company->childCompanies()
@@ -31,7 +31,7 @@ class ToggleCompanyStatus
                     ]);
                 }
             }
-            
+
             $company->update([
                 'is_active' => $newStatus,
                 'status_changed_at' => now(),
@@ -74,7 +74,7 @@ class ToggleCompanyStatus
      */
     public function getSuccessMessage(Company $company): string
     {
-        return $company->is_active 
+        return $company->is_active
             ? "Company '{$company->name}' has been activated successfully."
             : "Company '{$company->name}' has been deactivated successfully.";
     }

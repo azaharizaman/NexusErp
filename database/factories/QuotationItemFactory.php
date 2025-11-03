@@ -21,7 +21,7 @@ class QuotationItemFactory extends Factory
         $lineTotal = $quantity * $unitPrice;
         $taxRate = $this->faker->randomFloat(2, 0, 15);
         $taxAmount = $lineTotal * ($taxRate / 100);
-        
+
         return [
             'item_description' => $this->faker->words(3, true),
             'item_code' => $this->faker->optional()->bothify('ITM-####'),

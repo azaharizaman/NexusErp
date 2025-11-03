@@ -14,6 +14,7 @@ class PurchaseRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\PurchaseRequestFactory> */
     use HasFactory;
+
     use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;

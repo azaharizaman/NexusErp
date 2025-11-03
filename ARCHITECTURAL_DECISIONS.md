@@ -1,18 +1,52 @@
 # Architectural Decisions
 
+## 2025-11-03 Phase 4 - Purchase Orders and Sourcing Module Complete
+- **Implemented Phase 4 of Purchase Management Module** with complete CRUD for Purchase Orders, Contracts, and Delivery Schedules
+- Created four new models with full Filament resources:
+  - `PurchaseOrder` (PO-YYYY-XXXX) - Main purchase order with line items, status tracking, and approval workflow
+  - `PurchaseOrderItem` - Sortable line items with automatic tax and discount calculations
+  - `PurchaseContract` (PC-YYYY-XXXX) - Blanket orders and framework agreements with utilization tracking
+  - `DeliverySchedule` (DS-YYYY-XXXX) - Delivery schedules linked to PO items with reminder system
+  - `PurchaseOrderRevision` - Tracks amendments and changes to POs with old/new value comparison
+- **Purchase Order Features:**
+  - Real-time calculation of line totals, tax amounts, and discounts using Filament's reactive forms
+  - Support for multiple line items using Repeater component with sortable behavior
+  - Integration with suppliers, currencies, price lists, and terms templates
+  - Status workflow: Draft → Approved → Issued → Closed
+  - Links to purchase recommendations and contracts
+  - Separate shipping and billing addresses
+  - Payment terms, delivery terms, and Incoterms support
+  - Rich text editor for terms and conditions
+  - Internal notes field for private documentation
+- **Purchase Contract Features:**
+  - Support for blanket orders, framework agreements, and long-term contracts
+  - Contract value tracking with utilized and remaining value calculation
+  - Active contract scopes and expiration tracking
+  - Links to multiple purchase orders under the contract
+- **Delivery Schedule Features:**
+  - Scheduled, confirmed, and delivered status tracking
+  - Quantity tracking (scheduled, delivered, remaining)
+  - Automatic reminder system with configurable days before delivery
+  - Tracking number and delivery location support
+  - Integration with purchase orders and PO items
+- All models follow established patterns: HasSerialNumbering, HasStatuses, SoftDeletes, audit fields
+
 ## 2025-11-03 Serial Numbering Implementation - HasSerialNumbering Trait
 - **Implemented HasSerialNumbering trait** from `azaharizaman/laravel-serial-numbering` package for thread-safe serial number generation
-- Year-based auto-numbering format: RFQ-YYYY-XXXX, PR-YYYY-XXXX, PR-REC-YYYY-XXXX, QT-YYYY-XXXX
+- Year-based auto-numbering format: RFQ-YYYY-XXXX, PR-YYYY-XXXX, PR-REC-YYYY-XXXX, QT-YYYY-XXXX, PO-YYYY-XXXX, PC-YYYY-XXXX, DS-YYYY-XXXX
 - Features:
   - Database-backed sequential numbering with atomic locks to prevent race conditions
   - Audit logging of all serial number generations via `serial_logs` table
   - Yearly reset of sequence numbers (configurable in `config/serial-pattern.php`)
   - Support for serial voiding and tracking
-- **All RFQ-related documents** now use controlled numbering:
+- **All procurement documents** now use controlled numbering:
   - `RequestForQuotation` (RFQ-YYYY-XXXX) - Internal procurement document
   - `PurchaseRequest` (PR-YYYY-XXXX) - Internal requisition document
   - `PurchaseRecommendation` (PR-REC-YYYY-XXXX) - Internal recommendation document
-  - `Quotation` (QT-YYYY-XXXX) - Supplier quotation document with controlled numbering
+  - `Quotation` (QT-YYYY-XXXX) - Supplier quotation document
+  - `PurchaseOrder` (PO-YYYY-XXXX) - Purchase order document
+  - `PurchaseContract` (PC-YYYY-XXXX) - Contract document
+  - `DeliverySchedule` (DS-YYYY-XXXX) - Delivery schedule document
 - Configuration stored in `config/serial-pattern.php` with patterns for each document type
 
 ## 2025-11-03 Standard Fields Implementation

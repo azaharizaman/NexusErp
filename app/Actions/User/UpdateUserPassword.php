@@ -3,8 +3,8 @@
 namespace App\Actions\User;
 
 use App\Models\User;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\Hash;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class UpdateUserPassword
 {

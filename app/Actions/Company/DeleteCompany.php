@@ -3,8 +3,8 @@
 namespace App\Actions\Company;
 
 use App\Models\Company;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\DB;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class DeleteCompany
 {

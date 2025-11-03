@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Companies\Pages;
 
-use App\Filament\Resources\Companies\CompanyResource;
-use App\Actions\Company\UpdateCompany as UpdateCompanyAction;
 use App\Actions\Company\DeleteCompany as DeleteCompanyAction;
+use App\Actions\Company\UpdateCompany as UpdateCompanyAction;
+use App\Filament\Resources\Companies\CompanyResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;

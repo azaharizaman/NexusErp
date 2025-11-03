@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use AzahariZaman\BackOffice\Traits\HasHierarchy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\BusinessPartnerContact;
 
 class BusinessPartner extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasHierarchy;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',

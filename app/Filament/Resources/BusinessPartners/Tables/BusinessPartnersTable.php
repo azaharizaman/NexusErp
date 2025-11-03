@@ -4,11 +4,11 @@ namespace App\Filament\Resources\BusinessPartners\Tables;
 
 use App\Models\BusinessPartner;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 

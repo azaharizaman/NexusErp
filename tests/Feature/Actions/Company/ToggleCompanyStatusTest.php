@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Actions\Company;
 
-use Tests\TestCase;
 use App\Actions\Company\ToggleCompanyStatus;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ToggleCompanyStatusTest extends TestCase
 {
@@ -17,7 +17,7 @@ class ToggleCompanyStatusTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
     }
@@ -52,7 +52,7 @@ class ToggleCompanyStatusTest extends TestCase
     public function test_it_can_specifically_mark_company_as_inactive()
     {
         $company = Company::factory()->create(['is_active' => true]);
-        $action = new ToggleCompanyStatus();
+        $action = new ToggleCompanyStatus;
 
         $updatedCompany = $action->markInactive($company);
 
@@ -62,7 +62,7 @@ class ToggleCompanyStatusTest extends TestCase
     public function test_it_can_specifically_mark_company_as_active()
     {
         $company = Company::factory()->create(['is_active' => false]);
-        $action = new ToggleCompanyStatus();
+        $action = new ToggleCompanyStatus;
 
         $updatedCompany = $action->markActive($company);
 
@@ -85,7 +85,7 @@ class ToggleCompanyStatusTest extends TestCase
     public function test_it_provides_appropriate_success_messages()
     {
         $company = Company::factory()->create(['is_active' => true, 'name' => 'Test Company']);
-        $action = new ToggleCompanyStatus();
+        $action = new ToggleCompanyStatus;
 
         // Test inactive message
         $inactiveCompany = $action->markInactive($company);
@@ -114,7 +114,7 @@ class ToggleCompanyStatusTest extends TestCase
     public function test_action_as_controller_method()
     {
         $company = Company::factory()->create(['is_active' => true]);
-        $action = new ToggleCompanyStatus();
+        $action = new ToggleCompanyStatus;
 
         $result = $action->asController($company);
 

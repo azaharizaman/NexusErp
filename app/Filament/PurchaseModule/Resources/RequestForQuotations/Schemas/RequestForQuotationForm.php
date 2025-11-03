@@ -3,10 +3,10 @@
 namespace App\Filament\PurchaseModule\Resources\RequestForQuotations\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class RequestForQuotationForm
@@ -53,7 +53,7 @@ class RequestForQuotationForm
                             ->default('draft'),
                     ])
                     ->columns(2),
-                
+
                 Section::make('Purchase Requests')
                     ->schema([
                         Select::make('purchaseRequests')
@@ -64,7 +64,7 @@ class RequestForQuotationForm
                             ->preload()
                             ->helperText('Select one or more purchase requests to include in this RFQ'),
                     ]),
-                
+
                 Section::make('Invited Suppliers')
                     ->schema([
                         Select::make('invitedSuppliers')
@@ -79,7 +79,7 @@ class RequestForQuotationForm
                             ->preload()
                             ->helperText('Select suppliers to send this RFQ to'),
                     ]),
-                
+
                 Section::make('Additional Information')
                     ->schema([
                         Textarea::make('description')

@@ -3,11 +3,11 @@
 namespace App\Filament\PurchaseModule\Resources\Quotations\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -54,7 +54,7 @@ class QuotationForm
                             ->preload(),
                     ])
                     ->columns(2),
-                
+
                 Section::make('Quotation Items')
                     ->schema([
                         Repeater::make('items')
@@ -103,7 +103,7 @@ class QuotationForm
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['item_description'] ?? null),
                     ]),
-                
+
                 Section::make('Totals')
                     ->schema([
                         TextInput::make('subtotal')
@@ -126,7 +126,7 @@ class QuotationForm
                             ->prefix('$'),
                     ])
                     ->columns(3),
-                
+
                 Section::make('Additional Information')
                     ->schema([
                         Select::make('status')

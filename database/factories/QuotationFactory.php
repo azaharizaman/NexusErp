@@ -19,7 +19,7 @@ class QuotationFactory extends Factory
         $subtotal = $this->faker->randomFloat(2, 1000, 50000);
         $taxRate = $this->faker->randomFloat(2, 0, 15);
         $taxAmount = $subtotal * ($taxRate / 100);
-        
+
         return [
             'quotation_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'valid_until' => $this->faker->dateTimeBetween('now', '+2 months'),

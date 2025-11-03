@@ -2,7 +2,7 @@
 
 use App\Helpers\SettingsHelper;
 
-if (!function_exists('settings')) {
+if (! function_exists('settings')) {
     /**
      * Get the settings helper instance.
      */
@@ -12,11 +12,9 @@ if (!function_exists('settings')) {
     }
 }
 
-if (!function_exists('app_name')) {
+if (! function_exists('app_name')) {
     /**
      * Get application name from settings
-     *
-     * @return string
      */
     function app_name(): string
     {
@@ -24,11 +22,9 @@ if (!function_exists('app_name')) {
     }
 }
 
-if (!function_exists('company_name')) {
+if (! function_exists('company_name')) {
     /**
      * Get company name from settings
-     *
-     * @return string
      */
     function company_name(): string
     {
@@ -36,12 +32,9 @@ if (!function_exists('company_name')) {
     }
 }
 
-if (!function_exists('format_currency')) {
+if (! function_exists('format_currency')) {
     /**
      * Format currency amount using settings
-     *
-     * @param float $amount
-     * @return string
      */
     function format_currency(float $amount): string
     {
@@ -49,11 +42,9 @@ if (!function_exists('format_currency')) {
     }
 }
 
-if (!function_exists('default_currency')) {
+if (! function_exists('default_currency')) {
     /**
      * Get default currency from settings
-     *
-     * @return string
      */
     function default_currency(): string
     {
@@ -61,11 +52,9 @@ if (!function_exists('default_currency')) {
     }
 }
 
-if (!function_exists('is_maintenance_mode')) {
+if (! function_exists('is_maintenance_mode')) {
     /**
      * Check if maintenance mode is enabled
-     *
-     * @return bool
      */
     function is_maintenance_mode(): bool
     {

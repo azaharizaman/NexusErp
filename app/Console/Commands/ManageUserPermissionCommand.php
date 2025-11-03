@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use Illuminate\Console\Command;
 use App\Actions\User\AssignPermissionToUser;
 use App\Actions\User\RevokePermissionFromUser;
+use App\Models\User;
+use Illuminate\Console\Command;
 
 class ManageUserPermissionCommand extends Command
 {
@@ -32,9 +32,10 @@ class ManageUserPermissionCommand extends Command
         $permission = $this->argument('permission');
 
         $user = User::where('email', $email)->first();
-        
-        if (!$user) {
+
+        if (! $user) {
             $this->error("User with email '{$email}' not found.");
+
             return 1;
         }
 
@@ -47,10 +48,12 @@ class ManageUserPermissionCommand extends Command
                 $this->info("Permission '{$permission}' revoked from user '{$user->name}' ({$user->email}) successfully.");
             } else {
                 $this->error("Invalid action. Use 'assign' or 'revoke'.");
+
                 return 1;
             }
         } catch (\Exception $e) {
-            $this->error("Failed to {$action} permission: " . $e->getMessage());
+            $this->error("Failed to {$action} permission: ".$e->getMessage());
+
             return 1;
         }
 

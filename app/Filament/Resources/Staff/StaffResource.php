@@ -2,22 +2,22 @@
 
 namespace App\Filament\Resources\Staff;
 
-use UnitEnum;
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
-use AzahariZaman\BackOffice\Models\Staff;
-use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\Staff\Pages\CreateStaff;
 use App\Filament\Resources\Staff\Pages\EditStaff;
 use App\Filament\Resources\Staff\Pages\ListStaff;
 use App\Filament\Resources\Staff\Pages\ViewStaff;
-use App\Filament\Resources\Staff\Pages\CreateStaff;
 use App\Filament\Resources\Staff\Schemas\StaffForm;
-use App\Filament\Resources\Staff\Tables\StaffTable;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Staff\Schemas\StaffInfolist;
+use App\Filament\Resources\Staff\Tables\StaffTable;
+use AzahariZaman\BackOffice\Models\Staff;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class StaffResource extends Resource
 {
@@ -26,6 +26,7 @@ class StaffResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|UnitEnum|null $navigationGroup = 'Organization';
 
     public static function form(Schema $schema): Schema

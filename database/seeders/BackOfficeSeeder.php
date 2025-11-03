@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use AzahariZaman\BackOffice\Models\Company;
-use AzahariZaman\BackOffice\Models\Office;
 use AzahariZaman\BackOffice\Models\Department;
+use AzahariZaman\BackOffice\Models\Office;
+use AzahariZaman\BackOffice\Models\OfficeType;
+use AzahariZaman\BackOffice\Models\Position;
 use AzahariZaman\BackOffice\Models\Staff;
+use AzahariZaman\BackOffice\Models\StaffTransfer;
 use AzahariZaman\BackOffice\Models\Unit;
 use AzahariZaman\BackOffice\Models\UnitGroup;
-use AzahariZaman\BackOffice\Models\Position;
-use AzahariZaman\BackOffice\Models\StaffTransfer;
-use AzahariZaman\BackOffice\Models\OfficeType;
+use Illuminate\Database\Seeder;
 
 class BackOfficeSeeder extends Seeder
 {
@@ -32,7 +32,7 @@ class BackOfficeSeeder extends Seeder
         \AzahariZaman\BackOffice\Models\Office::truncate();
         \AzahariZaman\BackOffice\Models\OfficeType::truncate();
         \AzahariZaman\BackOffice\Models\Company::truncate();
-        
+
         // Truncate pivot tables
         \DB::table('backoffice_office_office_type')->truncate();
         \DB::table('backoffice_staff_unit')->truncate();
@@ -238,14 +238,14 @@ class BackOfficeSeeder extends Seeder
 
         $this->command->info('BackOffice data seeded successfully!');
         $this->command->info('Created:');
-        $this->command->info('- ' . Company::count() . ' companies');
-        $this->command->info('- ' . Office::count() . ' offices');
-        $this->command->info('- ' . Department::count() . ' departments');
-        $this->command->info('- ' . Staff::count() . ' staff members');
-        $this->command->info('- ' . UnitGroup::count() . ' unit groups');
-        $this->command->info('- ' . Unit::count() . ' units');
-        $this->command->info('- ' . Position::count() . ' positions');
-        $this->command->info('- ' . OfficeType::count() . ' office types');
-        $this->command->info('- ' . StaffTransfer::count() . ' staff transfers');
+        $this->command->info('- '.Company::count().' companies');
+        $this->command->info('- '.Office::count().' offices');
+        $this->command->info('- '.Department::count().' departments');
+        $this->command->info('- '.Staff::count().' staff members');
+        $this->command->info('- '.UnitGroup::count().' unit groups');
+        $this->command->info('- '.Unit::count().' units');
+        $this->command->info('- '.Position::count().' positions');
+        $this->command->info('- '.OfficeType::count().' office types');
+        $this->command->info('- '.StaffTransfer::count().' staff transfers');
     }
 }

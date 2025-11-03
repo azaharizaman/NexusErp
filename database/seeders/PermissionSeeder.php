@@ -16,27 +16,27 @@ class PermissionSeeder extends Seeder
         $permissions = [
             // Admin access
             'access_admin',
-            
+
             // Company permissions
             'view_companies',
             'create_companies',
             'update_companies',
             'delete_companies',
-            
+
             // User permissions
             'view_users',
             'create_users',
             'update_users',
             'delete_users',
-            
+
             // Settings permissions
             'view_settings',
             'manage_settings',
             'manage_financial_settings',
-            
+
             // Permission management
             'manage_permissions',
-            
+
             // General permissions
             'export_data',
             'import_data',
