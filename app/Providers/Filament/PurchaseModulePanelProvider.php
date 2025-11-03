@@ -32,6 +32,15 @@ class PurchaseModulePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->navigationGroups([
+                'Procurement Setup',
+                'Requisition Management',
+                'Sourcing & Ordering',
+                'Receiving & Invoicing',
+                'Payments & Settlements',
+                'Procurement Insights',
+                'Administration & Policy',
+            ])
             ->userMenuItems([
                 Action::make('switchToNexusPanel')
                     ->label('Nexus Panel')

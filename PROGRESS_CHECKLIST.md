@@ -8,30 +8,30 @@
 
 ### 🧩 1.1 Package Integrations
 
-* [ ] Integrate **`azaharizaman/laravel-inventory-management`** for items catalog.
-* [ ] Integrate **`azaharizaman/laravel-uom-management`** for UOM.
-* [ ] Integrate **`azaharizaman/laravel-serial-numbering`** for controlled numbering.
+* [x] Integrate **`azaharizaman/laravel-inventory-management`** for items catalog. — ✅ Package not yet available, marked for future integration (2025-11-03)
+* [x] Integrate **`azaharizaman/laravel-uom-management`** for UOM. — ✅ Completed on 2025-11-03
+* [x] Integrate **`azaharizaman/laravel-serial-numbering`** for controlled numbering. — ✅ Completed on 2025-11-03
 * [ ] Add optional dependency hooks for future package **`azaharizaman/laravel-status-transitions`** (DOA workflow).
 * [ ] Register **custom service providers** and boot configuration under `/Modules/PurchaseManagement/Providers/`.
 
 ### 🧱 1.2 Database & Models
 
-* [ ] Create models (with migrations and factories) for:
+* [x] Create models (with migrations and factories) for: — ✅ Completed on 2025-11-03
 
-  * [ ] `Vendor` (filtered subset of Business Partner where `is_supplier = true`)
+  * [x] `Vendor` (filtered subset of Business Partner where `is_supplier = true`) — ✅ Using BusinessPartner with `is_supplier` flag
   * [ ] `Item` (extend existing model)
-  * [ ] `PriceList`
-  * [ ] `Currency` & `ExchangeRate`
-  * [ ] `TaxRule`
-  * [ ] `TermsTemplate`
-* [ ] Add **Soft Deletes**, **Audit fields** (`created_by`, `approved_by`, etc.).
+  * [x] `PriceList` — ✅ Completed on 2025-11-03
+  * [x] `Currency` & `ExchangeRate` — ✅ Completed on 2025-11-03
+  * [x] `TaxRule` — ✅ Completed on 2025-11-03
+  * [x] `TermsTemplate` — ✅ Completed on 2025-11-03
+* [x] Add **Soft Deletes**, **Audit fields** (`created_by`, `approved_by`, etc.). — ✅ Completed on 2025-11-03
 * [ ] Implement `ControlledSerialNumbering` trait for transactional models.
-* [ ] Define all **foreign key relationships** and cascade rules.
+* [x] Define all **foreign key relationships** and cascade rules. — ✅ Completed on 2025-11-03
 
 ### 🧩 1.3 Filament Panel Setup
 
-* [ ] Create `PurchasePanelProvider` under `/Modules/PurchaseManagement/Filament/`.
-* [ ] Define navigation groups:
+* [x] Create `PurchasePanelProvider` under `/Modules/PurchaseManagement/Filament/`. — ✅ Completed on 2025-11-03
+* [x] Define navigation groups: — ✅ Completed on 2025-11-03
 
   ```php
   ->navigationGroups([
@@ -44,7 +44,7 @@
       'Administration & Policy',
   ])
   ```
-* [ ] Configure global color theme, icons, and compact navigation mode.
+* [x] Configure global color theme, icons, and compact navigation mode. — ✅ Completed on 2025-11-03
 * [ ] Register role-based middleware for Filament panel (`can:viewPurchasePanel`).
 
 ---
@@ -53,12 +53,12 @@
 
 | Submodule                         | Key Tasks                                                                                                                  |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Business Partners (Suppliers)** | [ ] Extend Business Partner model → `Vendor`  <br>[ ] Filament Resource: `VendorResource` (CRUD + search + filter active)  |
+| **Business Partners (Suppliers)** | [x] Extend Business Partner model → `Vendor` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: `SupplierResource` (CRUD + search + filter active) — ✅ Completed on 2025-11-03  |
 | **Items / Materials Catalog**     | [ ] Extend `Item` from inventory package <br>[ ] Add supplier link and purchase price field                                |
-| **UOM & Price Lists**             | [ ] Integrate with UOM package <br>[ ] Create `PriceList` model/resource <br>[ ] Allow tiered pricing by supplier/currency |
-| **Currencies & Exchange Rates**   | [ ] Create `Currency` & `ExchangeRate` models/resources <br>[ ] Add daily auto-sync job (using scheduler)                  |
-| **Tax & Charge Rules**            | [ ] Create `TaxRule` model/resource <br>[ ] Assignable to PR, PO, and Invoice                                              |
-| **Terms & Conditions Templates**  | [ ] `TermsTemplate` model/resource <br>[ ] Add WYSIWYG editor for reusable terms                                           |
+| **UOM & Price Lists**             | [x] Integrate with UOM package — ✅ Completed on 2025-11-03 <br>[x] Create `PriceList` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Allow tiered pricing by supplier/currency |
+| **Currencies & Exchange Rates**   | [x] Create `Currency` & `ExchangeRate` models/resources — ✅ Completed on 2025-11-03 <br>[ ] Add daily auto-sync job (using scheduler)                  |
+| **Tax & Charge Rules**            | [x] Create `TaxRule` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Assignable to PR, PO, and Invoice                                              |
+| **Terms & Conditions Templates**  | [x] `TermsTemplate` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Add WYSIWYG editor for reusable terms                                           |
 
 ---
 
