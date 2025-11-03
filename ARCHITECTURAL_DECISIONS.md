@@ -1,5 +1,59 @@
 # Architectural Decisions
 
+## 2025-11-03 Phase 6 & 7 - Payments & Settlements and Procurement Insights Complete
+- **Implemented Phase 6 (Payments & Settlements)** with complete models and Filament resources for payment management
+- Created three new models with full database schema:
+  - `PaymentVoucher` (PV-YYYY-XXXX) - Payment vouchers with multi-currency support, serial numbering, and approval workflow
+  - `PaymentSchedule` - Tracks payment due dates, milestones, and payment status with reminder system
+  - `PayableLedger` - Multi-currency ledger for tracking supplier payables with base currency conversion
+- **Payment Voucher Features:**
+  - Serial numbering with yearly reset (PV-YYYY-XXXX pattern)
+  - Multi-currency support with automatic base currency conversion using exchange rates
+  - Multiple payment methods (bank transfer, check, cash, credit card, etc.)
+  - Comprehensive approval workflow: Draft → Pending Approval → Approved → Paid → Cancelled
+  - Links to purchase orders (ready for future invoice integration when Phase 5 is implemented)
+  - Payment reference tracking (check numbers, transaction IDs, etc.)
+  - Audit trail with requested_by, approved_by, paid_by user tracking
+  - Soft deletes for data retention
+- **Payment Schedule Features:**
+  - Due date tracking with automatic overdue status
+  - Scheduled, paid, and remaining amount tracking
+  - Payment milestone descriptions
+  - Reminder system with configurable days before due date
+  - Links to payment vouchers for payment tracking
+  - Status workflow: Scheduled → Overdue → Partially Paid → Paid
+- **Payable Ledger Features:**
+  - Multi-currency transaction recording with base currency conversion
+  - Support for multiple transaction types (invoice, payment, credit_note, debit_note, adjustment)
+  - Automatic balance calculation in both original and base currencies
+  - Exchange rate snapshot at transaction time for accurate historical reporting
+  - Links to purchase orders and payment vouchers
+  - Debit/credit tracking with running balance
+- **Implemented Phase 7 (Procurement Insights & Reports)** with 5 dashboard widgets for procurement analytics
+- Created comprehensive dashboard widgets:
+  - `ProcurementStatsWidget` - Overview widget showing key metrics (Pending PRs, Open POs, Open RFQs, Pending Payments)
+  - `SpendAnalysisWidget` - Line chart showing total spend over the last 6 months
+  - `SpendBySupplierWidget` - Bar chart showing spend by top 10 suppliers
+  - `SupplierPerformanceWidget` - Table widget showing supplier performance metrics (on-time delivery rates, late deliveries)
+  - `PaymentAgingWidget` - Table widget showing payment aging analysis with days overdue and remaining amounts
+- **Widget Features:**
+  - Real-time data aggregation using Eloquent queries
+  - Interactive charts using Chart.js via Filament ChartWidget
+  - Color-coded status indicators for quick visual assessment
+  - Sorting and filtering capabilities in table widgets
+  - Integration with Laravel Trend package for time-series analysis
+  - Performance-optimized queries with proper relationships and indexing
+- **Navigation Structure:**
+  - Added "Payments & Settlements" navigation group to Purchase Module panel
+  - "Procurement Insights" navigation group already configured (widgets auto-discovered)
+  - All widgets automatically registered via panel's discoverWidgets configuration
+- **Database Design:**
+  - All payment models include proper foreign key relationships and cascade rules
+  - Comprehensive indexing for performance (status, dates, supplier relationships)
+  - Soft deletes enabled on all models for audit trail
+  - Audit fields (created_by, updated_by) on all models
+  - Exchange rate snapshots stored at transaction time for accurate historical reporting
+
 ## 2025-11-03 Phase 4 - Purchase Orders and Sourcing Module Complete
 - **Implemented Phase 4 of Purchase Management Module** with complete CRUD for Purchase Orders, Contracts, and Delivery Schedules
 - Created four new models with full Filament resources:
