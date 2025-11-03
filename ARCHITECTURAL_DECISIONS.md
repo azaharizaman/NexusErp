@@ -19,6 +19,10 @@
 - Added standard fields to all transactional models: `requested_by`, `approved_by`, `approved_at`, `remarks`
 - All models now include complete audit trail: `created_by`, `updated_by`, `requested_by`, `approved_by` with corresponding User relationships
 - Relationships: `requester()`, `approver()`, `creator()`, `updater()` methods added for audit tracking
+## 2025-11-03 Project Documentation Update
+- Updated README.md from standard Laravel boilerplate to NexusERP-specific documentation to properly communicate project purpose, architecture, and development workflow.
+- New README includes comprehensive sections on project purpose, features, tech stack, installation, development workflow, project structure, contribution guidelines, and references to all existing documentation files.
+- This ensures new developers and contributors can quickly understand the project's goals, architecture, and how to get started.
 
 ## 2025-11-03 Panel Switching via User Menu
 - Added Filament user menu actions in both `nexus` and `purchase-module` panels to generate deep links with `Filament::getPanel()->getUrl()`, providing the recommended panel-switching experience in v4.
