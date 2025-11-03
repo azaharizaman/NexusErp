@@ -29,10 +29,6 @@ class PriceListForm
                     ->required(),
                 Textarea::make('notes')
                     ->columnSpanFull(),
-                TextInput::make('created_by')
-                    ->numeric(),
-                TextInput::make('updated_by')
-                    ->numeric(),
             ]);
     }
 }
