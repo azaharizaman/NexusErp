@@ -1,5 +1,24 @@
 # Architectural Decisions
 
+## 2025-11-03 Serial Numbering Implementation - HasSerialNumbering Trait
+- **Implemented HasSerialNumbering trait** from `azaharizaman/laravel-serial-numbering` package for thread-safe serial number generation
+- Year-based auto-numbering format: RFQ-YYYY-XXXX, PR-YYYY-XXXX, PR-REC-YYYY-XXXX, QT-YYYY-XXXX
+- Features:
+  - Database-backed sequential numbering with atomic locks to prevent race conditions
+  - Audit logging of all serial number generations via `serial_logs` table
+  - Yearly reset of sequence numbers (configurable in `config/serial-pattern.php`)
+  - Support for serial voiding and tracking
+- **All RFQ-related documents** now use controlled numbering:
+  - `RequestForQuotation` (RFQ-YYYY-XXXX) - Internal procurement document
+  - `PurchaseRequest` (PR-YYYY-XXXX) - Internal requisition document
+  - `PurchaseRecommendation` (PR-REC-YYYY-XXXX) - Internal recommendation document
+  - `Quotation` (QT-YYYY-XXXX) - Supplier quotation document with controlled numbering
+- Configuration stored in `config/serial-pattern.php` with patterns for each document type
+
+## 2025-11-03 Standard Fields Implementation
+- Added standard fields to all transactional models: `requested_by`, `approved_by`, `approved_at`, `remarks`
+- All models now include complete audit trail: `created_by`, `updated_by`, `requested_by`, `approved_by` with corresponding User relationships
+- Relationships: `requester()`, `approver()`, `creator()`, `updater()` methods added for audit tracking
 ## 2025-11-03 Project Documentation Update
 - Updated README.md from standard Laravel boilerplate to NexusERP-specific documentation to properly communicate project purpose, architecture, and development workflow.
 - New README includes comprehensive sections on project purpose, features, tech stack, installation, development workflow, project structure, contribution guidelines, and references to all existing documentation files.
@@ -146,9 +165,121 @@ PurchaseRequestItem.php
 PurchaseRequestFactory.php
 PurchaseRequestItemFactory.php
 app/Filament/PurchaseModule/Resources/PurchaseRequests/* (Resource, Pages, Schemas, Tables)
-🎯 Next Steps for Phase 3:
-Request for Quotation (RFQ) model and resource
-Quotation model with comparison functionality
-Purchase Recommendation model
-Custom Filament page for quotation comparison
-The foundation for requisition management is now in place with a fully functional Purchase Request system that can track requests from creation through approval workflow.
+🎯 Phase 3 - Request for Quotations (COMPLETED - 2025-11-03):
+
+✅ Request for Quotation (RFQ) Implementation:
+
+Models Created:
+RequestForQuotation model with:
+
+Auto-generating RFQ number with RFQ- prefix (RFQ-000001, RFQ-000002, etc.)
+Fields: company, rfq_date, expiry_date, status, description, terms_and_conditions, currency, notes
+Many-to-many relationship with PurchaseRequests via purchase_request_rfq pivot table
+Many-to-many relationship with invited suppliers via rfq_suppliers pivot table
+One-to-many relationship with Quotations
+Soft deletes and audit fields (created_by, updated_by)
+Spatie Model Status integration for workflow states (draft, sent, received, evaluated, closed, cancelled)
+Scopes: draft(), sent(), received(), evaluated()
+Database Tables:
+
+request_for_quotations - main RFQ table
+purchase_request_rfq - pivot table linking RFQs to multiple Purchase Requests
+rfq_suppliers - tracks invited suppliers per RFQ with status (invited, declined, submitted)
+Filament Resource:
+
+RequestForQuotationResource in Purchase Module panel
+Navigation group: "Requisition Management"
+Full CRUD pages: List, Create, Edit
+Form sections: RFQ Details, Purchase Requests (multi-select), Invited Suppliers (multi-select), Additional Information
+Table with status badges, linked PRs display, invited suppliers display
+Filters for status and soft deletes
+
+
+✅ Quotation Implementation:
+
+Models Created:
+Quotation model with:
+
+Auto-generating quotation number with QT- prefix (QT-000001, QT-000002, etc.)
+Fields: rfq, supplier, quotation_date, valid_until, currency, subtotal, tax_amount, total_amount, status, terms_and_conditions, notes, delivery_lead_time_days, payment_terms, is_recommended
+Belongs to RequestForQuotation and BusinessPartner (supplier)
+One-to-many relationship with QuotationItems
+Method: calculateTotals() to sum item totals and taxes
+Soft deletes and audit fields
+Spatie Model Status integration
+Scopes: recommended(), submitted(), accepted()
+QuotationItem model with:
+
+Fields: item_description, item_code, quantity, uom, unit_price, line_total, tax_rate, tax_amount, specifications, notes
+Spatie Eloquent Sortable for ordering items
+Belongs to Quotation
+Method: calculateTotals() for line item calculations
+Database Tables:
+
+quotations - supplier quotations with pricing and terms
+quotation_items - line items with tax calculations
+Filament Resource:
+
+QuotationResource in Purchase Module panel
+Navigation group: "Requisition Management"
+Form with repeater for line items with auto-calculation support
+Sections: Quotation Details, Quotation Items (repeater), Totals, Additional Information
+Table with recommended flag, status badges, money formatting
+Filters for status, recommended flag, and soft deletes
+
+
+✅ Purchase Recommendation Implementation:
+
+Model Created:
+PurchaseRecommendation model with:
+
+Auto-generating recommendation number with PR-REC- prefix
+Fields: rfq, recommended_quotation, company, recommendation_date, status, justification, comparison_notes, recommended_total, currency
+Belongs to RequestForQuotation and Quotation
+Relationships for company, currency, approver
+Approval tracking (approved_by, approved_at)
+Soft deletes and audit fields
+Spatie Model Status integration
+Scopes: approved(), pending()
+Database Table:
+
+purchase_recommendations - recommendations with justifications
+Filament Resource:
+
+PurchaseRecommendationResource in Purchase Module panel
+Navigation group: "Requisition Management"
+Form sections: Recommendation Details, Justification, Approval Information
+Dynamic quotation filtering based on selected RFQ
+Table with supplier display, approval tracking, status badges
+
+
+📁 Files Created for Phase 3:
+Models:
+
+RequestForQuotation.php
+Quotation.php
+QuotationItem.php
+PurchaseRecommendation.php
+Migrations:
+
+2025_11_03_104208_create_request_for_quotations_table.php (includes pivot tables)
+2025_11_03_104231_create_quotations_table.php
+2025_11_03_104239_create_quotation_items_table.php
+2025_11_03_104239_create_purchase_recommendations_table.php
+Filament Resources:
+
+app/Filament/PurchaseModule/Resources/RequestForQuotations/* (Resource, Pages, Schemas, Tables)
+app/Filament/PurchaseModule/Resources/Quotations/* (Resource, Pages, Schemas, Tables)
+app/Filament/PurchaseModule/Resources/PurchaseRecommendations/* (Resource, Pages, Schemas, Tables)
+Factories (created but not yet implemented):
+
+RequestForQuotationFactory.php
+QuotationFactory.php
+QuotationItemFactory.php
+PurchaseRecommendationFactory.php
+🔄 Remaining Items for Phase 3:
+
+Custom Filament page for quotation comparison (optional enhancement)
+Auto-generation of recommendations from selected quotations (can be implemented as an action)
+Factory implementations for testing
+The foundation for requisition management is now complete with a fully functional RFQ system that can track quotations from multiple suppliers, compare them, and generate purchase recommendations.
