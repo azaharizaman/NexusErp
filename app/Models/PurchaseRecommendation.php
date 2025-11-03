@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use AzahariZaman\ControlledNumber\Traits\HasSerialNumbering;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,8 +12,14 @@ use Spatie\ModelStatus\HasStatuses;
 class PurchaseRecommendation extends Model
 {
     use HasFactory;
+    use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;
+
+    /**
+     * The column name for storing serial numbers.
+     */
+    protected string $serialColumn = 'recommendation_number';
 
     protected $fillable = [
         'recommendation_number',
@@ -38,27 +45,6 @@ class PurchaseRecommendation extends Model
         'recommended_total' => 'decimal:2',
         'approved_at' => 'datetime',
     ];
-
-    /**
-     * Boot method to generate recommendation number with year.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->recommendation_number)) {
-                $year = now()->format('Y');
-                $count = self::whereYear('created_at', $year)->count() + 1;
-                $model->recommendation_number = 'PR-REC-' . $year . '-' . str_pad(
-                    $count,
-                    4,
-                    '0',
-                    STR_PAD_LEFT
-                );
-            }
-        });
-    }
 
     /**
      * RFQ relationship.

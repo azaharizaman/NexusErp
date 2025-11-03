@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use AzahariZaman\ControlledNumber\Traits\HasSerialNumbering;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,8 +14,14 @@ class PurchaseRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\PurchaseRequestFactory> */
     use HasFactory;
+    use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;
+
+    /**
+     * The column name for storing serial numbers.
+     */
+    protected string $serialColumn = 'pr_number';
 
     protected $fillable = [
         'pr_number',
@@ -44,25 +51,6 @@ class PurchaseRequest extends Model
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
     ];
-
-    /**
-     * Boot method to generate PR number.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->pr_number)) {
-                $model->pr_number = 'PR-' . str_pad(
-                    self::max('id') + 1,
-                    6,
-                    '0',
-                    STR_PAD_LEFT
-                );
-            }
-        });
-    }
 
     /**
      * Requester relationship.

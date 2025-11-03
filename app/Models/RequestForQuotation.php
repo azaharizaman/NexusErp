@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use AzahariZaman\ControlledNumber\Traits\HasSerialNumbering;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,8 +14,14 @@ use Spatie\ModelStatus\HasStatuses;
 class RequestForQuotation extends Model
 {
     use HasFactory;
+    use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;
+
+    /**
+     * The column name for storing serial numbers.
+     */
+    protected string $serialColumn = 'rfq_number';
 
     protected $fillable = [
         'rfq_number',
@@ -39,27 +46,6 @@ class RequestForQuotation extends Model
         'expiry_date' => 'date',
         'approved_at' => 'datetime',
     ];
-
-    /**
-     * Boot method to generate RFQ number with year.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->rfq_number)) {
-                $year = now()->format('Y');
-                $count = self::whereYear('created_at', $year)->count() + 1;
-                $model->rfq_number = 'RFQ-' . $year . '-' . str_pad(
-                    $count,
-                    4,
-                    '0',
-                    STR_PAD_LEFT
-                );
-            }
-        });
-    }
 
     /**
      * Company relationship.

@@ -1,10 +1,20 @@
 # Architectural Decisions
 
-## 2025-11-03 Serial Numbering Implementation - Updated
-- Updated to year-based auto-numbering format: RFQ-YYYY-XXXX, QT-YYYY-XXXX, PR-REC-YYYY-XXXX
-- Uses `whereYear('created_at', $year)->count() + 1` approach for sequential numbering per year
-- **Future Enhancement**: Migrate to azaharizaman/laravel-serial-numbering package's HasSerialNumbering trait for thread-safe, database-backed serial generation with proper locking and void management
-- Package is already installed and ready for integration when needed
+## 2025-11-03 Serial Numbering Implementation - HasSerialNumbering Trait
+- **Implemented HasSerialNumbering trait** from `azaharizaman/laravel-serial-numbering` package for thread-safe serial number generation
+- Year-based auto-numbering format: RFQ-YYYY-XXXX, PR-YYYY-XXXX, PR-REC-YYYY-XXXX
+- Features:
+  - Database-backed sequential numbering with atomic locks to prevent race conditions
+  - Audit logging of all serial number generations via `serial_logs` table
+  - Yearly reset of sequence numbers (configurable in `config/serial-pattern.php`)
+  - Support for serial voiding and tracking
+- **Internal documents** with controlled numbering:
+  - `RequestForQuotation` (RFQ-YYYY-XXXX) - Internal procurement document
+  - `PurchaseRequest` (PR-YYYY-XXXX) - Internal requisition document
+  - `PurchaseRecommendation` (PR-REC-YYYY-XXXX) - Internal recommendation document
+- **External documents** without controlled numbering:
+  - `Quotation` (QT-YYYY-XXXX) - Supplier-submitted document, uses manual year-based numbering
+- Configuration stored in `config/serial-pattern.php` with patterns for each document type
 
 ## 2025-11-03 Standard Fields Implementation
 - Added standard fields to all transactional models: `requested_by`, `approved_by`, `approved_at`, `remarks`
