@@ -52,6 +52,14 @@ return [
             'interval' => 1,
             'delimiters' => ['-'],
         ],
+        'quotation' => [
+            'pattern' => 'QT-{year}-{number}',
+            'start' => 1,
+            'digits' => 4,
+            'reset' => 'yearly',
+            'interval' => 1,
+            'delimiters' => ['-'],
+        ],
     ],
 
     /*

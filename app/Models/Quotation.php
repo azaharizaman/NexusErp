@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use AzahariZaman\ControlledNumber\Traits\HasSerialNumbering;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,8 +13,14 @@ use Spatie\ModelStatus\HasStatuses;
 class Quotation extends Model
 {
     use HasFactory;
+    use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;
+
+    /**
+     * The column name for storing serial numbers.
+     */
+    protected string $serialColumn = 'quotation_number';
 
     protected $fillable = [
         'quotation_number',
@@ -48,27 +55,6 @@ class Quotation extends Model
         'is_recommended' => 'boolean',
         'approved_at' => 'datetime',
     ];
-
-    /**
-     * Boot method to generate quotation number with year.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->quotation_number)) {
-                $year = now()->format('Y');
-                $count = self::whereYear('created_at', $year)->count() + 1;
-                $model->quotation_number = 'QT-' . $year . '-' . str_pad(
-                    $count,
-                    4,
-                    '0',
-                    STR_PAD_LEFT
-                );
-            }
-        });
-    }
 
     /**
      * RFQ relationship.

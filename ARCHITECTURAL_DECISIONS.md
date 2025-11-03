@@ -2,18 +2,17 @@
 
 ## 2025-11-03 Serial Numbering Implementation - HasSerialNumbering Trait
 - **Implemented HasSerialNumbering trait** from `azaharizaman/laravel-serial-numbering` package for thread-safe serial number generation
-- Year-based auto-numbering format: RFQ-YYYY-XXXX, PR-YYYY-XXXX, PR-REC-YYYY-XXXX
+- Year-based auto-numbering format: RFQ-YYYY-XXXX, PR-YYYY-XXXX, PR-REC-YYYY-XXXX, QT-YYYY-XXXX
 - Features:
   - Database-backed sequential numbering with atomic locks to prevent race conditions
   - Audit logging of all serial number generations via `serial_logs` table
   - Yearly reset of sequence numbers (configurable in `config/serial-pattern.php`)
   - Support for serial voiding and tracking
-- **Internal documents** with controlled numbering:
+- **All RFQ-related documents** now use controlled numbering:
   - `RequestForQuotation` (RFQ-YYYY-XXXX) - Internal procurement document
   - `PurchaseRequest` (PR-YYYY-XXXX) - Internal requisition document
   - `PurchaseRecommendation` (PR-REC-YYYY-XXXX) - Internal recommendation document
-- **External documents** without controlled numbering:
-  - `Quotation` (QT-YYYY-XXXX) - Supplier-submitted document, uses manual year-based numbering
+  - `Quotation` (QT-YYYY-XXXX) - Supplier quotation document with controlled numbering
 - Configuration stored in `config/serial-pattern.php` with patterns for each document type
 
 ## 2025-11-03 Standard Fields Implementation
