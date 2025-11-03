@@ -2,17 +2,18 @@
 
 namespace App\Filament\PurchaseModule\Resources\Suppliers;
 
+use UnitEnum;
+use BackedEnum;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use App\Models\BusinessPartner;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\PurchaseModule\Resources\Suppliers\Pages;
 use App\Filament\PurchaseModule\Resources\Suppliers\Schemas\SupplierForm;
 use App\Filament\PurchaseModule\Resources\Suppliers\Tables\SuppliersTable;
 use App\Filament\Resources\BusinessPartners\Schemas\BusinessPartnerInfolist;
 use App\Filament\Resources\BusinessPartners\RelationManagers\ContactsRelationManager;
-use App\Models\BusinessPartner;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use UnitEnum;
 
 class SupplierResource extends Resource
 {
@@ -24,7 +25,7 @@ class SupplierResource extends Resource
 
     protected static ?string $navigationLabel = 'Suppliers';
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
     protected static string|UnitEnum|null $navigationGroup = 'Procurement Setup';
 
