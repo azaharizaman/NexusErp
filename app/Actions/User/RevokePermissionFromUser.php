@@ -17,7 +17,7 @@ class RevokePermissionFromUser
         if ($user->hasPermissionTo($permissionName)) {
             $user->revokePermissionTo($permissionName);
         }
-        
+
         return $user->fresh();
     }
 

@@ -2,17 +2,17 @@
 
 namespace App\Filament\Resources\Companies\Schemas;
 
-use Throwable;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Support\Enums\Size;
-use Filament\Forms\Components\Select;
-use Filament\Notifications\Notification;
-use AzahariZaman\BackOffice\Models\Company;
 use App\Actions\Company\ToggleCompanyStatus;
+use AzahariZaman\BackOffice\Models\Company;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Size;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CompanyInfolist
 {

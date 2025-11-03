@@ -33,8 +33,8 @@ class FormatCurrency
         $symbol = $currency ? $this->getCurrencySymbol($currency) : $config['currency_symbol'];
 
         return $config['currency_position'] === 'before'
-            ? $symbol . $formattedAmount
-            : $formattedAmount . $symbol;
+            ? $symbol.$formattedAmount
+            : $formattedAmount.$symbol;
     }
 
     /**

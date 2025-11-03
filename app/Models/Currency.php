@@ -11,6 +11,7 @@ class Currency extends Model
 {
     /** @use HasFactory<\Database\Factories\CurrencyFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [

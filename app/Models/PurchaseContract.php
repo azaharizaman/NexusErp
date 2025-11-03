@@ -14,6 +14,7 @@ class PurchaseContract extends Model
 {
     /** @use HasFactory<\Database\Factories\PurchaseContractFactory> */
     use HasFactory;
+
     use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;
@@ -147,11 +148,11 @@ class PurchaseContract extends Model
         $this->utilized_value = $this->purchaseOrders()
             ->whereIn('status', ['approved', 'issued', 'closed'])
             ->sum('total_amount');
-        
+
         if ($this->contract_value) {
             $this->remaining_value = $this->contract_value - $this->utilized_value;
         }
-        
+
         $this->save();
     }
 
@@ -160,7 +161,7 @@ class PurchaseContract extends Model
      */
     public function isActive(): bool
     {
-        return $this->status === 'active' 
+        return $this->status === 'active'
             && $this->start_date <= now()
             && $this->end_date >= now();
     }
@@ -170,10 +171,10 @@ class PurchaseContract extends Model
      */
     public function hasAvailableBudget(float $amount = 0): bool
     {
-        if (!$this->contract_value) {
+        if (! $this->contract_value) {
             return true; // No limit
         }
-        
+
         return ($this->remaining_value ?? $this->contract_value) >= $amount;
     }
 }

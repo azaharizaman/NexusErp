@@ -4,8 +4,8 @@ namespace App\Actions\Company;
 
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Validation\ValidationException;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateCompany
 {
@@ -20,7 +20,7 @@ class CreateCompany
             // Validate company code uniqueness
             if (Company::where('code', $data['code'])->exists()) {
                 throw ValidationException::withMessages([
-                    'code' => 'Company code already exists.'
+                    'code' => 'Company code already exists.',
                 ]);
             }
 
@@ -70,6 +70,7 @@ class CreateCompany
     public function asController(): Company
     {
         $data = request()->validate($this->rules());
+
         return $this->handle($data);
     }
 

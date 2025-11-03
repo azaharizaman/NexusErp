@@ -2,23 +2,23 @@
 
 namespace App\Filament\Resources\BusinessPartners;
 
-use UnitEnum;
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
+use App\Filament\Resources\BusinessPartners\Pages\CreateBusinessPartner;
+use App\Filament\Resources\BusinessPartners\Pages\EditBusinessPartner;
+use App\Filament\Resources\BusinessPartners\Pages\ListBusinessPartners;
+use App\Filament\Resources\BusinessPartners\Pages\ViewBusinessPartner;
+use App\Filament\Resources\BusinessPartners\RelationManagers\ContactsRelationManager;
+use App\Filament\Resources\BusinessPartners\Schemas\BusinessPartnerForm;
+use App\Filament\Resources\BusinessPartners\Schemas\BusinessPartnerInfolist;
+use App\Filament\Resources\BusinessPartners\Tables\BusinessPartnersTable;
 use App\Models\BusinessPartner;
+use BackedEnum;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\BusinessPartners\Pages\EditBusinessPartner;
-use App\Filament\Resources\BusinessPartners\Pages\ViewBusinessPartner;
-use App\Filament\Resources\BusinessPartners\Pages\ListBusinessPartners;
-use App\Filament\Resources\BusinessPartners\Pages\CreateBusinessPartner;
-use App\Filament\Resources\BusinessPartners\Schemas\BusinessPartnerForm;
-use App\Filament\Resources\BusinessPartners\Tables\BusinessPartnersTable;
-use App\Filament\Resources\BusinessPartners\Schemas\BusinessPartnerInfolist;
-use App\Filament\Resources\BusinessPartners\RelationManagers\ContactsRelationManager;
+use UnitEnum;
 
 class BusinessPartnerResource extends Resource
 {

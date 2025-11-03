@@ -2,8 +2,8 @@
 
 namespace App\Actions\Utils;
 
-use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Support\Facades\Artisan;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class ConvertUnits
 {
@@ -25,12 +25,12 @@ class ConvertUnits
 
             if ($exitCode === 0) {
                 $output = Artisan::output();
-                
+
                 // Parse the conversion result
                 // This is a simplified implementation - you may need to adjust based on actual command output
-                if (preg_match('/(\d+\.?\d*)\s*' . preg_quote($toUnit) . '/i', $output, $matches)) {
+                if (preg_match('/(\d+\.?\d*)\s*'.preg_quote($toUnit).'/i', $output, $matches)) {
                     $convertedValue = (float) $matches[1];
-                    
+
                     return [
                         'success' => true,
                         'original_value' => $value,

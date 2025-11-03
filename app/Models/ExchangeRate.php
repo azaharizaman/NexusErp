@@ -11,6 +11,7 @@ class ExchangeRate extends Model
 {
     /** @use HasFactory<\Database\Factories\ExchangeRateFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [

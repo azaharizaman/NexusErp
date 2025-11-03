@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Actions\Utils\GenerateInvoiceNumber;
+use Illuminate\Console\Command;
 
 class GenerateInvoiceNumberCommand extends Command
 {
@@ -37,9 +37,9 @@ class GenerateInvoiceNumberCommand extends Command
             $this->info("Generated invoice number: {$number}");
         } else {
             // Generate multiple numbers
-            $action = new GenerateInvoiceNumber();
+            $action = new GenerateInvoiceNumber;
             $numbers = $action->handleBatch($count, $prefix, $length, $from);
-            
+
             $this->info("Generated {$count} invoice numbers:");
             foreach ($numbers as $number) {
                 $this->line("  - {$number}");

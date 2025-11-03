@@ -61,10 +61,10 @@ class PurchaseOrderRevision extends Model
     public static function trackChanges(PurchaseOrder $purchaseOrder, array $oldValues, array $newValues): array
     {
         $changes = [];
-        
+
         foreach ($newValues as $key => $newValue) {
             $oldValue = $oldValues[$key] ?? null;
-            
+
             if ($oldValue != $newValue) {
                 $changes[$key] = [
                     'old' => $oldValue,
@@ -72,7 +72,7 @@ class PurchaseOrderRevision extends Model
                 ];
             }
         }
-        
+
         return $changes;
     }
 

@@ -2,22 +2,22 @@
 
 namespace App\Filament\Resources\Departments;
 
-use UnitEnum;
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
-use Illuminate\Database\Eloquent\Builder;
-use AzahariZaman\BackOffice\Models\Department;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\Departments\Pages\EditDepartment;
-use App\Filament\Resources\Departments\Pages\ViewDepartment;
-use App\Filament\Resources\Departments\Pages\ListDepartments;
 use App\Filament\Resources\Departments\Pages\CreateDepartment;
+use App\Filament\Resources\Departments\Pages\EditDepartment;
+use App\Filament\Resources\Departments\Pages\ListDepartments;
+use App\Filament\Resources\Departments\Pages\ViewDepartment;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
-use App\Filament\Resources\Departments\Tables\DepartmentsTable;
 use App\Filament\Resources\Departments\Schemas\DepartmentInfolist;
+use App\Filament\Resources\Departments\Tables\DepartmentsTable;
+use AzahariZaman\BackOffice\Models\Department;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class DepartmentResource extends Resource
 {
@@ -26,8 +26,8 @@ class DepartmentResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     protected static ?string $recordTitleAttribute = 'name';
-    protected static string|UnitEnum|null $navigationGroup = 'Organization';
 
+    protected static string|UnitEnum|null $navigationGroup = 'Organization';
 
     public static function form(Schema $schema): Schema
     {

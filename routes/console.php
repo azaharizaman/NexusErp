@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
 use App\Actions\Utils\GenerateInvoiceNumber;
 use App\Console\Commands\ManageUserPermissionCommand;
+use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Artisan;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -15,7 +15,7 @@ Artisan::command('invoice:generate-number
                   {--length=6 : The length of the numeric part}
                   {--count=1 : Number of invoice numbers to generate}
                   {--from= : Generate from this number}', function () {
-    
+
     $prefix = $this->option('prefix');
     $length = (int) $this->option('length');
     $count = (int) $this->option('count');
@@ -27,9 +27,9 @@ Artisan::command('invoice:generate-number
         $this->info("Generated invoice number: {$number}");
     } else {
         // Generate multiple numbers
-        $action = new GenerateInvoiceNumber();
+        $action = new GenerateInvoiceNumber;
         $numbers = $action->handleBatch($count, $prefix, $length, $from);
-        
+
         $this->info("Generated {$count} invoice numbers:");
         foreach ($numbers as $number) {
             $this->line("  - {$number}");
@@ -39,6 +39,7 @@ Artisan::command('invoice:generate-number
 
 // User permission management command
 Artisan::command('user:permission {action} {email} {permission}', function () {
-    $command = new ManageUserPermissionCommand();
+    $command = new ManageUserPermissionCommand;
+
     return $command->handle();
 })->purpose('Assign or revoke permissions for a user');

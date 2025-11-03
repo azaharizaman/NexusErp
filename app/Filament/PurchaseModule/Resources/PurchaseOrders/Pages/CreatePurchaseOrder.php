@@ -13,7 +13,7 @@ class CreatePurchaseOrder extends CreateRecord
     {
         $data['created_by'] = auth()->id();
         $data['status'] = $data['status'] ?? 'draft';
-        
+
         return $data;
     }
 

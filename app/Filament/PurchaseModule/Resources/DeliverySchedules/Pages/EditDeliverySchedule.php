@@ -20,10 +20,10 @@ class EditDeliverySchedule extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['updated_by'] = auth()->id();
-        
+
         // Recalculate remaining quantity
         $data['remaining_quantity'] = ($data['scheduled_quantity'] ?? 0) - ($data['delivered_quantity'] ?? 0);
-        
+
         return $data;
     }
 }

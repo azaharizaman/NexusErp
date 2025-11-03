@@ -4,8 +4,8 @@ namespace App\Filament\PurchaseModule\Resources\Suppliers\Pages;
 
 use App\Actions\BusinessPartner\UpdateBusinessPartner as UpdateBusinessPartnerAction;
 use App\Filament\PurchaseModule\Resources\Suppliers\SupplierResource;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
 class EditSupplier extends EditRecord

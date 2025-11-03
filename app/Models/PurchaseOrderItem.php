@@ -12,6 +12,7 @@ class PurchaseOrderItem extends Model implements Sortable
 {
     /** @use HasFactory<\Database\Factories\PurchaseOrderItemFactory> */
     use HasFactory;
+
     use SortableTrait;
 
     protected $fillable = [

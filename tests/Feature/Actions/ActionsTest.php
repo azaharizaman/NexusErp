@@ -2,16 +2,15 @@
 
 namespace Tests\Feature\Actions;
 
-use Tests\TestCase;
 use App\Actions\Company\CreateCompany;
 use App\Actions\Company\UpdateCompany;
 use App\Actions\User\CreateUser;
 use App\Actions\Utils\FormatCurrency;
 use App\Actions\Utils\GenerateInvoiceNumber;
-use App\Actions\Utils\ConvertUnits;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ActionsTest extends TestCase
 {
@@ -80,9 +79,9 @@ class ActionsTest extends TestCase
     {
         // This test assumes your financial settings are properly configured
         $amount = 1234.56;
-        
+
         $formatted = FormatCurrency::run($amount);
-        
+
         $this->assertIsString($formatted);
         $this->assertStringContainsString('1,234.56', $formatted);
     }
@@ -91,7 +90,7 @@ class ActionsTest extends TestCase
     public function it_can_generate_invoice_numbers()
     {
         $invoiceNumber = GenerateInvoiceNumber::run('INV-', 6);
-        
+
         $this->assertEquals('INV-000001', $invoiceNumber);
 
         // Test with existing number
@@ -102,7 +101,7 @@ class ActionsTest extends TestCase
     /** @test */
     public function it_can_generate_multiple_invoice_numbers()
     {
-        $action = new GenerateInvoiceNumber();
+        $action = new GenerateInvoiceNumber;
         $numbers = $action->handleBatch(3, 'QUO-', 4);
 
         $this->assertCount(3, $numbers);
@@ -159,7 +158,7 @@ class ActionsTest extends TestCase
         ]);
 
         $this->assertEquals('Chain Test Company', $updatedCompany->name);
-    $this->assertEquals('Updated after action chain', $updatedCompany->description);
+        $this->assertEquals('Updated after action chain', $updatedCompany->description);
         $this->assertEquals('Company Admin', $user->name);
     }
 }

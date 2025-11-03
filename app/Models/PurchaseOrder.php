@@ -14,6 +14,7 @@ class PurchaseOrder extends Model
 {
     /** @use HasFactory<\Database\Factories\PurchaseOrderFactory> */
     use HasFactory;
+
     use HasSerialNumbering;
     use HasStatuses;
     use SoftDeletes;

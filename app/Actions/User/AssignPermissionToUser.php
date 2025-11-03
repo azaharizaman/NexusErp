@@ -20,12 +20,12 @@ class AssignPermissionToUser
             'name' => $permissionName,
             'guard_name' => 'web',
         ]);
-        
+
         // Assign permission to user if they don't already have it
-        if (!$user->hasPermissionTo($permissionName)) {
+        if (! $user->hasPermissionTo($permissionName)) {
             $user->givePermissionTo($permission);
         }
-        
+
         return $user->fresh();
     }
 

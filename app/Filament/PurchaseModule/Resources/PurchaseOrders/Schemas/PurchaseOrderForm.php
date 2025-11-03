@@ -183,14 +183,14 @@ class PurchaseOrderForm
                                         $unitPrice = (float) ($get('unit_price') ?? 0);
                                         $discountPercent = (float) ($get('discount_percent') ?? 0);
                                         $taxRate = (float) ($get('tax_rate') ?? 0);
-                                        
+
                                         $baseTotal = $quantity * $unitPrice;
                                         $discountAmount = $baseTotal * ($discountPercent / 100);
                                         $afterDiscount = $baseTotal - $discountAmount;
                                         $taxAmount = $afterDiscount * ($taxRate / 100);
                                         $lineTotal = $afterDiscount + $taxAmount;
-                                        
-                                        return '$' . number_format($lineTotal, 2);
+
+                                        return '$'.number_format($lineTotal, 2);
                                     })
                                     ->columnSpan(1),
                                 Hidden::make('line_total')
@@ -229,17 +229,17 @@ class PurchaseOrderForm
                         Placeholder::make('subtotal_display')
                             ->label('Subtotal')
                             ->content(function (Get $get): string {
-                                return '$' . number_format(static::calculateSubtotal($get), 2);
+                                return '$'.number_format(static::calculateSubtotal($get), 2);
                             }),
                         Placeholder::make('discount_display')
                             ->label('Total Discount')
                             ->content(function (Get $get): string {
-                                return '$' . number_format(static::calculateTotalDiscount($get), 2);
+                                return '$'.number_format(static::calculateTotalDiscount($get), 2);
                             }),
                         Placeholder::make('tax_display')
                             ->label('Total Tax')
                             ->content(function (Get $get): string {
-                                return '$' . number_format(static::calculateTotalTax($get), 2);
+                                return '$'.number_format(static::calculateTotalTax($get), 2);
                             }),
                         Placeholder::make('total_display')
                             ->label('Total Amount')
@@ -248,7 +248,8 @@ class PurchaseOrderForm
                                 $discount = static::calculateTotalDiscount($get);
                                 $tax = static::calculateTotalTax($get);
                                 $total = $subtotal - $discount + $tax;
-                                return '$' . number_format($total, 2);
+
+                                return '$'.number_format($total, 2);
                             }),
                         Hidden::make('subtotal'),
                         Hidden::make('discount_amount'),
@@ -296,13 +297,13 @@ class PurchaseOrderForm
         $unitPrice = (float) ($get('unit_price') ?? 0);
         $discountPercent = (float) ($get('discount_percent') ?? 0);
         $taxRate = (float) ($get('tax_rate') ?? 0);
-        
+
         $baseTotal = $quantity * $unitPrice;
         $discountAmount = $baseTotal * ($discountPercent / 100);
         $afterDiscount = $baseTotal - $discountAmount;
         $taxAmount = $afterDiscount * ($taxRate / 100);
         $lineTotal = $afterDiscount + $taxAmount;
-        
+
         $set('line_total', number_format($lineTotal, 2, '.', ''));
         $set('discount_amount', number_format($discountAmount, 2, '.', ''));
         $set('tax_amount', number_format($taxAmount, 2, '.', ''));
@@ -314,7 +315,7 @@ class PurchaseOrderForm
         $discount = static::calculateTotalDiscount($get);
         $tax = static::calculateTotalTax($get);
         $total = $subtotal - $discount + $tax;
-        
+
         $set('../../subtotal', number_format($subtotal, 2, '.', ''));
         $set('../../discount_amount', number_format($discount, 2, '.', ''));
         $set('../../tax_amount', number_format($tax, 2, '.', ''));
@@ -325,13 +326,13 @@ class PurchaseOrderForm
     {
         $items = $get('items') ?? [];
         $subtotal = 0;
-        
+
         foreach ($items as $item) {
             $quantity = (float) ($item['quantity'] ?? 0);
             $unitPrice = (float) ($item['unit_price'] ?? 0);
             $subtotal += $quantity * $unitPrice;
         }
-        
+
         return $subtotal;
     }
 
@@ -339,11 +340,11 @@ class PurchaseOrderForm
     {
         $items = $get('items') ?? [];
         $discount = 0;
-        
+
         foreach ($items as $item) {
             $discount += (float) ($item['discount_amount'] ?? 0);
         }
-        
+
         return $discount;
     }
 
@@ -351,11 +352,11 @@ class PurchaseOrderForm
     {
         $items = $get('items') ?? [];
         $tax = 0;
-        
+
         foreach ($items as $item) {
             $tax += (float) ($item['tax_amount'] ?? 0);
         }
-        
+
         return $tax;
     }
 }

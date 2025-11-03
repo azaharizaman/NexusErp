@@ -3,8 +3,8 @@
 namespace App\Filament\PurchaseModule\Resources\TermsTemplates\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -23,12 +23,12 @@ class TermsTemplateForm
                     ->columnSpanFull(),
                 Select::make('category')
                     ->options([
-            'purchase' => 'Purchase',
-            'contract' => 'Contract',
-            'delivery' => 'Delivery',
-            'payment' => 'Payment',
-            'general' => 'General',
-        ])
+                        'purchase' => 'Purchase',
+                        'contract' => 'Contract',
+                        'delivery' => 'Delivery',
+                        'payment' => 'Payment',
+                        'general' => 'General',
+                    ])
                     ->default('general')
                     ->required(),
                 Toggle::make('is_active')

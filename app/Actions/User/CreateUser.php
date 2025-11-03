@@ -3,10 +3,10 @@
 namespace App\Actions\User;
 
 use App\Models\User;
-use Lorisleiva\Actions\Concerns\AsAction;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateUser
 {

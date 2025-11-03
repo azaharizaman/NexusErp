@@ -10,6 +10,7 @@ class TermsTemplate extends Model
 {
     /** @use HasFactory<\Database\Factories\TermsTemplateFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [

@@ -11,6 +11,7 @@ class DeliverySchedule extends Model
 {
     /** @use HasFactory<\Database\Factories\DeliveryScheduleFactory> */
     use HasFactory;
+
     use HasSerialNumbering;
 
     /**
@@ -162,7 +163,7 @@ class DeliverySchedule extends Model
         }
 
         $reminderDate = $this->scheduled_date->subDays($this->reminder_days_before);
-        
+
         return now()->greaterThanOrEqualTo($reminderDate);
     }
 }

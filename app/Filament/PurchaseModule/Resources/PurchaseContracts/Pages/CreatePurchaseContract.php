@@ -13,12 +13,12 @@ class CreatePurchaseContract extends CreateRecord
     {
         $data['created_by'] = auth()->id();
         $data['status'] = $data['status'] ?? 'draft';
-        
+
         // Calculate remaining value if contract value is set
         if (isset($data['contract_value'])) {
             $data['remaining_value'] = $data['contract_value'] - ($data['utilized_value'] ?? 0);
         }
-        
+
         return $data;
     }
 }

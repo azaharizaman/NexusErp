@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\BusinessPartnerContact;
 use App\Models\BusinessPartner;
+use App\Models\BusinessPartnerContact;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

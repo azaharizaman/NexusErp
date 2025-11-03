@@ -142,8 +142,8 @@ class SettingsHelper
         $symbol = (string) data_get($financial, 'currency_symbol', '$');
 
         return $position === 'before'
-            ? $symbol . $formattedAmount
-            : $formattedAmount . $symbol;
+            ? $symbol.$formattedAmount
+            : $formattedAmount.$symbol;
     }
 
     /**

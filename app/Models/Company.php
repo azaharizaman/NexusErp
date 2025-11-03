@@ -13,6 +13,6 @@ class Company extends BaseCompany
 
     public function getCompanyRecordTitleAttribute(): string
     {
-        return ' (' . $this->code . ') ' . $this->name;
+        return ' ('.$this->code.') '.$this->name;
     }
 }

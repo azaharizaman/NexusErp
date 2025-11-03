@@ -2,7 +2,6 @@
 
 namespace App\Filament\PurchaseModule\Resources\Suppliers\Tables;
 
-use App\Models\BusinessPartner;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;

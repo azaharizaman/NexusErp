@@ -10,6 +10,7 @@ class TaxRule extends Model
 {
     /** @use HasFactory<\Database\Factories\TaxRuleFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [

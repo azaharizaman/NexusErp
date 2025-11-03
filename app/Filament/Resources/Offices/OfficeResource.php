@@ -2,28 +2,29 @@
 
 namespace App\Filament\Resources\Offices;
 
-use UnitEnum;
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
-use Illuminate\Database\Eloquent\Builder;
-use AzahariZaman\BackOffice\Models\Office;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\Offices\Pages\EditOffice;
-use App\Filament\Resources\Offices\Pages\ViewOffice;
-use App\Filament\Resources\Offices\Pages\ListOffices;
 use App\Filament\Resources\Offices\Pages\CreateOffice;
+use App\Filament\Resources\Offices\Pages\EditOffice;
+use App\Filament\Resources\Offices\Pages\ListOffices;
+use App\Filament\Resources\Offices\Pages\ViewOffice;
 use App\Filament\Resources\Offices\Schemas\OfficeForm;
-use App\Filament\Resources\Offices\Tables\OfficesTable;
 use App\Filament\Resources\Offices\Schemas\OfficeInfolist;
+use App\Filament\Resources\Offices\Tables\OfficesTable;
+use AzahariZaman\BackOffice\Models\Office;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class OfficeResource extends Resource
 {
     protected static ?string $model = Office::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
+
     protected static string|UnitEnum|null $navigationGroup = 'Organization';
 
     protected static ?string $recordTitleAttribute = 'name';

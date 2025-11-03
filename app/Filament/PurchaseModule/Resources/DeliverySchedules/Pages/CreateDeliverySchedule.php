@@ -13,10 +13,10 @@ class CreateDeliverySchedule extends CreateRecord
     {
         $data['created_by'] = auth()->id();
         $data['status'] = $data['status'] ?? 'scheduled';
-        
+
         // Calculate remaining quantity
         $data['remaining_quantity'] = ($data['scheduled_quantity'] ?? 0) - ($data['delivered_quantity'] ?? 0);
-        
+
         return $data;
     }
 }
