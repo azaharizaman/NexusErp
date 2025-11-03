@@ -25,10 +25,6 @@ class CurrencyForm
                     ->required(),
                 Toggle::make('is_base')
                     ->required(),
-                TextInput::make('created_by')
-                    ->numeric(),
-                TextInput::make('updated_by')
-                    ->numeric(),
             ]);
     }
 }
