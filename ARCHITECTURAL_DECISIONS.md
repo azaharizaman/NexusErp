@@ -1,5 +1,10 @@
 # Architectural Decisions
 
+## 2025-11-03 Project Documentation Update
+- Updated README.md from standard Laravel boilerplate to NexusERP-specific documentation to properly communicate project purpose, architecture, and development workflow.
+- New README includes comprehensive sections on project purpose, features, tech stack, installation, development workflow, project structure, contribution guidelines, and references to all existing documentation files.
+- This ensures new developers and contributors can quickly understand the project's goals, architecture, and how to get started.
+
 ## 2025-11-03 Panel Switching via User Menu
 - Added Filament user menu actions in both `nexus` and `purchase-module` panels to generate deep links with `Filament::getPanel()->getUrl()`, providing the recommended panel-switching experience in v4.
 - Restored the Nexus panel topbar so the shared user menu (and panel switcher action) remains accessible in the default location.
