@@ -49,17 +49,32 @@ class RecordPayment
             }
 
             // Update related payment schedules
-            $voucher->paymentSchedules()->pending()->each(function ($schedule) use ($voucher) {
-                $schedule->paid_amount += $voucher->amount;
-                $schedule->updateOutstanding();
+            // Note: This distributes the payment across linked schedules
+            // For specific schedule allocation, link voucher to specific schedules before calling this
+            $linkedSchedules = $voucher->paymentSchedules()->pending()->get();
+            
+            if ($linkedSchedules->isNotEmpty()) {
+                $totalOutstanding = $linkedSchedules->sum('outstanding_amount');
+                $remainingAmount = $voucher->amount;
 
-                if ($schedule->outstanding_amount <= 0) {
-                    $schedule->completed_at = now();
-                    $schedule->setStatus('completed', 'Payment schedule completed');
+                foreach ($linkedSchedules as $schedule) {
+                    if ($remainingAmount <= 0) {
+                        break;
+                    }
+
+                    $allocationAmount = min($remainingAmount, $schedule->outstanding_amount);
+                    $schedule->paid_amount += $allocationAmount;
+                    $schedule->updateOutstanding();
+                    $remainingAmount -= $allocationAmount;
+
+                    if ($schedule->outstanding_amount <= 0) {
+                        $schedule->completed_at = now();
+                        $schedule->setStatus('completed', 'Payment schedule completed');
+                    }
+
+                    $schedule->save();
                 }
-
-                $schedule->save();
-            });
+            }
 
             // Update supplier invoice if linked
             if ($voucher->supplierInvoice) {

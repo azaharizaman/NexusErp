@@ -182,13 +182,15 @@ class PayableLedger extends Model
 
     /**
      * Calculate running balance for supplier.
+     * Note: For production use, consider implementing a cached balance approach
+     * or using a database view for better performance.
      */
     public static function calculateBalance(int $supplierId, ?string $date = null): float
     {
         $query = static::where('supplier_id', $supplierId);
 
         if ($date) {
-            $query->where('transaction_date', '<=', $date);
+            $query->where('transaction_date', '<', $date);
         }
 
         $debits = $query->sum('debit_amount_base');

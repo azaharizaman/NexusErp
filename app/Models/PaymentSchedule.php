@@ -146,7 +146,10 @@ class PaymentSchedule extends Model
     public function scopeOverdue($query)
     {
         return $query->where('due_date', '<', now())
-            ->whereIn('status', ['pending', 'partial']);
+            ->whereHas('statuses', function ($q) {
+                $q->where('name', 'pending')
+                    ->orWhere('name', 'partial');
+            });
     }
 
     /**
@@ -156,7 +159,10 @@ class PaymentSchedule extends Model
     {
         return $query->where('due_date', '>=', now())
             ->where('due_date', '<=', now()->addDays($days))
-            ->whereIn('status', ['pending', 'partial']);
+            ->whereHas('statuses', function ($q) {
+                $q->where('name', 'pending')
+                    ->orWhere('name', 'partial');
+            });
     }
 
     /**
@@ -164,7 +170,10 @@ class PaymentSchedule extends Model
      */
     public function isOverdue(): bool
     {
-        return $this->due_date < now() && in_array($this->latestStatus(), ['pending', 'partial']);
+        $currentStatus = $this->latestStatus();
+        return $this->due_date < now() && 
+               $currentStatus && 
+               in_array($currentStatus, ['pending', 'partial']);
     }
 
     /**

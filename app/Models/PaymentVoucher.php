@@ -211,4 +211,12 @@ class PaymentVoucher extends Model
     {
         return in_array($this->latestStatus(), ['draft', 'submitted', 'approved']);
     }
+
+    /**
+     * Get the current status for display purposes.
+     */
+    public function getStatusAttribute(): ?string
+    {
+        return $this->latestStatus();
+    }
 }
