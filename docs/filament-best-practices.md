@@ -169,6 +169,89 @@ Select::make('supplier_id')
     ->native(false),  // Uses Filament's custom select UI
 ```
 
+## Working with Carbon Dates
+
+### Avoid Mutating Carbon Instances
+
+Carbon date methods like `addDays()`, `subDays()`, `addMonths()`, etc., **mutate the original instance**. Always use `copy()` to prevent unintended side effects.
+
+#### ❌ Incorrect - Mutating Original Date
+```php
+public function generateSchedules($baseDate)
+{
+    $schedules = [
+        ['due_date' => $baseDate->addDays(30)],  // Mutates $baseDate!
+        ['due_date' => $baseDate->addDays(30)],  // Now adds 60 days total
+    ];
+}
+```
+
+#### ✅ Correct - Using copy()
+```php
+public function generateSchedules($baseDate)
+{
+    $schedules = [
+        ['due_date' => $baseDate->copy()->addDays(30)],  // Creates a copy
+        ['due_date' => $baseDate->copy()->addDays(60)],  // Original unchanged
+    ];
+}
+```
+
+**Key Rule:** Always use `$date->copy()` before calling any mutation method when you need to preserve the original date.
+
+## Working with Spatie ModelStatus
+
+### Check Current Status with Strict Comparison
+
+When checking if a model has a specific status, use strict equality comparison (`===`) with `latestStatus()`, not null checks.
+
+#### ❌ Incorrect - Checking for Status Existence
+```php
+public function canApprove(): bool
+{
+    // This checks if there's ANY 'submitted' status in history
+    return $this->latestStatus('submitted') !== null;
+}
+```
+
+#### ✅ Correct - Checking Current Status
+```php
+public function canApprove(): bool
+{
+    // This checks if the CURRENT status is 'submitted'
+    return $this->latestStatus() === 'submitted';
+}
+```
+
+**Key Rule:** Use `$this->latestStatus() === 'status_name'` to check the current status, not `$this->latestStatus('status_name') !== null`.
+
+### Understanding latestStatus() Behavior
+
+The `latestStatus()` method from Spatie ModelStatus:
+- `latestStatus()` - Returns the name of the current status as a string, or null if no status exists
+- `latestStatus('name')` - Checks if the latest status matches the given name and returns the name or null
+
+**Example:**
+```php
+// Get current status
+$currentStatus = $model->latestStatus();  // Returns 'draft', 'approved', etc.
+
+// Check if current status is 'approved'
+if ($model->latestStatus() === 'approved') {
+    // Current status is approved
+}
+
+// AVOID: Using parameter for current status check
+if ($model->latestStatus('approved') !== null) {
+    // This works but is less clear
+}
+```
+
 ## Summary
 
-The key principle is: **Make the UI user-friendly by displaying meaningful data instead of technical database IDs.** Users should never have to mentally map numeric IDs to understand what they're looking at.
+The key principles are:
+1. **Make the UI user-friendly** by displaying meaningful data instead of technical database IDs
+2. **Preserve Carbon dates** by using `copy()` before mutating
+3. **Check current status clearly** using strict equality with `latestStatus()`
+
+Users should never have to mentally map numeric IDs to understand what they're looking at, and code should be explicit about its intent.

@@ -40,3 +40,16 @@
   - Remove these fields from forms entirely
   - If they must be displayed for reference, mark them as `->disabled()` and `->dehydrated(false)`
 - See `docs/filament-best-practices.md` for detailed examples and patterns.
+
+## Carbon Date Handling
+- **ALWAYS** use `copy()` before mutating Carbon dates to prevent unintended side effects.
+  - ❌ Incorrect: `$date->addDays(30)` (mutates original)
+  - ✅ Correct: `$date->copy()->addDays(30)` (preserves original)
+- This is critical when using dates in loops or generating multiple schedules from the same base date.
+
+## Spatie ModelStatus Usage
+- **ALWAYS** use strict equality comparison to check current status.
+  - ❌ Incorrect: `$this->latestStatus('submitted') !== null`
+  - ✅ Correct: `$this->latestStatus() === 'submitted'`
+- Use `latestStatus()` without parameters to get the current status name, then compare with `===`.
+- This ensures you're checking the current status, not just whether a status exists in history.
