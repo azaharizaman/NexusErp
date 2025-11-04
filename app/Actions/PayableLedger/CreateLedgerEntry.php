@@ -75,7 +75,7 @@ class CreateLedgerEntry
             'exchange_rate_date' => $exchangeRateDate,
             'balance_base' => $balance,
             'balance_foreign' => isset($data['foreign_currency_id']) 
-                ? $balance / $exchangeRate 
+                ? ($exchangeRate > 0 ? $balance / $exchangeRate : 0)
                 : $debitForeign - $creditForeign,
             'reference_number' => $data['reference_number'] ?? null,
             'description' => $data['description'] ?? null,
