@@ -54,7 +54,8 @@ class CreateLedgerEntry
         $query = PayableLedger::where('supplier_id', $data['supplier_id'])
             ->where('transaction_date', '<', $data['transaction_date']);
         
-        $previousBalance = $query->sum('debit_amount_base') - $query->sum('credit_amount_base');
+        $totals = $query->selectRaw('SUM(debit_amount_base) as total_debits, SUM(credit_amount_base) as total_credits')->first();
+        $previousBalance = ($totals->total_debits ?? 0) - ($totals->total_credits ?? 0);
         $balance = $previousBalance + $debitBase - $creditBase;
 
         return PayableLedger::create([
