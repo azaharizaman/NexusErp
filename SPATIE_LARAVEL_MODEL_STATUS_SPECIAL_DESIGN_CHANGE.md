@@ -161,3 +161,39 @@ class CreateStatusAction extends Action
     }
 }
 ```
+
+### Suggested Directory Structure
+
+#### Organize the actions as follows:
+- app/Actions/StatusManagement/
+- CreateStatusAction
+- CreateStatusTransitionAction
+- RequestStatusChangeAction
+- ApproveStatusChangeAction
+- CheckApprovalStatusAction
+- TransitionStatusAction
+
+### Workflow Example
+
+1. Setup
+- Admin creates statuses (e.g., Draft, Reviewed).
+- Configures transitions (e.g., Draft → Reviewed).
+- Defines approval logic (e.g., “Manager” role required).
+
+2. Status Transition Request
+- A user requests a status change (e.g., Draft → Reviewed).
+- Approval workflow is triggered, notifying the required roles/staff.
+
+3. Approval
+- Assigned approvers take action (Approve/Reject).
+- Status_requests table updates approval state.
+
+4. Status Change
+- If approved, the model’s status transitions. Otherwise, it remains unchanged.
+
+### Notifications
+
+Integrate notifications for:
+1. Request assignments to approvers.
+2. Updates on decisions (approved/rejected) for transition requests.
+
