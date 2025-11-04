@@ -23,11 +23,11 @@ class PaymentSchedulesTable
                     ->searchable(),
                 TextColumn::make('supplier.name')
                     ->searchable(),
-                TextColumn::make('purchaseOrder.id')
+                TextColumn::make('purchaseOrder.po_number')
                     ->searchable(),
-                TextColumn::make('supplierInvoice.id')
+                TextColumn::make('supplierInvoice.invoice_number')
                     ->searchable(),
-                TextColumn::make('paymentVoucher.id')
+                TextColumn::make('paymentVoucher.voucher_number')
                     ->searchable(),
                 TextColumn::make('currency.name')
                     ->searchable(),
