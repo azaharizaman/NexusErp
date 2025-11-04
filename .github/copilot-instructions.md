@@ -22,6 +22,17 @@
 - Actions should be invokable classes that encapsulate a single piece of business logic. They should be reusable and testable.
 - Actions can be used in controllers, models, or other parts of the application to perform specific tasks.
 
+## Exception Handling
+- **NEVER** use generic `\Exception` for throwing exceptions. Use specific exception types:
+  - Use `\InvalidArgumentException` for invalid arguments or parameters
+  - Use `\LogicException` for logic errors that should be caught during development
+  - Use `\RuntimeException` for runtime errors
+  - Use custom exceptions for domain-specific errors
+- **ALWAYS** include helpful context in exception messages:
+  - ❌ Incorrect: `throw new \Exception('Invalid model');`
+  - ✅ Correct: `throw new \InvalidArgumentException('Model '.get_class($model).' must implement HasStatuses trait');`
+- Include variable values, class names, or other context to help with debugging
+
 ## Filament Resources - Tables and Forms
 - **ALWAYS** display meaningful relationship columns instead of raw IDs in tables and forms.
   - For table columns: Use `TextColumn::make('relationship.attribute')` format, e.g., `TextColumn::make('supplier.name')` instead of `TextColumn::make('supplier_id')`
@@ -39,6 +50,15 @@
 - **Audit Fields in Forms**: NEVER include audit fields (`created_by`, `updated_by`) in forms as they are managed automatically by the system.
   - Remove these fields from forms entirely
   - If they must be displayed for reference, mark them as `->disabled()` and `->dehydrated(false)`
+- **JSON and Array Fields**: NEVER use Textarea for JSON or array input. Use appropriate Filament components:
+  - For key-value pairs: Use `KeyValue::make()` component with `->keyLabel()` and `->valueLabel()`
+  - For simple arrays/tags: Use `TagsInput::make()` with `->suggestions()` for predefined options
+  - For multiple selection: Use `Select::make()->multiple()` with proper options or relationships
+  - For complex nested data: Use `Repeater::make()` with proper field schema
+  - **ALWAYS** validate JSON fields if Textarea must be used: `->rules(['json'])`
+  - Example for roles: `TagsInput::make('required_roles')->suggestions(fn () => Role::pluck('name')->toArray())`
+  - Example for staff: `Select::make('staff_ids')->multiple()->options(fn () => User::pluck('name', 'id'))`
+  - Example for conditions: `KeyValue::make('condition')->keyLabel('Key')->valueLabel('Value')`
 - See `docs/filament-best-practices.md` for detailed examples and patterns.
 
 ## Carbon Date Handling

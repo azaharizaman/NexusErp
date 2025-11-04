@@ -1,5 +1,44 @@
 # Architectural Decisions
 
+## 2025-11-04 Status Management System Implementation
+- **Implemented comprehensive status management system** based on design document `SPATIE_LARAVEL_MODEL_STATUS_SPECIAL_DESIGN_CHANGE.md`
+- Created centralized system for configuring statuses, transitions, and approval workflows across all models
+- **New Models Created:**
+  - `DocumentModel` - Represents configurable models/documents that can have statuses
+  - `ModelStatus` - Stores status definitions with color coding and sorting (uses Spatie Sortable)
+  - `StatusTransition` - Defines valid status transitions with optional conditions
+  - `ApprovalWorkflow` - Configures approval requirements for transitions (roles, staff, approval type)
+  - `StatusRequest` - Tracks status change requests requiring approval
+- **Laravel Actions for Status Management:**
+  - `CreateStatusAction` - Creates new statuses for document models
+  - `CreateStatusTransitionAction` - Defines status transitions with approval conditions
+  - `RequestStatusChangeAction` - Creates status change requests and notifies approvers
+  - `ApproveStatusChangeAction` - Approves/rejects status change requests
+  - `CheckApprovalStatusAction` - Checks current status of approval requests
+  - `TransitionStatusAction` - Performs actual status transitions using Spatie ModelStatus
+- **Filament Resources in Nexus Panel:**
+  - `DocumentModelResource` - Manage document models that can have statuses
+  - `ModelStatusResource` - Configure statuses with reorderable list
+  - `StatusTransitionResource` - Define transitions and approval workflows
+  - `StatusRequestResource` - View and manage approval requests (read-only)
+- **Key Features:**
+  - Centralized status configuration for all models using HasStatuses trait
+  - Flexible approval workflows with single or group approval types
+  - Role-based and staff-specific approval assignments
+  - Complete audit trail for status change requests
+  - Integration with existing Spatie ModelStatus package
+  - All resources added to "Status Management" navigation group in Nexus panel
+- **Database Schema:**
+  - `document_models` - Stores model configurations
+  - `model_statuses` - Stores status definitions with colors and sorting
+  - `status_transitions` - Defines valid transitions with conditions
+  - `approval_workflows` - Configures approval requirements
+  - `status_requests` - Tracks approval requests with morphic relationship to any model
+- **Existing Models Review:**
+  - Verified all models using HasStatuses trait follow best practices
+  - All status checks use `latestStatus() === 'status'` pattern as per custom instructions
+  - Models properly using Spatie ModelStatus: PaymentVoucher, PaymentSchedule, PurchaseOrder, etc.
+
 ## 2025-11-04 Phase 6 - Payments & Settlements Module Complete
 - **Implemented Phase 6 of Purchase Management Module** with complete payment processing, scheduling, and payables tracking
 - Created three new models with full Filament resources and business logic Actions:

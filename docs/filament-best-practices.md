@@ -135,6 +135,172 @@ Section::make('Audit Information')
     ->visible(fn ($record) => $record !== null),  // Only show on edit, not create
 ```
 
+## JSON and Array Input Fields
+
+### Use Appropriate Filament Components for Structured Data
+
+**NEVER** use `Textarea` for JSON or array input. Use proper Filament components that provide better UX, validation, and error prevention.
+
+#### ❌ Incorrect - Using Textarea for JSON
+```php
+Textarea::make('required_roles')
+    ->label('Required Roles (JSON array)')
+    ->helperText('e.g., ["manager", "finance_head"]')
+    ->rows(2),
+
+Textarea::make('staff_ids')
+    ->label('Specific Staff IDs (JSON array)')
+    ->helperText('e.g., [1, 2, 3]')
+    ->rows(2),
+
+Textarea::make('condition')
+    ->label('Transition Conditions (JSON)')
+    ->helperText('Optional: Define conditions in JSON format')
+    ->rows(3),
+```
+
+**Problems:**
+- Error-prone: Users can easily make syntax errors
+- No validation: Invalid JSON can be saved
+- Poor UX: Users need to remember JSON syntax
+- No autocomplete or suggestions
+
+#### ✅ Correct - Using Proper Components
+
+**For Key-Value Pairs:** Use `KeyValue` component
+```php
+KeyValue::make('condition')
+    ->label('Transition Conditions')
+    ->helperText('Optional: Define conditions as key-value pairs')
+    ->keyLabel('Condition Key')
+    ->valueLabel('Condition Value')
+    ->addActionLabel('Add Condition')
+    ->reorderable()
+    ->columnSpanFull(),
+```
+
+**For Simple Arrays/Tags:** Use `TagsInput` with suggestions
+```php
+use Spatie\Permission\Models\Role;
+
+TagsInput::make('required_roles')
+    ->label('Required Roles')
+    ->helperText('Select or type role names')
+    ->suggestions(fn () => Role::pluck('name')->toArray())
+    ->placeholder('Add role'),
+```
+
+**For Multiple Selection from Database:** Use `Select` with `multiple()`
+```php
+use App\Models\User;
+
+Select::make('staff_ids')
+    ->label('Specific Staff Members')
+    ->helperText('Select specific staff members (optional)')
+    ->multiple()
+    ->searchable()
+    ->preload()
+    ->options(fn () => User::pluck('name', 'id'))
+    ->placeholder('Select staff members'),
+```
+
+**For Complex Nested Data:** Use `Repeater` with proper field schema
+```php
+Repeater::make('items')
+    ->schema([
+        TextInput::make('name')->required(),
+        TextInput::make('quantity')->numeric()->required(),
+        Select::make('unit')->options(['kg', 'pcs', 'box'])->required(),
+    ])
+    ->columns(3)
+    ->addActionLabel('Add Item'),
+```
+
+### When Textarea is Absolutely Necessary
+
+If you must use `Textarea` for JSON input (very rare cases), **ALWAYS** add proper validation and transformation:
+
+```php
+Textarea::make('metadata')
+    ->label('Metadata (JSON)')
+    ->rows(5)
+    ->rules(['json'])  // Validates JSON syntax
+    ->dehydrateStateUsing(fn ($state) => json_decode($state, true))  // Convert to array
+    ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT)),  // Format for display
+```
+
+### Component Selection Guide
+
+| Data Type | Recommended Component | Example Use Case |
+|-----------|----------------------|------------------|
+| Key-value pairs | `KeyValue` | Configuration options, metadata |
+| Simple string array | `TagsInput` | Tags, roles, categories |
+| Selection from DB | `Select::multiple()` | Users, products, categories |
+| Complex nested data | `Repeater` | Line items, addresses, contacts |
+| Boolean flags | `CheckboxList` | Feature flags, permissions |
+
+## Exception Handling Best Practices
+
+### Use Specific Exception Types
+
+**NEVER** use generic `\Exception`. Always use the most specific exception type that describes the error condition.
+
+#### ❌ Incorrect - Generic Exception
+```php
+if (! in_array(HasStatuses::class, class_uses_recursive($model))) {
+    throw new \Exception('Model must use HasStatuses trait');
+}
+```
+
+**Problems:**
+- Doesn't indicate the error category
+- Hard to catch specific error types
+- Doesn't help with debugging
+
+#### ✅ Correct - Specific Exception with Context
+```php
+if (! in_array(HasStatuses::class, class_uses_recursive($model))) {
+    throw new \InvalidArgumentException(
+        'Model '.get_class($model).' must use HasStatuses trait'
+    );
+}
+```
+
+### Exception Type Guidelines
+
+| Error Type | Exception Class | When to Use |
+|------------|----------------|-------------|
+| Invalid arguments/parameters | `InvalidArgumentException` | Wrong type, missing required data |
+| Logic errors | `LogicException` | Programming errors, wrong state |
+| Runtime errors | `RuntimeException` | File not found, permission denied |
+| Database errors | `PDOException` | Query failures, constraint violations |
+| Domain-specific errors | Custom Exception | Business rule violations |
+
+### Include Helpful Context
+
+**ALWAYS** include helpful information in exception messages:
+- Variable values
+- Class names
+- Expected vs. actual values
+- Stack trace hints
+
+```php
+// ✅ Good - Includes context
+throw new \InvalidArgumentException(
+    "Expected model to implement ".HasStatuses::class.", but ".get_class($model)." does not"
+);
+
+// ✅ Good - Includes state information
+throw new \LogicException(
+    "Cannot approve voucher with status '{$this->latestStatus()}'. Expected 'submitted'"
+);
+
+// ✅ Good - Includes expected and actual
+throw new \RuntimeException(
+    "Failed to process payment. Expected amount: {$expected}, Got: {$actual}"
+);
+```
+
 ## Additional Best Practices
 
 ### Searchable and Sortable
@@ -251,7 +417,14 @@ if ($model->latestStatus('approved') !== null) {
 
 The key principles are:
 1. **Make the UI user-friendly** by displaying meaningful data instead of technical database IDs
-2. **Preserve Carbon dates** by using `copy()` before mutating
-3. **Check current status clearly** using strict equality with `latestStatus()`
+2. **Use appropriate input components** - Never use Textarea for JSON/arrays; use KeyValue, TagsInput, or Select
+3. **Preserve Carbon dates** by using `copy()` before mutating
+4. **Check current status clearly** using strict equality with `latestStatus()`
+5. **Use specific exceptions** with helpful context for better debugging and error handling
 
-Users should never have to mentally map numeric IDs to understand what they're looking at, and code should be explicit about its intent.
+Users should never have to:
+- Manually write JSON syntax
+- Mentally map numeric IDs to understand what they're looking at
+- Debug generic exception messages without context
+
+Code should be explicit about its intent and provide the best possible user experience.
