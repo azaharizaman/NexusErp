@@ -17,9 +17,9 @@ class StatusRequestResource extends Resource
 {
     protected static ?string $model = StatusRequest::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
+    protected static string | UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Approval Requests';
 

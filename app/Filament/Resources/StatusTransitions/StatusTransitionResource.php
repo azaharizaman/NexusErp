@@ -20,9 +20,9 @@ class StatusTransitionResource extends Resource
 {
     protected static ?string $model = StatusTransition::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-arrows-right-left';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
+    protected static string | UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Status Transitions';
 

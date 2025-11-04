@@ -20,9 +20,9 @@ class DocumentModelResource extends Resource
 {
     protected static ?string $model = DocumentModel::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
+    protected static string | UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Document Models';
 

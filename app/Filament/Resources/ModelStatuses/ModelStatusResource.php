@@ -20,9 +20,9 @@ class ModelStatusResource extends Resource
 {
     protected static ?string $model = ModelStatus::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-tag';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
+    protected static string | UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Statuses';
 
