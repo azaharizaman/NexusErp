@@ -10,18 +10,19 @@ use App\Filament\Resources\DocumentModels\Schemas\DocumentModelForm;
 use App\Filament\Resources\DocumentModels\Schemas\DocumentModelInfolist;
 use App\Filament\Resources\DocumentModels\Tables\DocumentModelsTable;
 use App\Models\DocumentModel;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class DocumentModelResource extends Resource
 {
     protected static ?string $model = DocumentModel::class;
 
-    protected static string $navigationIcon = Heroicon::OutlinedDocumentText;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Status Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Document Models';
 

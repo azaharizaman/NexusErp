@@ -10,18 +10,19 @@ use App\Filament\Resources\StatusTransitions\Schemas\StatusTransitionForm;
 use App\Filament\Resources\StatusTransitions\Schemas\StatusTransitionInfolist;
 use App\Filament\Resources\StatusTransitions\Tables\StatusTransitionsTable;
 use App\Models\StatusTransition;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class StatusTransitionResource extends Resource
 {
     protected static ?string $model = StatusTransition::class;
 
-    protected static string $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrows-right-left';
 
-    protected static ?string $navigationGroup = 'Status Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Status Transitions';
 

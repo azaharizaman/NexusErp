@@ -10,18 +10,19 @@ use App\Filament\Resources\ModelStatuses\Schemas\ModelStatusForm;
 use App\Filament\Resources\ModelStatuses\Schemas\ModelStatusInfolist;
 use App\Filament\Resources\ModelStatuses\Tables\ModelStatusesTable;
 use App\Models\ModelStatus;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ModelStatusResource extends Resource
 {
     protected static ?string $model = ModelStatus::class;
 
-    protected static string $navigationIcon = Heroicon::OutlinedTag;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
 
-    protected static ?string $navigationGroup = 'Status Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Statuses';
 

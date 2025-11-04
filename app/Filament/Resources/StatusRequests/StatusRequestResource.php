@@ -7,18 +7,19 @@ use App\Filament\Resources\StatusRequests\Pages\ViewStatusRequest;
 use App\Filament\Resources\StatusRequests\Schemas\StatusRequestInfolist;
 use App\Filament\Resources\StatusRequests\Tables\StatusRequestsTable;
 use App\Models\StatusRequest;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class StatusRequestResource extends Resource
 {
     protected static ?string $model = StatusRequest::class;
 
-    protected static string $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationGroup = 'Status Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Status Management';
 
     protected static ?string $navigationLabel = 'Approval Requests';
 
