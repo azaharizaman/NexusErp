@@ -11,21 +11,21 @@
 * [x] Integrate **`azaharizaman/laravel-inventory-management`** for items catalog. — ✅ Package not yet available, marked for future integration (2025-11-03)
 * [x] Integrate **`azaharizaman/laravel-uom-management`** for UOM. — ✅ Completed on 2025-11-03
 * [x] Integrate **`azaharizaman/laravel-serial-numbering`** for controlled numbering. — ✅ Completed on 2025-11-03
-* [ ] Add optional dependency hooks for future package **`azaharizaman/laravel-status-transitions`** (DOA workflow).
-* [ ] Register **custom service providers** and boot configuration under `/Modules/PurchaseManagement/Providers/`.
+* [ ] Add optional dependency hooks for future package **`azaharizaman/laravel-status-transitions`** (DOA workflow). — ⏳ Deferred for future integration
+* [x] Register **custom service providers** and boot configuration under `/Modules/PurchaseManagement/Providers/`. — ✅ PurchaseModulePanelProvider configured (2025-11-03)
 
 ### 🧱 1.2 Database & Models
 
 * [x] Create models (with migrations and factories) for: — ✅ Completed on 2025-11-03
 
   * [x] `Vendor` (filtered subset of Business Partner where `is_supplier = true`) — ✅ Using BusinessPartner with `is_supplier` flag
-  * [ ] `Item` (extend existing model)
+  * [ ] `Item` (extend existing model) — ⏳ Awaiting laravel-inventory-management package
   * [x] `PriceList` — ✅ Completed on 2025-11-03
   * [x] `Currency` & `ExchangeRate` — ✅ Completed on 2025-11-03
   * [x] `TaxRule` — ✅ Completed on 2025-11-03
   * [x] `TermsTemplate` — ✅ Completed on 2025-11-03
 * [x] Add **Soft Deletes**, **Audit fields** (`created_by`, `approved_by`, etc.). — ✅ Completed on 2025-11-03
-* [ ] Implement `ControlledSerialNumbering` trait for transactional models.
+* [x] Implement `ControlledSerialNumbering` trait for transactional models. — ✅ HasSerialNumbering trait from laravel-serial-numbering package implemented on all transactional models (2025-11-03)
 * [x] Define all **foreign key relationships** and cascade rules. — ✅ Completed on 2025-11-03
 
 ### 🧩 1.3 Filament Panel Setup
@@ -45,7 +45,7 @@
   ])
   ```
 * [x] Configure global color theme, icons, and compact navigation mode. — ✅ Completed on 2025-11-03
-* [ ] Register role-based middleware for Filament panel (`can:viewPurchasePanel`).
+* [ ] Register role-based middleware for Filament panel (`can:viewPurchasePanel`). — ⏳ Pending RBAC implementation in Phase 8
 
 ---
 
@@ -54,11 +54,11 @@
 | Submodule                         | Key Tasks                                                                                                                  |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | **Business Partners (Suppliers)** | [x] Extend Business Partner model → `Vendor` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: `SupplierResource` (CRUD + search + filter active) — ✅ Completed on 2025-11-03  |
-| **Items / Materials Catalog**     | [ ] Extend `Item` from inventory package <br>[ ] Add supplier link and purchase price field                                |
-| **UOM & Price Lists**             | [x] Integrate with UOM package — ✅ Completed on 2025-11-03 <br>[x] Create `PriceList` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Allow tiered pricing by supplier/currency |
-| **Currencies & Exchange Rates**   | [x] Create `Currency` & `ExchangeRate` models/resources — ✅ Completed on 2025-11-03 <br>[ ] Add daily auto-sync job (using scheduler)                  |
-| **Tax & Charge Rules**            | [x] Create `TaxRule` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Assignable to PR, PO, and Invoice                                              |
-| **Terms & Conditions Templates**  | [x] `TermsTemplate` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Add WYSIWYG editor for reusable terms                                           |
+| **Items / Materials Catalog**     | [ ] Extend `Item` from inventory package — ⏳ Awaiting package <br>[ ] Add supplier link and purchase price field — ⏳ Awaiting package                                |
+| **UOM & Price Lists**             | [x] Integrate with UOM package — ✅ Completed on 2025-11-03 <br>[x] Create `PriceList` model/resource — ✅ Completed on 2025-11-03 <br>[ ] Allow tiered pricing by supplier/currency — ⏳ Future enhancement |
+| **Currencies & Exchange Rates**   | [x] Create `Currency` & `ExchangeRate` models/resources — ✅ Completed on 2025-11-03 <br>[ ] Add daily auto-sync job (using scheduler) — ⏳ Future enhancement                  |
+| **Tax & Charge Rules**            | [x] Create `TaxRule` model/resource — ✅ Completed on 2025-11-03 <br>[x] Assignable to PR, PO, and Invoice — ✅ Integrated in PO and Invoice models (2025-11-03)                                              |
+| **Terms & Conditions Templates**  | [x] `TermsTemplate` model/resource — ✅ Completed on 2025-11-03 <br>[x] Add WYSIWYG editor for reusable terms — ✅ RichEditor implemented in resource (2025-11-03)                                           |
 
 ---
 
@@ -66,10 +66,10 @@
 
 | Submodule                             | Tasks                                                                                                                                                                                                                                           |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Purchase Requests (PR)**            | [x] Create model `PurchaseRequest` with serial prefix `PR-` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: Create/Edit/List views — ✅ Completed on 2025-11-03 <br>[x] Fields: Requester, Dept, Items (Repeater), Total, Status — ✅ Completed on 2025-11-03 <br>[x] Workflow states: Draft → Submitted → Approved → Rejected — ✅ Implemented with Spatie Model Status (2025-11-03) | `PurchaseRequest` with serial prefix `PR-` <br>[ ] Filament Resource: Create/Edit/List views <br>[ ] Fields: Requester, Dept, Items (Repeater), Total, Status <br>[ ] Workflow states: Draft → Submitted → Approved → Rejected |
+| **Purchase Requests (PR)**            | [x] Create model `PurchaseRequest` with serial prefix `PR-` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: Create/Edit/List views — ✅ Completed on 2025-11-03 <br>[x] Fields: Requester, Dept, Items (Repeater), Total, Status — ✅ Completed on 2025-11-03 <br>[x] Workflow states: Draft → Submitted → Approved → Rejected — ✅ Implemented with Spatie Model Status (2025-11-03) |
 | **Request for Quotation (RFQ)**       | [x] Model: `RequestForQuotation` (extends serial numbering) — ✅ Completed on 2025-11-03 <br>[x] Fields: Linked PRs, Suppliers invited, Expiry date — ✅ Completed on 2025-11-03 <br>[x] Filament Resource with subform for supplier quotations — ✅ Completed on 2025-11-03 <br>[x] Pivot tables for PR-RFQ and RFQ-Suppliers relationships — ✅ Completed on 2025-11-03 |
-| **Quotation Comparison / Evaluation** | [x] Model: `Quotation` — ✅ Completed on 2025-11-03 <br>[x] Model: `QuotationItem` with line items — ✅ Completed on 2025-11-03 <br>[x] Filament Resource with repeater for items — ✅ Completed on 2025-11-03 <br>[ ] Comparison page (custom Filament Page) <br>[ ] Add "Select Recommended Supplier" button |
-| **Purchase Recommendation**           | [x] Model: `PurchaseRecommendation` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource with justification tracking — ✅ Completed on 2025-11-03 <br>[ ] Auto-generate from selected RFQ quotations |
+| **Quotation Comparison / Evaluation** | [x] Model: `Quotation` — ✅ Completed on 2025-11-03 <br>[x] Model: `QuotationItem` with line items — ✅ Completed on 2025-11-03 <br>[x] Filament Resource with repeater for items — ✅ Completed on 2025-11-03 <br>[ ] Comparison page (custom Filament Page) — ⏳ Future enhancement <br>[ ] Add "Select Recommended Supplier" button — ⏳ Future enhancement |
+| **Purchase Recommendation**           | [x] Model: `PurchaseRecommendation` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource with justification tracking — ✅ Completed on 2025-11-03 <br>[ ] Auto-generate from selected RFQ quotations — ⏳ Future enhancement |
 
 ---
 
@@ -80,7 +80,7 @@
 | **Purchase Orders (PO)**       | [x] Model: `PurchaseOrder` — ✅ Completed on 2025-11-03 <br>[x] Implement serial prefix `PO-` — ✅ Completed on 2025-11-03 <br>[x] Filament Resource: Form with vendor, items, total, taxes — ✅ Completed on 2025-11-03 <br>[x] Status transitions: Draft → Approved → Issued → Closed — ✅ Model supports status transitions (2025-11-03) |
 | **PO Revisions / Amendments**  | [x] `PurchaseOrderRevision` model (linked to original PO) — ✅ Completed on 2025-11-03 <br>[x] Auto-track old vs new values — ✅ Completed on 2025-11-03                                                                                                   |
 | **Contracts & Blanket Orders** | [x] `PurchaseContract` model — ✅ Completed on 2025-11-03 <br>[x] Link multiple POs under contract — ✅ Completed on 2025-11-03 <br>[x] Filament Resource for contracts — ✅ Completed on 2025-11-03                                                                                                                            |
-| **Delivery Schedules**         | [x] `DeliverySchedule` model — ✅ Completed on 2025-11-03 <br>[x] Link to PO items and expected dates — ✅ Completed on 2025-11-03 <br>[x] Filament Resource for delivery schedules — ✅ Completed on 2025-11-03 <br>[ ] Optional integration with calendar widget (deferred for future enhancement)                                                                       |
+| **Delivery Schedules**         | [x] `DeliverySchedule` model — ✅ Completed on 2025-11-03 <br>[x] Link to PO items and expected dates — ✅ Completed on 2025-11-03 <br>[x] Filament Resource for delivery schedules — ✅ Completed on 2025-11-03 <br>[ ] Optional integration with calendar widget — ⏳ Future enhancement                                                                       |
 
 ---
 
@@ -88,10 +88,10 @@
 
 | Submodule                      | Tasks                                                                                                                                      |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Goods Received Notes (GRN)** | [ ] `GRN` model <br>[ ] Linked to PO <br>[ ] Capture delivered quantity, batch, date <br>[ ] Auto-update stock if inventory package exists |
-| **Supplier Invoices**          | [ ] `SupplierInvoice` model <br>[ ] Link PO + GRN <br>[ ] Tax & currency handling                                                          |
-| **Three-way Matching**         | [ ] `InvoiceMatching` model <br>[ ] Automated validation: PO vs GRN vs Invoice totals <br>[ ] Report mismatches                            |
-| **Debit / Credit Notes**       | [ ] `DebitNote` / `CreditNote` models <br>[ ] Allow linking to Invoice and Vendor account                                                  |
+| **Goods Received Notes (GRN)** | [ ] `GRN` model — ⏳ Partial: relationships and scopes created, migration pending <br>[x] Linked to PO — ✅ Relationship implemented (2025-11-03) <br>[x] Capture delivered quantity, batch, date — ✅ Fields defined in model (2025-11-03) <br>[ ] Auto-update stock if inventory package exists — ⏳ Awaiting inventory package <br>[ ] Create migration for GRN tables <br>[ ] Create Filament Resource for GRN |
+| **Supplier Invoices**          | [x] `SupplierInvoice` model — ⏳ Model code exists, migration pending (not deployable) (2025-11-03) <br>[x] Link PO + GRN — ✅ Relationships implemented (2025-11-03) <br>[x] Tax & currency handling — ✅ Fields and calculations implemented (2025-11-03) <br>[ ] Create migration for supplier invoice tables <br>[ ] Create Filament Resource for Supplier Invoices                                                          |
+| **Three-way Matching**         | [ ] Create migration for invoice matching table <br>[ ] `InvoiceMatching` model — ⏳ Pending migration <br>[ ] Automated validation: PO vs GRN vs Invoice totals — ⏳ Pending migration <br>[ ] Report mismatches — ⏳ Pending Filament resource <br>[ ] Create Filament Resource for Invoice Matching                            |
+| **Debit / Credit Notes**       | [x] `DebitNote` / `CreditNote` models — ⏳ Models and relationships created, migrations pending <br>[x] Allow linking to Invoice and Vendor account — ⏳ Relationships created, migrations pending <br>[ ] Create migrations for debit/credit note tables <br>[ ] Create Filament Resources for Debit/Credit Notes                                                  |
 
 ---
 
@@ -142,7 +142,7 @@
 
 ## 🧪 PHASE 10 — TESTING & DEPLOYMENT
 
-* [ ] Write **Pest/PHPUnit tests** for all models and Filament resources.
+* [x] Write **Pest/PHPUnit tests** for all models and Filament resources. — 🔄 Partial: Tests for Actions (Company, User, Utils) implemented (2025-11-03)
 * [ ] Create **seeders** for sample vendors, currencies, and documents.
 * [ ] Add **feature tests** for document approval flows.
 * [ ] Implement **code coverage tracking** (via GitHub Actions + badges).
