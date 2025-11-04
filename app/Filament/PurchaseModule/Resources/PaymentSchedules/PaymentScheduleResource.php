@@ -15,14 +15,15 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class PaymentScheduleResource extends Resource
 {
     protected static ?string $model = PaymentSchedule::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;
 
-    protected static ?string $navigationGroup = 'Payments & Settlements';
+    protected static string|UnitEnum|null $navigationGroup = 'Payments & Settlements';
 
     protected static ?string $recordTitleAttribute = 'schedule_number';
 

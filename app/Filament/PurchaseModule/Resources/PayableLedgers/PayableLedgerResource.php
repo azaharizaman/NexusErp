@@ -15,14 +15,15 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class PayableLedgerResource extends Resource
 {
     protected static ?string $model = PayableLedger::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $navigationGroup = 'Payments & Settlements';
+    protected static string|UnitEnum|null $navigationGroup = 'Payments & Settlements';
 
     protected static ?string $navigationLabel = 'Payable Ledger';
 

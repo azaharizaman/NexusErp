@@ -15,14 +15,15 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class PaymentVoucherResource extends Resource
 {
     protected static ?string $model = PaymentVoucher::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlineBanknotes;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
-    protected static ?string $navigationGroup = 'Payments & Settlements';
+    protected static string|UnitEnum|null $navigationGroup = 'Payments & Settlements';
 
     protected static ?string $recordTitleAttribute = 'voucher_number';
 
