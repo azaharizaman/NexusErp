@@ -105,16 +105,22 @@ class DebitNote extends Model
     /**
      * Scope for draft debit notes.
      */
+    /**
+     * Scope for draft debit notes using Spatie ModelStatus.
+     */
     public function scopeDraft($query)
     {
-        return $query->where('status', 'draft');
+        return $query->withStatus('draft');
     }
 
     /**
      * Scope for approved debit notes.
      */
+    /**
+     * Scope for approved debit notes using Spatie ModelStatus.
+     */
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->withStatus('approved');
     }
 }
