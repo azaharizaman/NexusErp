@@ -17,7 +17,7 @@ class TransitionStatusAction
     {
         // Ensure the model uses HasStatuses trait
         if (! in_array(HasStatuses::class, class_uses_recursive($model))) {
-            throw new \Exception('Model must use HasStatuses trait');
+            throw new \InvalidArgumentException('Model '.get_class($model).' must use HasStatuses trait');
         }
 
         // Get the status names from IDs
