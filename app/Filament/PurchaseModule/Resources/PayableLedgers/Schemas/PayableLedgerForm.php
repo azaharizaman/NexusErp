@@ -65,10 +65,7 @@ class PayableLedgerForm
                     ->columnSpanFull(),
                 Textarea::make('notes')
                     ->columnSpanFull(),
-                TextInput::make('created_by')
-                    ->numeric(),
-                TextInput::make('updated_by')
-                    ->numeric(),
+                // Audit fields removed: created_by, updated_by
             ]);
     }
 }
