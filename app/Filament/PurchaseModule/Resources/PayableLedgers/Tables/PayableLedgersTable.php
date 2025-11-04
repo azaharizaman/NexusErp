@@ -21,9 +21,9 @@ class PayableLedgersTable
                     ->searchable(),
                 TextColumn::make('supplier.name')
                     ->searchable(),
-                TextColumn::make('supplierInvoice.id')
+                TextColumn::make('supplierInvoice.invoice_number')
                     ->searchable(),
-                TextColumn::make('paymentVoucher.id')
+                TextColumn::make('paymentVoucher.voucher_number')
                     ->searchable(),
                 TextColumn::make('baseCurrency.name')
                     ->searchable(),
