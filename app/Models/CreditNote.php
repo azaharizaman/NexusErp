@@ -103,18 +103,18 @@ class CreditNote extends Model
     }
 
     /**
-     * Scope for draft credit notes.
+     * Scope for draft credit notes using Spatie ModelStatus.
      */
     public function scopeDraft($query)
     {
-        return $query->where('status', 'draft');
+        return $query->currentStatus('draft');
     }
 
     /**
-     * Scope for approved credit notes.
+     * Scope for approved credit notes using Spatie ModelStatus.
      */
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->currentStatus('approved');
     }
 }

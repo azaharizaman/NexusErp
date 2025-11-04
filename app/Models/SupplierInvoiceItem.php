@@ -80,15 +80,10 @@ class SupplierInvoiceItem extends Model implements Sortable
     }
 
     /**
-     * Calculate totals for this item.
+     * Calculate totals for this item using Action.
      */
-    public function calculateTotals(): void
+    public function calculateTotals(): self
     {
-        $baseTotal = $this->quantity * $this->unit_price;
-        $this->discount_amount = $baseTotal * ($this->discount_percent / 100);
-        $afterDiscount = $baseTotal - $this->discount_amount;
-        $this->tax_amount = $afterDiscount * ($this->tax_rate / 100);
-        $this->line_total = $afterDiscount + $this->tax_amount;
-        $this->save();
+        return \App\Actions\SupplierInvoice\CalculateSupplierInvoiceItemTotals::run($this);
     }
 }

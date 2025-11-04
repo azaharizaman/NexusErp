@@ -123,65 +123,10 @@ class InvoiceMatching extends Model
     }
 
     /**
-     * Perform three-way matching validation.
+     * Perform three-way matching validation using Action.
      */
-    public function performMatching(): void
+    public function performMatching(): self
     {
-        $this->calculateVariances();
-        $this->checkTolerance();
-        $this->identifyMismatches();
-        $this->determineMatchingStatus();
-        $this->save();
-    }
-
-    /**
-     * Calculate variances between PO, GRN, and Invoice.
-     */
-    protected function calculateVariances(): void
-    {
-        $this->total_variance = abs($this->invoice_total - $this->po_total);
-        $this->variance_percentage = $this->po_total > 0 
-            ? ($this->total_variance / $this->po_total) * 100 
-            : 0;
-    }
-
-    /**
-     * Check if variance is within tolerance.
-     */
-    protected function checkTolerance(): void
-    {
-        $this->is_within_tolerance = $this->variance_percentage <= $this->tolerance_percentage;
-    }
-
-    /**
-     * Identify specific mismatches.
-     */
-    protected function identifyMismatches(): void
-    {
-        $mismatches = [];
-
-        if ($this->po_total != $this->invoice_total) {
-            $mismatches[] = [
-                'type' => 'total_mismatch',
-                'description' => 'Invoice total does not match PO total',
-                'po_value' => $this->po_total,
-                'invoice_value' => $this->invoice_total,
-                'variance' => $this->total_variance,
-            ];
-        }
-
-        $this->mismatches = $mismatches;
-    }
-
-    /**
-     * Determine overall matching status.
-     */
-    protected function determineMatchingStatus(): void
-    {
-        if (empty($this->mismatches) || $this->is_within_tolerance) {
-            $this->matching_status = 'matched';
-        } else {
-            $this->matching_status = 'mismatched';
-        }
+        return \App\Actions\InvoiceMatching\PerformThreeWayMatching::run($this);
     }
 }

@@ -143,38 +143,34 @@ class SupplierInvoice extends Model
     }
 
     /**
-     * Scope for draft invoices.
+     * Scope for draft invoices using Spatie ModelStatus.
      */
     public function scopeDraft($query)
     {
-        return $query->where('status', 'draft');
+        return $query->currentStatus('draft');
     }
 
     /**
-     * Scope for approved invoices.
+     * Scope for approved invoices using Spatie ModelStatus.
      */
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->currentStatus('approved');
     }
 
     /**
-     * Scope for paid invoices.
+     * Scope for paid invoices using Spatie ModelStatus.
      */
     public function scopePaid($query)
     {
-        return $query->where('status', 'paid');
+        return $query->currentStatus('paid');
     }
 
     /**
-     * Calculate totals from items.
+     * Calculate totals from items using Action.
      */
-    public function calculateTotals(): void
+    public function calculateTotals(): self
     {
-        $this->subtotal = $this->items->sum('line_total');
-        $this->tax_amount = $this->items->sum('tax_amount');
-        $this->total_amount = $this->subtotal + $this->tax_amount - $this->discount_amount;
-        $this->outstanding_amount = $this->total_amount - $this->paid_amount;
-        $this->save();
+        return \App\Actions\SupplierInvoice\CalculateSupplierInvoiceTotals::run($this);
     }
 }

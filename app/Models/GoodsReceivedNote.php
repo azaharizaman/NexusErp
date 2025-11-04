@@ -98,18 +98,18 @@ class GoodsReceivedNote extends Model
     }
 
     /**
-     * Scope for draft GRNs.
+     * Scope for draft GRNs using Spatie ModelStatus.
      */
     public function scopeDraft($query)
     {
-        return $query->where('status', 'draft');
+        return $query->currentStatus('draft');
     }
 
     /**
-     * Scope for completed GRNs.
+     * Scope for completed GRNs using Spatie ModelStatus.
      */
     public function scopeCompleted($query)
     {
-        return $query->where('status', 'completed');
+        return $query->currentStatus('completed');
     }
 }
