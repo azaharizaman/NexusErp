@@ -88,10 +88,10 @@
 
 | Submodule                      | Tasks                                                                                                                                      |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Goods Received Notes (GRN)** | [ ] `GRN` model <br>[ ] Linked to PO <br>[ ] Capture delivered quantity, batch, date <br>[ ] Auto-update stock if inventory package exists |
-| **Supplier Invoices**          | [ ] `SupplierInvoice` model <br>[ ] Link PO + GRN <br>[ ] Tax & currency handling                                                          |
-| **Three-way Matching**         | [ ] `InvoiceMatching` model <br>[ ] Automated validation: PO vs GRN vs Invoice totals <br>[ ] Report mismatches                            |
-| **Debit / Credit Notes**       | [ ] `DebitNote` / `CreditNote` models <br>[ ] Allow linking to Invoice and Vendor account                                                  |
+| **Goods Received Notes (GRN)** | [x] `GRN` model — ✅ Model with relationships and scopes created (2025-11-03) <br>[x] Linked to PO — ✅ Relationship implemented (2025-11-03) <br>[x] Capture delivered quantity, batch, date — ✅ Fields defined in model (2025-11-03) <br>[ ] Auto-update stock if inventory package exists — ⏳ Awaiting inventory package <br>[ ] Create migration for GRN tables <br>[ ] Create Filament Resource for GRN |
+| **Supplier Invoices**          | [x] `SupplierInvoice` model — ✅ Model with relationships created (2025-11-03) <br>[x] Link PO + GRN — ✅ Relationships implemented (2025-11-03) <br>[x] Tax & currency handling — ✅ Fields and calculations implemented (2025-11-03) <br>[ ] Create migration for supplier invoice tables <br>[ ] Create Filament Resource for Supplier Invoices                                                          |
+| **Three-way Matching**         | [x] `InvoiceMatching` model — ✅ Model created with variance calculations (2025-11-03) <br>[x] Automated validation: PO vs GRN vs Invoice totals — ✅ PerformThreeWayMatching Action implemented (2025-11-03) <br>[ ] Report mismatches — ⏳ Pending Filament resource <br>[ ] Create migration for invoice matching table <br>[ ] Create Filament Resource for Invoice Matching                            |
+| **Debit / Credit Notes**       | [x] `DebitNote` / `CreditNote` models — ✅ Models with serial numbering created (2025-11-03) <br>[x] Allow linking to Invoice and Vendor account — ✅ Relationships implemented (2025-11-03) <br>[ ] Create migrations for debit/credit note tables <br>[ ] Create Filament Resources for Debit/Credit Notes                                                  |
 
 ---
 
@@ -142,7 +142,7 @@
 
 ## 🧪 PHASE 10 — TESTING & DEPLOYMENT
 
-* [ ] Write **Pest/PHPUnit tests** for all models and Filament resources.
+* [x] Write **Pest/PHPUnit tests** for all models and Filament resources. — 🔄 Partial: Tests for Actions (Company, User, Utils) implemented (2025-11-03)
 * [ ] Create **seeders** for sample vendors, currencies, and documents.
 * [ ] Add **feature tests** for document approval flows.
 * [ ] Implement **code coverage tracking** (via GitHub Actions + badges).
