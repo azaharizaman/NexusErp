@@ -193,7 +193,7 @@ class PaymentVoucher extends Model
      */
     public function canApprove(): bool
     {
-        return $this->latestStatus('submitted') !== null;
+        return $this->latestStatus() === 'submitted';
     }
 
     /**

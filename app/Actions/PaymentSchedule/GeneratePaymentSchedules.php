@@ -58,33 +58,33 @@ class GeneratePaymentSchedules
         $scheduleData = match (strtolower($paymentTerms)) {
             'net 30' => [
                 [
-                    'due_date' => $baseDate->addDays(30),
+                    'due_date' => $baseDate->copy()->addDays(30),
                     'amount' => $amount,
                     'milestone' => 'Net 30',
                 ],
             ],
             'net 60' => [
                 [
-                    'due_date' => $baseDate->addDays(60),
+                    'due_date' => $baseDate->copy()->addDays(60),
                     'amount' => $amount,
                     'milestone' => 'Net 60',
                 ],
             ],
             '50% advance' => [
                 [
-                    'due_date' => $baseDate,
+                    'due_date' => $baseDate->copy(),
                     'amount' => $amount * 0.5,
                     'milestone' => '50% Advance',
                 ],
                 [
-                    'due_date' => $baseDate->addDays(30),
+                    'due_date' => $baseDate->copy()->addDays(30),
                     'amount' => $amount * 0.5,
                     'milestone' => '50% Upon Completion',
                 ],
             ],
             default => [
                 [
-                    'due_date' => $baseDate,
+                    'due_date' => $baseDate->copy(),
                     'amount' => $amount,
                     'milestone' => 'Due Immediately',
                 ],

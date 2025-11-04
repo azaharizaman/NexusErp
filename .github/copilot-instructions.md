@@ -21,3 +21,22 @@
 - Business logic should be implemented using lorisleiva/laravel-actions package. Each action should be placed in the App\Actions namespace and be as granular as possible. Actions can be grouped into sub-namespaces as needed.
 - Actions should be invokable classes that encapsulate a single piece of business logic. They should be reusable and testable.
 - Actions can be used in controllers, models, or other parts of the application to perform specific tasks.
+
+## Filament Resources - Tables and Forms
+- **ALWAYS** display meaningful relationship columns instead of raw IDs in tables and forms.
+  - For table columns: Use `TextColumn::make('relationship.attribute')` format, e.g., `TextColumn::make('supplier.name')` instead of `TextColumn::make('supplier_id')`
+  - For select fields in forms: Use `->relationship('relationshipName', 'displayColumn')` format, e.g., `->relationship('supplier', 'name')` instead of `->relationship('supplier', 'id')`
+  - Common examples:
+    - Suppliers: Use `supplier.name`
+    - Invoices: Use `supplierInvoice.invoice_number` or `invoice.invoice_number`
+    - Purchase Orders: Use `purchaseOrder.po_number`
+    - Vouchers: Use `paymentVoucher.voucher_number`
+    - Currencies: Use `currency.code` or `currency.name`
+- **Audit Fields in Tables**: Display audit fields as relationship columns showing user names, not IDs.
+  - Use `TextColumn::make('creator.name')->label('Created By')` instead of `TextColumn::make('created_by')`
+  - Use `TextColumn::make('updater.name')->label('Updated By')` instead of `TextColumn::make('updated_by')`
+  - Mark these as `->toggleable(isToggledHiddenByDefault: true)` if they don't need to be visible by default
+- **Audit Fields in Forms**: NEVER include audit fields (`created_by`, `updated_by`) in forms as they are managed automatically by the system.
+  - Remove these fields from forms entirely
+  - If they must be displayed for reference, mark them as `->disabled()` and `->dehydrated(false)`
+- See `docs/filament-best-practices.md` for detailed examples and patterns.
