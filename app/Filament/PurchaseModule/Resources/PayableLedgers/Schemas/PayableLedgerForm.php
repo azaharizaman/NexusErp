@@ -21,9 +21,9 @@ class PayableLedgerForm
                     ->relationship('supplier', 'name')
                     ->required(),
                 Select::make('supplier_invoice_id')
-                    ->relationship('supplierInvoice', 'id'),
+                    ->relationship('supplierInvoice', 'invoice_number'),
                 Select::make('payment_voucher_id')
-                    ->relationship('paymentVoucher', 'id'),
+                    ->relationship('paymentVoucher', 'voucher_number'),
                 Select::make('base_currency_id')
                     ->relationship('baseCurrency', 'name')
                     ->required(),
