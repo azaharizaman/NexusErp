@@ -99,10 +99,10 @@
 
 | Submodule                       | Tasks                                                                                                           |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Payment Vouchers**            | [ ] Model: `PaymentVoucher` (serial prefix `PV-`) <br>[ ] Filament Resource: Approval workflow                  |
-| **Payment Schedules**           | [ ] Model: `PaymentSchedule` (due dates, milestones) <br>[ ] Auto-generate based on PO or Invoice terms         |
-| **Multi-Currency Ledger View**  | [ ] `PayableLedger` model <br>[ ] Show base + foreign currency totals <br>[ ] Integrate exchange rate snapshots |
-| **Outstanding Payables Report** | [ ] Report page showing overdue payments and status                                                             |
+| **Payment Vouchers**            | [x] Model: `PaymentVoucher` (serial prefix `PV-`) — ✅ Completed on 2025-11-04 <br>[x] Filament Resource: Approval workflow — ✅ Completed on 2025-11-04 <br>[x] Actions: CreatePaymentVoucher, ApprovePaymentVoucher, RecordPayment — ✅ Completed on 2025-11-04 |
+| **Payment Schedules**           | [x] Model: `PaymentSchedule` (due dates, milestones) — ✅ Completed on 2025-11-04 <br>[x] Auto-generate based on PO or Invoice terms — ✅ GeneratePaymentSchedules action completed on 2025-11-04 <br>[x] Filament Resource with calendar view support — ✅ Completed on 2025-11-04 |
+| **Multi-Currency Ledger View**  | [x] `PayableLedger` model — ✅ Completed on 2025-11-04 <br>[x] Show base + foreign currency totals — ✅ Completed on 2025-11-04 <br>[x] Integrate exchange rate snapshots — ✅ Completed on 2025-11-04 <br>[x] Filament Resource — ✅ Completed on 2025-11-04 <br>[x] Actions: CreateLedgerEntry, CalculateSupplierBalance — ✅ Completed on 2025-11-04 |
+| **Outstanding Payables Report** | [ ] Report page showing overdue payments and status — ⏳ Future enhancement (can be implemented as custom Filament page with widgets) |
 
 ---
 

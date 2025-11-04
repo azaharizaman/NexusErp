@@ -1,5 +1,45 @@
 # Architectural Decisions
 
+## 2025-11-04 Phase 6 - Payments & Settlements Module Complete
+- **Implemented Phase 6 of Purchase Management Module** with complete payment processing, scheduling, and payables tracking
+- Created three new models with full Filament resources and business logic Actions:
+  - `PaymentVoucher` (PV-YYYY-XXXX) - Payment vouchers with approval workflow (draft → submitted → approved → paid → voided)
+  - `PaymentSchedule` (PS-YYYY-XXXX) - Payment schedules with due dates, milestones, and automatic tracking
+  - `PayableLedger` - Multi-currency payables ledger with exchange rate snapshots and running balance calculation
+- **Payment Voucher Features:**
+  - Multiple payment methods support (Bank Transfer, Cash, Cheque, Credit Card, Wire Transfer)
+  - Links to supplier invoices and payment schedules
+  - Complete audit trail with requester, approver, and payer tracking
+  - Bank details and transaction tracking (bank name, account number, cheque number, transaction ID)
+  - Void capability with reason tracking
+  - Status workflow managed via Spatie ModelStatus
+- **Payment Schedule Features:**
+  - Auto-generation from purchase orders or supplier invoices using GeneratePaymentSchedules action
+  - Support for various payment terms (Net 30, Net 60, 50% Advance, etc.)
+  - Milestone tracking for progress-based payments
+  - Automatic calculation of paid and outstanding amounts
+  - Reminder system for upcoming due dates
+  - Overdue and upcoming schedule scopes for easy filtering
+- **Payable Ledger Features:**
+  - Multi-currency support with automatic exchange rate application
+  - Debit/credit tracking in both base and foreign currencies
+  - Running balance calculation per supplier
+  - Exchange rate snapshots for historical accuracy
+  - Transaction type tracking (invoice, payment, credit_note, debit_note)
+  - Integration with payment vouchers and supplier invoices
+- **Business Logic Actions:**
+  - `CreatePaymentVoucher` - Creates new payment voucher and sets initial status
+  - `ApprovePaymentVoucher` - Approves voucher and updates approval tracking
+  - `RecordPayment` - Records payment, updates ledger, schedules, and invoice status in a transaction
+  - `GeneratePaymentSchedules` - Auto-generates schedules from PO/Invoice with various payment terms
+  - `CreateLedgerEntry` - Creates ledger entries with currency conversion and balance calculation
+  - `CalculateSupplierBalance` - Calculates outstanding balance for a supplier as of a specific date
+- **Serial Numbering:**
+  - Added `PaymentVoucher` (PV-YYYY-XXXX) pattern to `config/serial-pattern.php`
+  - Added `PaymentSchedule` (PS-YYYY-XXXX) pattern to `config/serial-pattern.php`
+- All models follow established patterns: HasSerialNumbering, HasStatuses, SoftDeletes, audit fields
+- Filament Resources added to "Payments & Settlements" navigation group with proper icons and labels
+
 ## 2025-11-03 Phase 4 - Purchase Orders and Sourcing Module Complete
 - **Implemented Phase 4 of Purchase Management Module** with complete CRUD for Purchase Orders, Contracts, and Delivery Schedules
 - Created four new models with full Filament resources:
