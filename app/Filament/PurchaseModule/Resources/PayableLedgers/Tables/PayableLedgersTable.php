@@ -60,11 +60,13 @@ class PayableLedgersTable
                     ->sortable(),
                 TextColumn::make('reference_number')
                     ->searchable(),
-                TextColumn::make('created_by')
-                    ->numeric()
+                TextColumn::make('creator.name')
+                    ->label('Created By')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('updated_by')
-                    ->numeric()
+                TextColumn::make('updater.name')
+                    ->label('Updated By')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
