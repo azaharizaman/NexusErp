@@ -26,7 +26,7 @@ class StatusTransitionForm
                             ->options(fn () => ModelStatus::with('documentModel')
                                 ->get()
                                 ->mapWithKeys(fn ($status) => [
-                                    $status->id => $status->documentModel->name.' - '.$status->name,
+                                    $status->id => $status->documentModel->name . ' - ' . $status->name,
                                 ]))
                             ->required()
                             ->searchable()

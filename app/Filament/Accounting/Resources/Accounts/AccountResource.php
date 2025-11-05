@@ -9,8 +9,9 @@ use App\Filament\Accounting\Resources\Accounts\Pages\ViewAccount;
 use App\Models\Account;
 use BackedEnum;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -30,10 +31,10 @@ class AccountResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Forms\Components\Section::make('Account Information')
                     ->schema([
                         Forms\Components\TextInput::make('account_code')
@@ -57,7 +58,7 @@ class AccountResource extends Resource
                             ->required()
                             ->live(),
                         Forms\Components\Select::make('sub_type')
-                            ->options(function (Forms\Get $get) {
+                            ->options(function (Get $get) {
                                 $accountType = $get('account_type');
 
                                 return match ($accountType) {
@@ -103,7 +104,7 @@ class AccountResource extends Resource
                             ->default(fn () => auth()->user()->company_id ?? null),
                     ])
                     ->columns(2),
-                    
+
                 Forms\Components\Section::make('Account Properties')
                     ->schema([
                         Forms\Components\Toggle::make('is_group')
@@ -118,7 +119,7 @@ class AccountResource extends Resource
                             ->default(true),
                     ])
                     ->columns(4),
-                    
+
                 Forms\Components\Section::make('Balance Information')
                     ->schema([
                         Forms\Components\TextInput::make('opening_balance')

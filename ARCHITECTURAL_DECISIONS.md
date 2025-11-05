@@ -1,5 +1,67 @@
 # Architectural Decisions
 
+## 2025-11-05 Phase 2 - General Ledger Management (Journal Entries & GL Posting)
+- **Implemented core double-entry bookkeeping** with comprehensive journal entry system
+- **Models Created:**
+  - `JournalEntry` - Main journal entry model with serial numbering (JE-YYYY-XXXX), status workflow, and full audit trail
+  - `JournalEntryLine` - Individual debit/credit lines with account, cost center, and dimensional tracking
+  - `RecurringJournalTemplate` - Templates for auto-generating recurring journal entries
+- **JournalEntry Features:**
+  - **Serial Numbering:** JE-YYYY-XXXX pattern with yearly reset (added to `config/serial-pattern.php`)
+  - **Entry Types:** manual, automatic, opening, closing, adjusting, reversing, reclassification, intercompany
+  - **Status Workflow:** draft → submitted → posted → cancelled
+  - **Reversal Support:** Full reversal functionality with automatic line swapping (debit ↔ credit)
+  - **Inter-company Support:** Reciprocal entry tracking for inter-company transactions
+  - **Source Tracking:** Polymorphic relationship to source documents (e.g., PurchaseOrder, SalesInvoice)
+  - **Balance Validation:** Built-in `isBalanced()` method validates debits = credits
+  - **Posting Method:** `post()` method updates account balances and prevents duplicate posting
+  - **Multi-currency:** Support for foreign currency transactions with exchange rate tracking
+- **JournalEntryLine Features:**
+  - Debit and credit amounts with 4 decimal precision
+  - Foreign currency support with separate foreign debit/credit fields
+  - Dimensional analytics: cost center, department (future), project (future)
+  - Sortable behavior for maintaining line order
+  - Helper methods: `isDebit()`, `isCredit()`, `getNetAmountAttribute()`
+- **RecurringJournalTemplate Features:**
+  - Frequency options: daily, weekly, biweekly, monthly, quarterly, half-yearly, yearly
+  - Occurrence tracking: max occurrences and actual count
+  - Start/end date management with next generation date calculation
+  - JSON template lines for storing entry structure
+  - `shouldGenerate()` validation method
+  - `generate()` method creates journal entries from template
+  - `calculateNextGenerationDate()` for automatic scheduling
+- **Actions Implemented:**
+  - `PostJournalEntry` - Posts JE to GL, validates balance, updates account balances, prevents duplicate posting
+  - `ReverseJournalEntry` - Creates reversal entry with swapped debits/credits, links to original
+  - `GenerateRecurringJournalEntries` - Batch generates JEs from templates, with dry-run and post-immediately options
+- **GL Posting Engine:**
+  - Atomic transaction-based posting to ensure data integrity
+  - Account balance updates respect account type (Asset/Expense increase with debits, Liability/Equity/Income increase with credits)
+  - Validation of accounting period status (must be open)
+  - Comprehensive error handling with specific exception types
+  - Full audit trail with posting user and timestamp
+- **Filament Resources:**
+  - `JournalEntryResource` - Full CRUD with repeater for lines, real-time balance calculation, status badges
+  - Post action with confirmation
+  - Reverse action for posted entries
+  - Filters: status, entry type, date range, trashed
+  - 4 page files: List, Create, View, Edit
+- **Database Design:**
+  - `journal_entries` table: comprehensive fields for all entry types, audit fields, reversal tracking, inter-company tracking
+  - `journal_entry_lines` table: debit/credit amounts, dimensional tracking, currency support
+  - `recurring_journal_templates` table: template configuration, occurrence tracking, JSON lines storage
+  - Proper indexes on company_id, status, fiscal_year_id, accounting_period_id, entry_date
+- **Integration Points:**
+  - Ready for auto-generation from Purchase Module (supplier invoices, payment vouchers)
+  - Ready for auto-generation from future Sales Module (customer invoices, receipts)
+  - Ready for auto-generation from future Inventory Module (COGS, stock adjustments)
+- **Future Considerations:**
+  - Scheduled job for auto-generating recurring entries (use `GenerateRecurringJournalEntries` action)
+  - Email notifications for posted/reversed entries
+  - Excel/CSV import for bulk journal entry upload
+  - GL account reconciliation functionality
+  - Audit report showing all postings by user/date
+
 ## 2025-11-05 Phase 1 - Accounting Module Foundation
 - **Created new Accounting Panel** as a separate Filament panel following the same architecture as Purchase Module
 - **Panel Configuration:**

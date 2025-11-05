@@ -12,7 +12,9 @@ use Spatie\EloquentSortable\SortableTrait;
 
 class AccountGroup extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $fillable = [
         'name',

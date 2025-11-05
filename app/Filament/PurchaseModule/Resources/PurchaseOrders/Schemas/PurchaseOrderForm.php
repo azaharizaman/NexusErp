@@ -190,7 +190,7 @@ class PurchaseOrderForm
                                         $taxAmount = $afterDiscount * ($taxRate / 100);
                                         $lineTotal = $afterDiscount + $taxAmount;
 
-                                        return '$'.number_format($lineTotal, 2);
+                                        return '$' . number_format($lineTotal, 2);
                                     })
                                     ->columnSpan(1),
                                 Hidden::make('line_total')
@@ -229,17 +229,17 @@ class PurchaseOrderForm
                         Placeholder::make('subtotal_display')
                             ->label('Subtotal')
                             ->content(function (Get $get): string {
-                                return '$'.number_format(static::calculateSubtotal($get), 2);
+                                return '$' . number_format(static::calculateSubtotal($get), 2);
                             }),
                         Placeholder::make('discount_display')
                             ->label('Total Discount')
                             ->content(function (Get $get): string {
-                                return '$'.number_format(static::calculateTotalDiscount($get), 2);
+                                return '$' . number_format(static::calculateTotalDiscount($get), 2);
                             }),
                         Placeholder::make('tax_display')
                             ->label('Total Tax')
                             ->content(function (Get $get): string {
-                                return '$'.number_format(static::calculateTotalTax($get), 2);
+                                return '$' . number_format(static::calculateTotalTax($get), 2);
                             }),
                         Placeholder::make('total_display')
                             ->label('Total Amount')
@@ -249,7 +249,7 @@ class PurchaseOrderForm
                                 $tax = static::calculateTotalTax($get);
                                 $total = $subtotal - $discount + $tax;
 
-                                return '$'.number_format($total, 2);
+                                return '$' . number_format($total, 2);
                             }),
                         Hidden::make('subtotal'),
                         Hidden::make('discount_amount'),

@@ -11,7 +11,9 @@ use Spatie\ModelStatus\HasStatuses;
 
 class FiscalYear extends Model
 {
-    use HasFactory, SoftDeletes, HasStatuses;
+    use HasFactory;
+    use SoftDeletes;
+    use HasStatuses;
 
     protected $fillable = [
         'name',

@@ -66,8 +66,7 @@ class CompaniesTable
                     ->modalHeading(fn ($record) => $record->is_active ? 'Deactivate Company' : 'Activate Company')
                     ->modalDescription(fn ($record) => $record->is_active
                         ? "Are you sure you want to deactivate '{$record->name}'?"
-                        : "Are you sure you want to activate '{$record->name}'?"
-                    )
+                        : "Are you sure you want to activate '{$record->name}'?")
                     ->action(function ($record) {
                         $company = ToggleCompanyStatus::run($record);
 

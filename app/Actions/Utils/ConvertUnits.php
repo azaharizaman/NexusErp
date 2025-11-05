@@ -28,7 +28,7 @@ class ConvertUnits
 
                 // Parse the conversion result
                 // This is a simplified implementation - you may need to adjust based on actual command output
-                if (preg_match('/(\d+\.?\d*)\s*'.preg_quote($toUnit).'/i', $output, $matches)) {
+                if (preg_match('/(\d+\.?\d*)\s*' . preg_quote($toUnit) . '/i', $output, $matches)) {
                     $convertedValue = (float) $matches[1];
 
                     return [

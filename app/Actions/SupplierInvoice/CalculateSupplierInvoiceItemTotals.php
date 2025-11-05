@@ -26,7 +26,7 @@ class CalculateSupplierInvoiceItemTotals
         $afterDiscount = $baseTotal - $item->discount_amount;
         $item->tax_amount = $afterDiscount * ($item->tax_rate / 100);
         $item->line_total = $afterDiscount + $item->tax_amount;
-        
+
         $item->save();
 
         return $item;

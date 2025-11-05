@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Account extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $fillable = [
         'account_code',
@@ -184,6 +186,8 @@ class Account extends Model implements Sortable
             $parent = $parent->parentAccount;
         }
 
+        $this->save();
+    }
     /**
      * Update the current balance safely using row-level locking.
      */
@@ -211,8 +215,5 @@ class Account extends Model implements Sortable
             // Optionally, refresh the current instance
             $this->refresh();
         });
-    }
-
-        $this->save();
     }
 }

@@ -40,25 +40,25 @@ Here's the high-level grouping you should aim for:
 
 (*core double-entry bookkeeping and journal entries*)
 
-* **Journal Entries**
-  * $\square$ Create journal entry model with JE- prefix
-  * $\square$ Implement double-entry validation (debit = credit)
-  * $\square$ Support multi-line journal entries
-  * $\square$ Add posting date and transaction date
-  * $\square$ Enable reference number and description
-  * $\square$ Implement status workflow (draft → submitted → posted → cancelled)
-  * $\square$ Add reversal entry functionality
-  * $\square$ Support inter-company journal entries
-* **Auto Recurring Entries**
-  * $\square$ Create recurring template model
-  * $\square$ Implement frequency options (daily, weekly, monthly, yearly)
-  * $\square$ Build scheduled job for auto-generation
-  * $\square$ Add start date, end date, and occurrence limits
-* **General Ledger (GL)**
-  * $\square$ Create GL posting engine for automatic entries
-  * $\square$ Build integration hooks from Sales, Purchase, Inventory modules
-  * $\square$ Implement audit trail for all GL postings
-  * $\square$ Create GL account balance aggregation
+* **Journal Entries** ✅ *Completed 2025-11-05*
+  * ✅ Create journal entry model with JE- prefix (JournalEntry model with HasSerialNumbering)
+  * ✅ Implement double-entry validation (debit = credit) (isBalanced() method with bccomp)
+  * ✅ Support multi-line journal entries (JournalEntryLine model with Repeater in Filament)
+  * ✅ Add posting date and transaction date (entry_date and posting_date fields)
+  * ✅ Enable reference number and description (reference_number, description, notes fields)
+  * ✅ Implement status workflow (draft → submitted → posted → cancelled) (status field with workflow)
+  * ✅ Add reversal entry functionality (ReverseJournalEntry Action, reversed_entry_id, reversal_entry_id)
+  * ✅ Support inter-company journal entries (is_intercompany, related_company_id, reciprocal_entry_id)
+* **Auto Recurring Entries** ✅ *Completed 2025-11-05*
+  * ✅ Create recurring template model (RecurringJournalTemplate model)
+  * ✅ Implement frequency options (daily, weekly, monthly, yearly) (frequency enum with 7 options)
+  * ✅ Build scheduled job for auto-generation (GenerateRecurringJournalEntries Action)
+  * ✅ Add start date, end date, and occurrence limits (start_date, end_date, max_occurrences, occurrences_count)
+* **General Ledger (GL)** ✅ *Completed 2025-11-05*
+  * ✅ Create GL posting engine for automatic entries (PostJournalEntry Action with account balance updates)
+  * ⏸️ Build integration hooks from Sales, Purchase, Inventory modules *[On Hold: Awaiting Sales and Inventory modules; Purchase Module ready]*
+  * ✅ Implement audit trail for all GL postings (created_by, posted_by, submitted_by, cancelled_by with timestamps)
+  * ✅ Create GL account balance aggregation (current_balance field updated on posting, total_debit/total_credit)
 
 ---
 

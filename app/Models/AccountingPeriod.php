@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AccountingPeriod extends Model
 {
-    use HasFactory, SoftDeletes, HasStatuses;
+    use HasFactory;
+    use SoftDeletes;
+    use HasStatuses;
 
     protected $fillable = [
         'fiscal_year_id',

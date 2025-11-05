@@ -56,7 +56,7 @@ class UpdateBusinessPartner
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:50', 'unique:business_partners,code,'.$partner->id],
+            'code' => ['nullable', 'string', 'max:50', 'unique:business_partners,code,' . $partner->id],
             'is_supplier' => ['boolean'],
             'is_customer' => ['boolean'],
             'email' => ['nullable', 'email', 'max:255'],

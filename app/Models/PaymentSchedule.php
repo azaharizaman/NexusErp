@@ -171,8 +171,8 @@ class PaymentSchedule extends Model
     public function isOverdue(): bool
     {
         $currentStatus = $this->latestStatus();
-        return $this->due_date < now() && 
-               $currentStatus && 
+        return $this->due_date < now() &&
+               $currentStatus &&
                in_array($currentStatus, ['pending', 'partial']);
     }
 

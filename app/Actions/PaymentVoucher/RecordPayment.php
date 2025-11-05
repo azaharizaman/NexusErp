@@ -52,7 +52,7 @@ class RecordPayment
             // Note: This distributes the payment across linked schedules
             // For specific schedule allocation, link voucher to specific schedules before calling this
             $linkedSchedules = $voucher->paymentSchedules()->pending()->get();
-            
+
             if ($linkedSchedules->isNotEmpty()) {
                 $totalOutstanding = $linkedSchedules->sum('outstanding_amount');
                 $remainingAmount = $voucher->amount;

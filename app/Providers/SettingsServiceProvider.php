@@ -12,7 +12,7 @@ class SettingsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(SettingsHelper::class, fn () => new SettingsHelper);
+        $this->app->singleton(SettingsHelper::class, fn () => new SettingsHelper());
         $this->app->alias(SettingsHelper::class, 'settings');
     }
 
