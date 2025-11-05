@@ -10,29 +10,29 @@ Here's the high-level grouping you should aim for:
 
 (*for configuration, master data, and accounting structure*)
 
-* **Chart of Accounts (CoA)**
-  * $\square$ Create hierarchical, tree-view structure
-  * $\square$ Implement customizable account types (Asset, Liability, Equity, Income, Expense)
-  * $\square$ Add preloaded templates for different industries
-  * $\square$ Build account group management
-  * $\square$ Enable account code validation and formatting
-* **Account Groups**
-  * $\square$ Define standard account groups (Current Assets, Fixed Assets, etc.)
-  * $\square$ Support custom group creation and nesting
-* **Fiscal Years & Periods**
-  * $\square$ Create fiscal year model with start/end dates
-  * $\square$ Auto-generate accounting periods (monthly/quarterly)
-  * $\square$ Implement period closing functionality
-  * $\square$ Lock/unlock periods for data integrity
-* **Cost Centers**
-  * $\square$ Create cost center model and structure
-  * $\square$ Enable hierarchical cost center organization
-  * $\square$ Link cost centers to departments/projects
-* **Tax Configurations**
-  * $\square$ Reuse tax rules from Purchase Module
-  * $\square$ Configure tax templates for sales and purchases
-  * $\square$ Support regional taxes (GST, VAT, TDS)
-  * $\square$ Enable tax-inclusive/exclusive pricing options
+* **Chart of Accounts (CoA)** ✅ *Completed 2025-11-05*
+  * ✅ Create hierarchical, tree-view structure (Account model with parent_account_id, level tracking)
+  * ✅ Implement customizable account types (Asset, Liability, Equity, Income, Expense with sub-types)
+  * ⏸️ Add preloaded templates for different industries *[On Hold: Requires seeder implementation]*
+  * ✅ Build account group management (AccountGroup model with hierarchical structure)
+  * ✅ Enable account code validation and formatting (unique constraint, validation in forms)
+* **Account Groups** ✅ *Completed 2025-11-05*
+  * ✅ Define standard account groups (Current Assets, Fixed Assets, etc. - via type and sub_type fields)
+  * ✅ Support custom group creation and nesting (AccountGroup model with parent-child relationships)
+* **Fiscal Years & Periods** ✅ *Completed 2025-11-05*
+  * ✅ Create fiscal year model with start/end dates (FiscalYear model with status workflow)
+  * ⏸️ Auto-generate accounting periods (monthly/quarterly) *[On Hold: Requires Action implementation]*
+  * ✅ Implement period closing functionality (AccountingPeriod model with status: open/closed/locked)
+  * ✅ Lock/unlock periods for data integrity (is_locked field on FiscalYear, status on AccountingPeriod)
+* **Cost Centers** ✅ *Completed 2025-11-05*
+  * ✅ Create cost center model and structure (CostCenter model with hierarchical organization)
+  * ✅ Enable hierarchical cost center organization (parent-child relationships, level tracking)
+  * ⏸️ Link cost centers to departments/projects *[On Hold: Waiting for Department and Project models from backoffice/project modules]*
+* **Tax Configurations** ⏸️ *On Hold*
+  * ✅ Reuse tax rules from Purchase Module (TaxRule model already available)
+  * ⏸️ Configure tax templates for sales and purchases *[On Hold: Requires tax authority setup and GL account mapping]*
+  * ⏸️ Support regional taxes (GST, VAT, TDS) *[On Hold: Requires tax configuration implementation]*
+  * ⏸️ Enable tax-inclusive/exclusive pricing options *[On Hold: Part of Phase 2 Journal Entry implementation]*
 
 ---
 

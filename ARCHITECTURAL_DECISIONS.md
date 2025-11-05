@@ -1,5 +1,130 @@
 # Architectural Decisions
 
+## 2025-11-05 Phase 1 - Accounting Module Foundation
+- **Created new Accounting Panel** as a separate Filament panel following the same architecture as Purchase Module
+- **Panel Configuration:**
+  - Panel ID: `accounting`
+  - Panel Path: `/accounting`
+  - Brand Name: "NexusERP - Accounting Module"
+  - Primary Color: Green (to differentiate from Purchase Module's Amber)
+  - 14 navigation groups defined for comprehensive accounting functionality
+  - User menu includes shortcuts to Nexus and Purchase Module panels
+- **Navigation Groups Structure:**
+  1. Chart of Accounts & Setup
+  2. General Ledger
+  3. Accounts Receivable
+  4. Accounts Payable
+  5. Banking & Cash
+  6. Financial Reports
+  7. Budgeting & Planning
+  8. Fixed Assets
+  9. Multi-Currency
+  10. Consolidation
+  11. Dimensions & Analytics
+  12. Tax Management
+  13. Audit & Compliance
+  14. Administration
+- **Phase 1 Models Created (Chart of Accounts & Setup):**
+  - `AccountGroup` - Hierarchical grouping of accounts with sortable behavior
+  - `Account` - Chart of Accounts with full double-entry support, hierarchical structure, and balance tracking
+  - `FiscalYear` - Fiscal year management with status workflow (draft → active → closed)
+  - `AccountingPeriod` - Monthly/quarterly/yearly periods with open/closed/locked status
+  - `CostCenter` - Hierarchical cost center structure for departmental accounting
+- **Account Model Features:**
+  - Comprehensive account types: Asset, Liability, Equity, Income, Expense
+  - Detailed sub-types for each account type (e.g., Current Asset, Fixed Asset, etc.)
+  - Hierarchical account structure with parent-child relationships
+  - Account groups for better organization
+  - Support for group accounts (header accounts) vs ledger accounts
+  - Control account designation for AR/AP
+  - Manual entry permission control
+  - Opening and current balance tracking
+  - Balance type (Debit/Credit) for proper double-entry bookkeeping
+  - Multi-currency support with foreign currency accounts
+  - Company-specific accounts for multi-company setups
+  - Sortable behavior using Spatie EloquentSortable
+  - Soft deletes and full audit trail (created_by, updated_by)
+  - Helper method `updateBalance()` for transaction posting
+  - Scopes for filtering by type, sub-type, active status, company
+  - `getFullPathAttribute()` for hierarchical display (e.g., "Assets > Current Assets > Cash")
+- **AccountGroup Model Features:**
+  - Hierarchical grouping (parent-child relationships)
+  - Type-based organization (Asset, Liability, Equity, Income, Expense)
+  - Sortable behavior for custom ordering
+  - Active/inactive status
+  - Links to accounts within the group
+- **FiscalYear Model Features:**
+  - Company-specific fiscal years
+  - Start and end date management
+  - Status workflow integration via Spatie ModelStatus (draft, active, closed)
+  - Default fiscal year designation
+  - Locking mechanism to prevent changes to closed years
+  - Automatic relationship with accounting periods
+  - Closure tracking (closed_on, closed_by)
+  - Unique code per company
+- **AccountingPeriod Model Features:**
+  - Belongs to fiscal year
+  - Support for monthly, quarterly, half-yearly, yearly periods
+  - Period numbering (1-12 for monthly, 1-4 for quarterly)
+  - Status management (open, closed, locked)
+  - Adjusting period flag for year-end adjustments
+  - Closure tracking
+  - `isCurrent()` helper method to check if today falls within period
+  - Scopes for filtering by status and period type
+- **CostCenter Model Features:**
+  - Hierarchical structure (parent-child relationships)
+  - Company-specific cost centers
+  - Prepared for future integration with Department and Project models (relationships commented)
+  - Group vs leaf cost center designation
+  - Sortable behavior for custom ordering
+  - Active/inactive status
+  - `getFullPathAttribute()` for hierarchical display
+- **Database Schema Design:**
+  - All tables include soft deletes for data integrity
+  - Comprehensive audit fields (created_by, updated_by) on all tables
+  - Foreign key constraints with proper cascade/set null rules
+  - Strategic indexes on frequently queried columns
+  - Multi-company support baked into schema design
+  - Unique constraints where appropriate (account_code, fiscal year code per company)
+- **Integration Points:**
+  - Currency and ExchangeRate models reused from Purchase Module
+  - Company model reused from backoffice package
+  - User model for audit trail tracking
+  - TaxRule model will be shared with Purchase Module for tax configurations
+- **Future Considerations (Marked in Code):**
+  - Department and Project relationships prepared but commented out in CostCenter and Account models
+  - Foreign key constraints deferred for department_id and project_id until those models exist
+  - Journal Entry model will use these accounts for double-entry bookkeeping
+  - General Ledger posting engine will update account current_balance
+- **Filament Resource (Partial Implementation):**
+  - Created AccountResource as example implementation
+  - Form includes dynamic sub-type options based on account type selection
+  - Comprehensive form sections: Account Information, Properties, Balance Information
+  - Table with filterable columns, search, and soft delete support
+  - View, Create, Edit, List pages scaffolded
+  - Note: Full Filament v4 compatibility requires database connection for generation
+- **Panel Provider Registration:**
+  - `AccountingPanelProvider` registered in `bootstrap/providers.php`
+  - Panel configured with resource auto-discovery from `app/Filament/Accounting/Resources`
+  - Widget and page auto-discovery configured
+  - Standard middleware stack applied
+  - Authentication middleware enforced
+- **Architectural Patterns Maintained:**
+  - All models use HasFactory for testing support
+  - SoftDeletes trait on all models for data preservation
+  - Spatie EloquentSortable for user-controlled ordering where applicable
+  - Spatie ModelStatus for workflow management where applicable
+  - Consistent audit field naming (created_by, updated_by)
+  - BelongsTo/HasMany relationships for hierarchies
+  - Eloquent scopes for common queries
+  - Attribute accessors for computed properties
+- **Deferred Items:**
+  - Full Filament resource generation requires database connection (database was not available)
+  - Resources for AccountGroup, FiscalYear, AccountingPeriod, and CostCenter to be generated similarly
+  - Business logic Actions for account management (CreateAccount, UpdateAccountBalance, CloseAccountingPeriod, etc.)
+  - Seeder for standard chart of accounts templates by industry
+  - Foreign key constraints to be added for department_id and project_id when those models exist
+
 ## 2025-11-04 Status Management System Implementation
 - **Implemented comprehensive status management system** based on design document `SPATIE_LARAVEL_MODEL_STATUS_SPECIAL_DESIGN_CHANGE.md`
 - Created centralized system for configuring statuses, transitions, and approval workflows across all models
