@@ -1,21 +1,26 @@
 #!/bin/bash
+set -euo pipefail
 
 # Script to create GitHub issues for AP Module Foundation Implementation
-# Usage: ./create-issues.sh
+# Usage: ./create-issues.sh [REPO]
+# Example: ./create-issues.sh azaharizaman/NexusErp
 
-REPO="azaharizaman/NexusErp"
+REPO="${1:-azaharizaman/NexusErp}"
 MILESTONE="AP Module Foundation"
 
 echo "Creating GitHub issues for AP Module Foundation..."
 
 # Create milestone if it doesn't exist
 echo "Checking for milestone: $MILESTONE"
-gh api repos/$REPO/milestones --jq ".[] | select(.title == \"$MILESTONE\") | .number" > /tmp/milestone_number.txt
-if [ ! -s /tmp/milestone_number.txt ]; then
+TEMP_FILE=$(mktemp)
+trap 'rm -f "$TEMP_FILE"' EXIT
+
+gh api repos/$REPO/milestones --jq ".[] | select(.title == \"$MILESTONE\") | .number" > "$TEMP_FILE"
+if [ ! -s "$TEMP_FILE" ]; then
     echo "Creating milestone: $MILESTONE"
     MILESTONE_NUMBER=$(gh api repos/$REPO/milestones -f title="$MILESTONE" -f description="Implement core AP module foundation with payment vouchers, debit notes, and GL integration" --jq '.number')
 else
-    MILESTONE_NUMBER=$(cat /tmp/milestone_number.txt)
+    MILESTONE_NUMBER=$(cat "$TEMP_FILE")
 fi
 echo "Using milestone number: $MILESTONE_NUMBER"
 

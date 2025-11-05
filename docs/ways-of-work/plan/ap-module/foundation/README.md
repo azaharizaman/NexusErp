@@ -19,11 +19,14 @@ Run the automated script that will create all 6 issues with proper labels, miles
 ```bash
 cd docs/ways-of-work/plan/ap-module/foundation
 ./create-issues.sh
+# Or specify a different repository:
+# ./create-issues.sh owner/repo
 ```
 
 **Prerequisites:**
 - GitHub CLI (`gh`) must be installed and authenticated
 - You must have write access to the repository
+- Script uses `set -euo pipefail` for robust error handling
 
 ### Option 2: Manual Creation
 
