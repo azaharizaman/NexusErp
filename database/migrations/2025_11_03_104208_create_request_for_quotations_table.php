@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('request_for_quotations', function (Blueprint $table) {
             $table->id();
             $table->string('rfq_number')->unique(); // Serial prefix: RFQ-
-            $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->foreignId('company_id')->nullable()->constrained('backoffice_companies')->nullOnDelete();
             $table->date('rfq_date');
             $table->date('expiry_date')->nullable(); // Deadline for suppliers to respond
             $table->string('status')->default('draft'); // draft, sent, received, evaluated, closed, cancelled

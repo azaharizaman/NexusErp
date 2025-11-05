@@ -62,39 +62,51 @@ Here's the high-level grouping you should aim for:
 
 ---
 
-### 3️⃣ Accounts Receivable (AR) (Transactional models need to implement Controlled Serial Numbering by extending azaharizaman/laravel-serial-numbering package)
+### 3️⃣ Accounts Receivable (AR) ✅ (Transactional models need to implement Controlled Serial Numbering by extending azaharizaman/laravel-serial-numbering package)
 
 (*managing customer invoices and payments*)
 
-* **Customer Invoices**
-  * $\square$ Create sales invoice model with SI- prefix
-  * $\square$ Link to customer (Business Partner with is_customer flag)
-  * $\square$ Implement line items with tax calculation
-  * $\square$ Support multiple payment terms
-  * $\square$ Add due date calculation
-  * $\square$ Implement status workflow (draft → issued → partially_paid → paid → overdue → cancelled)
-  * $\square$ Generate PDF invoices
-* **Customer Payments / Receipts**
-  * $\square$ Create payment receipt model with PR- prefix
-  * $\square$ Support multiple payment methods (cash, bank, card, cheque)
-  * $\square$ Implement payment allocation to invoices
-  * $\square$ Handle partial payments and advance payments
-  * $\square$ Add payment reconciliation
-* **Credit Notes (Customer)**
-  * $\square$ Create credit note model with CN- prefix
-  * $\square$ Link to original sales invoice
-  * $\square$ Support full or partial credit
-  * $\square$ Auto-adjust customer outstanding balance
-* **Customer Credit Management**
-  * $\square$ Add credit limit field to Business Partner
-  * $\square$ Implement credit limit checking on invoice creation
-  * $\square$ Create credit limit alert notifications
-  * $\square$ Add credit approval workflow
-* **Receivable Aging & Follow-up**
-  * $\square$ Build aging report (0-30, 31-60, 61-90, 90+ days)
-  * $\square$ Create automated reminder emails
-  * $\square$ Implement follow-up task scheduling
-  * $\square$ Add customer payment history view
+* **Customer Invoices** ✅
+  * ✅ Create sales invoice model with SI- prefix
+  * ✅ Link to customer (Business Partner with is_customer flag)
+  * ✅ Implement line items with tax calculation
+  * ✅ Support multiple payment terms
+  * ✅ Add due date calculation
+  * ✅ Implement status workflow (draft → issued → partially_paid → paid → overdue → cancelled)
+  * ✅ Create Filament Resource with Post to GL action
+  * $\square$ Generate PDF invoices (future enhancement)
+* **Customer Payments / Receipts** ✅
+  * ✅ Create payment receipt model with PR- prefix
+  * ✅ Support multiple payment methods (cash, bank, card, cheque, online, other)
+  * ✅ Implement payment allocation to invoices (manual and automatic FIFO)
+  * ✅ Handle partial payments and advance payments (unallocated_amount tracking)
+  * ✅ Create AllocatePaymentToInvoices Action
+  * ✅ Create PostPaymentReceipt Action for GL integration
+  * $\square$ Create PaymentReceiptResource (future - use CLI for now)
+  * $\square$ Add payment reconciliation (future enhancement)
+* **Credit Notes (Customer)** ✅
+  * ✅ Create credit note model with CN- prefix
+  * ✅ Link to original sales invoice
+  * ✅ Support full or partial credit
+  * ✅ Auto-adjust customer outstanding balance (applyToInvoice method)
+  * ✅ Create PostCreditNote Action for GL integration
+  * ✅ Implement reason tracking (return, price_adjustment, discount, error_correction, service_issue, other)
+  * $\square$ Create CustomerCreditNoteResource (future - use CLI for now)
+* **GL Integration** ✅
+  * ✅ PostSalesInvoice Action (Debit AR, Credit Revenue, Credit Tax Payable)
+  * ✅ PostPaymentReceipt Action (Debit Cash/Bank, Credit AR)
+  * ✅ PostCreditNote Action (Debit Sales Returns, Credit AR)
+  * ✅ All models have journal_entry_id, is_posted_to_gl, posted_to_gl_at fields
+* **Customer Credit Management** ⏸️
+  * $\square$ Add credit limit field to Business Partner (future)
+  * $\square$ Implement credit limit checking on invoice creation (future)
+  * $\square$ Create credit limit alert notifications (future)
+  * $\square$ Add credit approval workflow (future)
+* **Receivable Aging & Follow-up** ⏸️
+  * $\square$ Build aging report (0-30, 31-60, 61-90, 90+ days) (future)
+  * $\square$ Create automated reminder emails (future)
+  * $\square$ Implement follow-up task scheduling (future)
+  * $\square$ Add customer payment history view (future)
 
 ---
 

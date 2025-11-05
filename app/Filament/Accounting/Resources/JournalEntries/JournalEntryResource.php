@@ -170,9 +170,9 @@ class JournalEntryResource extends Resource
 
                                 $status = abs($difference) < 0.01 ? '✅ Balanced' : '❌ Not Balanced';
 
-                                return "Debits: $".number_format($totalDebit, 2).' | '.
-                                       "Credits: $".number_format($totalCredit, 2).' | '.
-                                       "Difference: $".number_format($difference, 2).' | '.
+                                return "Debits: $" . number_format($totalDebit, 2) . ' | ' .
+                                       "Credits: $" . number_format($totalCredit, 2) . ' | ' .
+                                       "Difference: $" . number_format($difference, 2) . ' | ' .
                                        $status;
                             })
                             ->columnSpanFull(),

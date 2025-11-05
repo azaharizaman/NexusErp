@@ -92,13 +92,13 @@ class JournalEntry extends Model
     public function post(): bool
     {
         if ($this->status === 'posted') {
-            throw new \RuntimeException('Journal entry '.$this->journal_entry_number.' is already posted');
+            throw new \RuntimeException('Journal entry ' . $this->journal_entry_number . ' is already posted');
         }
 
         if (! $this->isBalanced()) {
             throw new \InvalidArgumentException(
-                'Journal entry '.$this->journal_entry_number.' is not balanced. '.
-                'Debits: '.$this->total_debit.', Credits: '.$this->total_credit
+                'Journal entry ' . $this->journal_entry_number . ' is not balanced. ' .
+                'Debits: ' . $this->total_debit . ', Credits: ' . $this->total_credit
             );
         }
 
@@ -111,10 +111,10 @@ class JournalEntry extends Model
         // Update account balances
         foreach ($this->lines as $line) {
             $account = $line->account;
-            
+
             // Determine if this increases or decreases the balance based on account type
             $isDebitAccount = in_array($account->account_type, ['Asset', 'Expense']);
-            
+
             if ($line->debit > 0) {
                 if ($isDebitAccount) {
                     $account->current_balance += $line->debit;
@@ -122,7 +122,7 @@ class JournalEntry extends Model
                     $account->current_balance -= $line->debit;
                 }
             }
-            
+
             if ($line->credit > 0) {
                 if ($isDebitAccount) {
                     $account->current_balance -= $line->credit;
@@ -130,7 +130,7 @@ class JournalEntry extends Model
                     $account->current_balance += $line->credit;
                 }
             }
-            
+
             $account->save();
         }
 
@@ -163,7 +163,7 @@ class JournalEntry extends Model
             'entry_type' => 'reversing',
             'entry_date' => $date ?? now(),
             'reference_number' => $this->reference_number,
-            'description' => $description ?? 'Reversal of JE '.$this->journal_entry_number,
+            'description' => $description ?? 'Reversal of JE ' . $this->journal_entry_number,
             'is_reversal' => true,
             'reversed_entry_id' => $this->id,
             'currency_id' => $this->currency_id,

@@ -72,7 +72,7 @@ class CustomerCreditNote extends Model
         }
 
         $invoice = $this->salesInvoice;
-        
+
         if ($this->amount > $invoice->outstanding_amount) {
             throw new \InvalidArgumentException('Credit note amount exceeds invoice outstanding amount');
         }
@@ -90,7 +90,7 @@ class CustomerCreditNote extends Model
      */
     public function canBeApplied(): bool
     {
-        return $this->status === 'issued' && 
+        return $this->status === 'issued' &&
                $this->sales_invoice_id !== null &&
                $this->amount > 0;
     }

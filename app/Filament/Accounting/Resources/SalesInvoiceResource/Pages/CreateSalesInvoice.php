@@ -13,7 +13,7 @@ class CreateSalesInvoice extends CreateRecord
     {
         $data['status'] = 'draft';
         $data['created_by'] = auth()->id();
-        
+
         return $data;
     }
 

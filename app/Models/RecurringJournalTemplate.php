@@ -48,7 +48,7 @@ class RecurringJournalTemplate extends Model
     public function calculateNextGenerationDate(): ?\Carbon\Carbon
     {
         $lastDate = $this->last_generated_date ?? $this->start_date;
-        
+
         if (! $lastDate) {
             return null;
         }
@@ -101,7 +101,7 @@ class RecurringJournalTemplate extends Model
     public function generate(?FiscalYear $fiscalYear = null, ?AccountingPeriod $period = null): JournalEntry
     {
         if (! $this->shouldGenerate()) {
-            throw new \RuntimeException('Template '.$this->template_code.' cannot generate at this time');
+            throw new \RuntimeException('Template ' . $this->template_code . ' cannot generate at this time');
         }
 
         // Determine fiscal year and period
@@ -131,8 +131,8 @@ class RecurringJournalTemplate extends Model
             'accounting_period_id' => $period->id,
             'entry_type' => $this->entry_type,
             'entry_date' => now(),
-            'reference_number' => $this->reference_prefix ? $this->reference_prefix.'-'.now()->format('Ymd') : null,
-            'description' => $this->description.' (Auto-generated from template '.$this->template_code.')',
+            'reference_number' => $this->reference_prefix ? $this->reference_prefix . '-' . now()->format('Ymd') : null,
+            'description' => $this->description . ' (Auto-generated from template ' . $this->template_code . ')',
             'notes' => $this->notes,
             'status' => 'draft',
             'created_by' => auth()->id(),

@@ -66,7 +66,7 @@ class GenerateRecurringJournalEntries
 
                     if (! $fiscalYear) {
                         throw new \RuntimeException(
-                            'No default fiscal year found for company '.$template->company_id
+                            'No default fiscal year found for company ' . $template->company_id
                         );
                     }
 
@@ -78,7 +78,7 @@ class GenerateRecurringJournalEntries
 
                     if (! $period) {
                         throw new \RuntimeException(
-                            'No open accounting period found for fiscal year '.$fiscalYear->name
+                            'No open accounting period found for fiscal year ' . $fiscalYear->name
                         );
                     }
 
@@ -95,7 +95,7 @@ class GenerateRecurringJournalEntries
                 });
             } catch (\Exception $e) {
                 // Log error but continue with other templates
-                logger()->error('Failed to generate recurring entry from template '.$template->template_code, [
+                logger()->error('Failed to generate recurring entry from template ' . $template->template_code, [
                     'error' => $e->getMessage(),
                     'template_id' => $template->id,
                 ]);
@@ -141,7 +141,7 @@ class GenerateRecurringJournalEntries
         if ($generated->isEmpty()) {
             $command->info('No recurring journal entries generated');
         } else {
-            $command->info('Generated '.$generated->count().' journal entries');
+            $command->info('Generated ' . $generated->count() . ' journal entries');
 
             $command->table(
                 ['JE Number', 'Template', 'Status', 'Total Debit', 'Total Credit'],

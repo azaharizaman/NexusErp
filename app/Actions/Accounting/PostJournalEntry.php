@@ -32,21 +32,21 @@ class PostJournalEntry
         // Validate status
         if ($journalEntry->status === 'posted') {
             throw new \RuntimeException(
-                'Journal entry '.$journalEntry->journal_entry_number.' is already posted'
+                'Journal entry ' . $journalEntry->journal_entry_number . ' is already posted'
             );
         }
 
         if ($journalEntry->status === 'cancelled') {
             throw new \RuntimeException(
-                'Cannot post cancelled journal entry '.$journalEntry->journal_entry_number
+                'Cannot post cancelled journal entry ' . $journalEntry->journal_entry_number
             );
         }
 
         // Validate balanced
         if (! $journalEntry->isBalanced()) {
             throw new \InvalidArgumentException(
-                'Journal entry '.$journalEntry->journal_entry_number.' is not balanced. '.
-                'Debits: '.$journalEntry->total_debit.', Credits: '.$journalEntry->total_credit
+                'Journal entry ' . $journalEntry->journal_entry_number . ' is not balanced. ' .
+                'Debits: ' . $journalEntry->total_debit . ', Credits: ' . $journalEntry->total_credit
             );
         }
 
@@ -54,8 +54,8 @@ class PostJournalEntry
         $period = $journalEntry->accountingPeriod;
         if (! $period || $period->status !== 'open') {
             throw new \LogicException(
-                'Cannot post to closed or locked accounting period. '.
-                'Period: '.($period?->period_name ?? 'Unknown').' Status: '.($period?->status ?? 'Unknown')
+                'Cannot post to closed or locked accounting period. ' .
+                'Period: ' . ($period?->period_name ?? 'Unknown') . ' Status: ' . ($period?->status ?? 'Unknown')
             );
         }
 
@@ -125,6 +125,6 @@ class PostJournalEntry
 
         $posted = $this->handle($journalEntry);
 
-        $command->info('Journal entry '.$posted->journal_entry_number.' posted successfully');
+        $command->info('Journal entry ' . $posted->journal_entry_number . ' posted successfully');
     }
 }

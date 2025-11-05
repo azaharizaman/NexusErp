@@ -2,15 +2,16 @@
 
 namespace App\Filament\Accounting\Resources;
 
-use App\Actions\Accounting\PostSalesInvoice;
-use App\Filament\Accounting\Resources\SalesInvoiceResource\Pages;
-use App\Models\SalesInvoice;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Models\SalesInvoice;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Actions\Accounting\PostSalesInvoice;
+use App\Filament\Accounting\Resources\SalesInvoiceResource\Pages;
 
 class SalesInvoiceResource extends Resource
 {
@@ -24,50 +25,49 @@ class SalesInvoiceResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
-            Forms\Components\Section::make('Invoice Information')
-                ->schema([
-                    Forms\Components\Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->required()
-                        ->reactive()
-                        ->preload(),
+        return $schema
+            ->components([
+                Components\Section::make('Invoice Information')
+                    ->schema([
+                        Components\Select::make('company_id')
+                            ->relationship('company', 'name')
+                            ->required()
+                            ->reactive()
+                            ->preload(),
 
-                    Forms\Components\Select::make('customer_id')
-                        ->relationship('customer', 'name', fn (Builder $query) => 
-                            $query->where('is_customer', true)
-                        )
-                        ->searchable()
-                        ->required()
-                        ->preload(),
+                        Components\Select::make('customer_id')
+                            ->relationship('customer', 'name', fn (Builder $query) =>
+                                $query->where('is_customer', true)
+                            )
+                            ->searchable()
+                            ->required()
+                            ->preload(),
 
-                    Forms\Components\Select::make('fiscal_year_id')
+                        Components\Select::make('fiscal_year_id')
                         ->relationship('fiscalYear', 'year', fn (Builder $query, callable $get) =>
-                            $query->where('company_id', $get('company_id'))
-                        )
+                            $query->where('company_id', $get('company_id')))
                         ->required()
                         ->reactive()
                         ->preload(),
 
-                    Forms\Components\Select::make('accounting_period_id')
+                    Components\Select::make('accounting_period_id')
                         ->relationship('accountingPeriod', 'period_name', fn (Builder $query, callable $get) =>
                             $query->where('fiscal_year_id', $get('fiscal_year_id'))
-                                ->where('status', 'open')
-                        )
+                                ->where('status', 'open'))
                         ->required()
                         ->preload(),
 
-                    Forms\Components\DatePicker::make('invoice_date')
+                    Components\DatePicker::make('invoice_date')
                         ->required()
                         ->default(now())
                         ->reactive(),
 
-                    Forms\Components\TextInput::make('payment_terms')
+                    Components\TextInput::make('payment_terms')
                         ->maxLength(255),
 
-                    Forms\Components\TextInput::make('credit_days')
+                    Components\TextInput::make('credit_days')
                         ->numeric()
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
@@ -77,98 +77,93 @@ class SalesInvoiceResource extends Resource
                             }
                         }),
 
-                    Forms\Components\DatePicker::make('due_date')
+                    Components\DatePicker::make('due_date')
                         ->required(),
 
-                    Forms\Components\Select::make('currency_id')
+                    Components\Select::make('currency_id')
                         ->relationship('currency', 'code')
                         ->required()
-                        ->default(fn () => \AzahariZaman\Backoffice\Models\Currency::where('code', 'MYR')->first()?->id)
+                        ->default(fn () => \App\Models\Currency::where('code', 'MYR')->first()?->id)
                         ->preload(),
 
-                    Forms\Components\TextInput::make('exchange_rate')
+                    Components\TextInput::make('exchange_rate')
                         ->numeric()
                         ->default(1.000000)
                         ->required()
                         ->step('0.000001'),
                 ])->columns(2),
 
-            Forms\Components\Section::make('Invoice Items')
+            Components\Section::make('Invoice Items')
                 ->schema([
-                    Forms\Components\Repeater::make('items')
+                    Components\Repeater::make('items')
                         ->relationship('items')
                         ->schema([
-                            Forms\Components\TextInput::make('item_code')
+                            Components\TextInput::make('item_code')
                                 ->required()
                                 ->maxLength(100),
 
-                            Forms\Components\TextInput::make('item_description')
+                            Components\TextInput::make('item_description')
                                 ->required()
                                 ->maxLength(500),
 
-                            Forms\Components\Textarea::make('specifications')
+                            Components\Textarea::make('specifications')
                                 ->maxLength(1000)
                                 ->rows(2),
 
-                            Forms\Components\TextInput::make('quantity')
+                            Components\TextInput::make('quantity')
                                 ->numeric()
                                 ->required()
                                 ->default(1)
                                 ->step('0.0001')
                                 ->reactive()
-                                ->afterStateUpdated(fn ($state, callable $set, callable $get) => 
-                                    self::calculateLineTotal($set, $get)
-                                ),
+                                ->afterStateUpdated(fn ($state, callable $set, callable $get) =>
+                                    self::calculateLineTotal($set, $get)),
 
-                            Forms\Components\Select::make('uom_id')
+                            Components\Select::make('uom_id')
                                 ->relationship('uom', 'code')
                                 ->required()
                                 ->preload(),
 
-                            Forms\Components\TextInput::make('unit_price')
+                            Components\TextInput::make('unit_price')
                                 ->numeric()
                                 ->required()
                                 ->step('0.0001')
                                 ->reactive()
-                                ->afterStateUpdated(fn ($state, callable $set, callable $get) => 
-                                    self::calculateLineTotal($set, $get)
-                                ),
+                                ->afterStateUpdated(fn ($state, callable $set, callable $get) =>
+                                    self::calculateLineTotal($set, $get)),
 
-                            Forms\Components\TextInput::make('discount_percent')
+                            Components\TextInput::make('discount_percent')
                                 ->numeric()
                                 ->default(0)
                                 ->step('0.01')
                                 ->suffix('%')
                                 ->reactive()
-                                ->afterStateUpdated(fn ($state, callable $set, callable $get) => 
-                                    self::calculateLineTotal($set, $get)
-                                ),
+                                ->afterStateUpdated(fn ($state, callable $set, callable $get) =>
+                                    self::calculateLineTotal($set, $get)),
 
-                            Forms\Components\TextInput::make('tax_rate')
+                            Components\TextInput::make('tax_rate')
                                 ->numeric()
                                 ->default(0)
                                 ->step('0.01')
                                 ->suffix('%')
                                 ->reactive()
-                                ->afterStateUpdated(fn ($state, callable $set, callable $get) => 
-                                    self::calculateLineTotal($set, $get)
-                                ),
+                                ->afterStateUpdated(fn ($state, callable $set, callable $get) =>
+                                    self::calculateLineTotal($set, $get)),
 
-                            Forms\Components\Select::make('revenue_account_id')
+                            Components\Select::make('revenue_account_id')
                                 ->relationship('revenueAccount', 'account_name', fn (Builder $query) =>
-                                    $query->where('account_type', 'income')
-                                )
+                                    $query->where('account_type', 'income'))
                                 ->required()
                                 ->searchable()
                                 ->preload(),
 
-                            Forms\Components\TextInput::make('line_total')
+                            Components\TextInput::make('line_total')
                                 ->numeric()
                                 ->disabled()
                                 ->dehydrated(false)
                                 ->step('0.0001'),
 
-                            Forms\Components\TextInput::make('tax_amount')
+                            Components\TextInput::make('tax_amount')
                                 ->numeric()
                                 ->disabled()
                                 ->dehydrated(false)
@@ -181,50 +176,47 @@ class SalesInvoiceResource extends Resource
                         ->itemLabel(fn (array $state): ?string => $state['item_description'] ?? null),
                 ]),
 
-            Forms\Components\Section::make('Totals')
+            Components\Section::make('Totals')
                 ->schema([
-                    Forms\Components\Placeholder::make('subtotal_display')
+                    Components\Placeholder::make('subtotal_display')
                         ->label('Subtotal')
-                        ->content(fn (?SalesInvoice $record) => 
-                            $record ? number_format($record->subtotal, 4) : '0.0000'
-                        ),
+                        ->content(fn (?SalesInvoice $record) =>
+                            $record ? number_format((float) $record->subtotal, 4) : '0.0000'),
 
-                    Forms\Components\TextInput::make('discount_amount')
+                    Components\TextInput::make('discount_amount')
                         ->numeric()
                         ->default(0)
                         ->step('0.0001'),
 
-                    Forms\Components\Placeholder::make('tax_amount_display')
+                    Components\Placeholder::make('tax_amount_display')
                         ->label('Total Tax')
-                        ->content(fn (?SalesInvoice $record) => 
-                            $record ? number_format($record->tax_amount, 4) : '0.0000'
-                        ),
+                        ->content(fn (?SalesInvoice $record) =>
+                            $record ? number_format((float) $record->tax_amount, 4) : '0.0000'),
 
-                    Forms\Components\Placeholder::make('total_amount_display')
+                    Components\Placeholder::make('total_amount_display')
                         ->label('Total Amount')
-                        ->content(fn (?SalesInvoice $record) => 
-                            $record ? number_format($record->total_amount, 4) : '0.0000'
-                        ),
+                        ->content(fn (?SalesInvoice $record) =>
+                            $record ? number_format((float) $record->total_amount, 4) : '0.0000'),
                 ])->columns(2),
 
-            Forms\Components\Section::make('Addresses')
+            Components\Section::make('Addresses')
                 ->schema([
-                    Forms\Components\Textarea::make('billing_address')
+                    Components\Textarea::make('billing_address')
                         ->rows(3),
 
-                    Forms\Components\Textarea::make('shipping_address')
+                    Components\Textarea::make('shipping_address')
                         ->rows(3),
                 ])->columns(2)->collapsible(),
 
-            Forms\Components\Section::make('Additional Information')
+            Components\Section::make('Additional Information')
                 ->schema([
-                    Forms\Components\Textarea::make('description')
+                    Components\Textarea::make('description')
                         ->maxLength(1000),
 
-                    Forms\Components\Textarea::make('notes')
+                    Components\Textarea::make('notes')
                         ->maxLength(1000),
 
-                    Forms\Components\Textarea::make('terms_and_conditions')
+                    Components\Textarea::make('terms_and_conditions')
                         ->rows(5),
                 ])->collapsible(),
         ]);
@@ -324,8 +316,8 @@ class SalesInvoiceResource extends Resource
 
                 Tables\Filters\Filter::make('invoice_date')
                     ->form([
-                        Forms\Components\DatePicker::make('from'),
-                        Forms\Components\DatePicker::make('until'),
+                        Components\DatePicker::make('from'),
+                        Components\DatePicker::make('until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -346,10 +338,9 @@ class SalesInvoiceResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn (SalesInvoice $record) => 
-                        !$record->is_posted_to_gl && 
-                        in_array($record->status, ['issued', 'partially_paid'])
-                    )
+                    ->visible(fn (SalesInvoice $record) =>
+                        !$record->is_posted_to_gl &&
+                        in_array($record->status, ['issued', 'partially_paid']))
                     ->action(function (SalesInvoice $record) {
                         // Get AR account ID from company settings (simplified - should be configurable)
                         $arAccount = \App\Models\Account::where('account_code', '1200')

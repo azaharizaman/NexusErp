@@ -53,10 +53,10 @@ class SalesInvoiceItem extends Model implements Sortable
     public function calculateLineTotal(): void
     {
         $subtotal = bcmul($this->quantity, $this->unit_price, 4);
-        $discountAmount = $this->discount_percent > 0 
+        $discountAmount = $this->discount_percent > 0
             ? bcmul($subtotal, bcdiv($this->discount_percent, 100, 6), 4)
             : $this->discount_amount;
-        
+
         $this->discount_amount = $discountAmount;
         $this->line_total = bcsub($subtotal, $discountAmount, 4);
     }

@@ -101,8 +101,8 @@ class SalesInvoice extends Model
      */
     public function isOverdue(): bool
     {
-        return $this->status !== 'paid' && 
-               $this->status !== 'cancelled' && 
+        return $this->status !== 'paid' &&
+               $this->status !== 'cancelled' &&
                now()->gt($this->due_date);
     }
 

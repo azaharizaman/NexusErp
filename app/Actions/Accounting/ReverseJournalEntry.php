@@ -36,21 +36,21 @@ class ReverseJournalEntry
         // Validate original entry
         if ($originalEntry->status !== 'posted') {
             throw new \RuntimeException(
-                'Only posted journal entries can be reversed. '.
-                'Entry '.$originalEntry->journal_entry_number.' has status: '.$originalEntry->status
+                'Only posted journal entries can be reversed. ' .
+                'Entry ' . $originalEntry->journal_entry_number . ' has status: ' . $originalEntry->status
             );
         }
 
         if ($originalEntry->is_reversal) {
             throw new \RuntimeException(
-                'Reversal entries cannot be reversed. '.
-                'Entry '.$originalEntry->journal_entry_number.' is already a reversal'
+                'Reversal entries cannot be reversed. ' .
+                'Entry ' . $originalEntry->journal_entry_number . ' is already a reversal'
             );
         }
 
         if ($originalEntry->reversal_entry_id) {
             throw new \RuntimeException(
-                'Journal entry '.$originalEntry->journal_entry_number.' already has a reversal entry'
+                'Journal entry ' . $originalEntry->journal_entry_number . ' already has a reversal entry'
             );
         }
 
@@ -65,8 +65,8 @@ class ReverseJournalEntry
                 'entry_type' => 'reversing',
                 'entry_date' => $date ?? now(),
                 'reference_number' => $originalEntry->reference_number,
-                'description' => $description ?? 'Reversal of JE '.$originalEntry->journal_entry_number,
-                'notes' => 'Auto-generated reversal of '.$originalEntry->journal_entry_number,
+                'description' => $description ?? 'Reversal of JE ' . $originalEntry->journal_entry_number,
+                'notes' => 'Auto-generated reversal of ' . $originalEntry->journal_entry_number,
                 'is_reversal' => true,
                 'reversed_entry_id' => $originalEntry->id,
                 'currency_id' => $originalEntry->currency_id,
@@ -90,7 +90,7 @@ class ReverseJournalEntry
                     'department_id' => $line->department_id,
                     'project_id' => $line->project_id,
                     'description' => $line->description,
-                    'notes' => 'Reversal of line from '.$originalEntry->journal_entry_number,
+                    'notes' => 'Reversal of line from ' . $originalEntry->journal_entry_number,
                     'sort_order' => $line->sort_order,
                     'created_by' => auth()->id(),
                 ]);
