@@ -1,0 +1,55 @@
+# NexusERP
+
+> NexusERP is a modern, modular Enterprise Resource Planning (ERP) system built with Laravel 12 and FilamentPHP 4. Designed for scalability and flexibility, it provides comprehensive business management solutions including purchase management, accounts receivable/payable, multi-currency support, and workflow-based status management with a focus on clean architecture and enterprise-grade user experience.
+
+NexusERP follows action-based business logic patterns using Laravel Actions, implements status workflows with Spatie Model Status, and provides a rich FilamentPHP admin interface with multiple panels for different business modules.
+
+## Documentation
+
+- [Main README](README.md): Primary project documentation, getting started guide, installation instructions, and tech stack overview
+- [System Architecture Specification](spec/architecture-nexus-erp.md): Complete system architecture, design requirements, constraints, interfaces, and data contracts
+- [Architectural Decisions](ARCHITECTURAL_DECISIONS.md): Historical record of key technical decisions, rationale, and implementation details for all major features
+- [Progress Checklist](PROGRESS_CHECKLIST.md): Development roadmap, completed milestones, and phase-by-phase implementation tracking
+- [Laravel Actions Guide](LARAVEL_ACTIONS_GUIDE.md): Business logic implementation patterns using lorisleiva/laravel-actions package
+
+## Planning Documents
+
+- [Accounting Module Planning](ACCOUNTING_MODULE_PLANNING.md): Detailed accounting module implementation plan with GL, AR/AP specifications
+- [Purchase Management Modules Planning](PURCHASE_MANAGEMENT_MODULES_PLANNING.md): Complete purchase management development roadmap and feature specifications
+- [Settings Implementation](SETTINGS_IMPLEMENTATION.md): Application settings management architecture and implementation details
+- [Company Status Management](COMPANY_STATUS_MANAGEMENT.md): Status workflow documentation and state management patterns
+- [Spatie Laravel Model Status Special Design Change](SPATIE_LARAVEL_MODEL_STATUS_SPECIAL_DESIGN_CHANGE.md): Custom status management design decisions
+
+## Feature Planning
+
+- [Accounting Dimensions & Analytics](plan/feature-accounting-dimensions-analytics-1.md): Cost centers, departments, and analytics dimensions
+- [Accounts Payable Foundation](plan/feature-ap-foundation-1.md): AP module foundation and vendor management
+- [Accounts Receivable Filament Resources](plan/feature-ar-filament-resources-1.md): AR module UI and resource implementation
+- [Audit & Compliance](plan/feature-audit-compliance-1.md): Audit trail and compliance features
+- [Banking & Cash Management](plan/feature-banking-cash-management-1.md): Banking integration and cash flow management
+- [Budgeting & Planning](plan/feature-budgeting-planning-1.md): Budget management and financial planning
+- [Fixed Asset Management](plan/feature-fixed-asset-management-1.md): Asset tracking and depreciation
+- [Multi-Company Consolidation](plan/feature-multi-company-consolidation-1.md): Multi-entity accounting and consolidation
+- [Multi-Currency Exchange Management](plan/feature-multi-currency-exchange-management-1.md): Currency management and exchange rate handling
+- [Tax Management & Compliance](plan/feature-tax-management-compliance-1.md): Tax calculation and compliance features
+
+## Best Practices & Guidelines
+
+- [Business Partners Documentation](docs/business-partners.md): Business partner module documentation and usage patterns
+- [Company Status Rules](docs/company-status-rules.md): Status transition rules and workflow guidelines
+- [Filament Best Practices](docs/filament-best-practices.md): FilamentPHP coding standards, resource patterns, and UI conventions
+- [Settings](SETTINGS.md): Application settings configuration and management
+
+## Configuration
+
+- [Environment Example](.env.example): Environment variables and configuration template
+- [Composer Dependencies](composer.json): PHP package dependencies and autoload configuration
+- [NPM Dependencies](package.json): JavaScript dependencies and build scripts
+- [Vite Configuration](vite.config.js): Frontend build tool configuration
+- [PHPUnit Configuration](phpunit.xml): Testing framework configuration
+
+## Optional
+
+- [GitHub Copilot Instructions](.github/copilot-instructions.md): Custom instructions for GitHub Copilot agents and coding standards
+- [Editor Configuration](.editorconfig): Editor settings for consistent code formatting
+- [Git Attributes](.gitattributes): Git configuration for line endings and file handling
