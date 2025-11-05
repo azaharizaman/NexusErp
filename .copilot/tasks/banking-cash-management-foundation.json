@@ -1,0 +1,295 @@
+{
+  "id": "banking-cash-management-foundation",
+  "title": "Banking & Cash Management Module Foundation",
+  "description": "Implement Banking & Cash Management module including bank accounts, transactions, reconciliation, statement import, and payment gateway integration for tracking cash flow and ensuring bank statement accuracy.",
+  "tags": ["banking", "cash-management", "reconciliation", "payment-gateway"],
+  "dependencies": [
+    "general-ledger-foundation",
+    "ar-foundation",
+    "ap-foundation"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "title": "Bank Account and Transaction Models",
+      "description": "Create BankAccount and BankTransaction models with multi-currency support, serial numbering, and GL integration. These models form the foundation for all banking operations.",
+      "tasks": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003",
+        "TASK-004",
+        "TASK-005",
+        "TASK-006",
+        "TASK-007",
+        "TASK-008",
+        "TASK-009",
+        "TASK-010",
+        "TASK-011",
+        "TASK-012",
+        "TASK-013",
+        "TASK-014",
+        "TASK-015",
+        "TASK-016",
+        "TASK-017",
+        "TASK-018",
+        "TASK-019",
+        "TASK-020"
+      ],
+      "acceptanceCriteria": [
+        "BankAccount model tracks multiple accounts per company with currency support",
+        "Account tracks opening and current balances accurately",
+        "BankTransaction uses HasSerialNumbering with BT-YYYY-XXXX format",
+        "Transaction types include deposit, withdrawal, transfer, bank_charge, interest",
+        "Inter-account transfers tracked via transfer_to_bank_account_id",
+        "GL posting fields (journal_entry_id, is_posted_to_gl) present",
+        "Reconciliation tracking fields (is_reconciled, reconciled_at) present",
+        "Models include proper relationships and validation"
+      ],
+      "affectedFiles": [
+        "database/migrations/YYYY_MM_DD_create_bank_accounts_table.php",
+        "database/migrations/YYYY_MM_DD_create_bank_transactions_table.php",
+        "app/Models/BankAccount.php",
+        "app/Models/BankTransaction.php"
+      ]
+    },
+    {
+      "step": 2,
+      "title": "Bank Reconciliation Models",
+      "description": "Create BankReconciliation and ReconciliationItem models to track statement matching, outstanding items, and reconciliation status.",
+      "tasks": [
+        "TASK-021",
+        "TASK-022",
+        "TASK-023",
+        "TASK-024",
+        "TASK-025",
+        "TASK-026",
+        "TASK-027",
+        "TASK-028",
+        "TASK-029",
+        "TASK-030",
+        "TASK-031",
+        "TASK-032",
+        "TASK-033",
+        "TASK-034",
+        "TASK-035",
+        "TASK-036"
+      ],
+      "acceptanceCriteria": [
+        "BankReconciliation tracks statement vs book balances",
+        "Serial numbering uses BR-YYYY-XXXX format",
+        "Status enum includes draft, completed, approved states",
+        "Tracks total deposits, withdrawals, outstanding items",
+        "ReconciliationItem links transactions to reconciliation",
+        "Match status enum includes matched, unmatched, outstanding_cheque, outstanding_deposit",
+        "Difference amounts tracked for discrepancies",
+        "Approval workflow fields (approved_by, approved_at) present"
+      ],
+      "affectedFiles": [
+        "database/migrations/YYYY_MM_DD_create_bank_reconciliations_table.php",
+        "database/migrations/YYYY_MM_DD_create_reconciliation_items_table.php",
+        "app/Models/BankReconciliation.php",
+        "app/Models/ReconciliationItem.php"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "Auto-Matching Algorithm",
+      "description": "Implement AutoMatchBankTransactions Action to automatically match bank transactions with statement items using amount, date, and reference number matching logic.",
+      "tasks": [
+        "TASK-037",
+        "TASK-038",
+        "TASK-039",
+        "TASK-040"
+      ],
+      "acceptanceCriteria": [
+        "AutoMatchBankTransactions Action matches by exact amount",
+        "Date proximity matching within ±3 days window",
+        "Reference number matching for exact matches",
+        "Outstanding cheques and deposits handled separately",
+        "Algorithm handles 10,000+ transactions efficiently (PERF-001)",
+        "Returns match confidence score for manual review",
+        "Prevents duplicate matching of same transaction",
+        "Allows manual override of auto-matches"
+      ],
+      "affectedFiles": [
+        "app/Actions/AutoMatchBankTransactions.php",
+        "tests/Unit/AutoMatchBankTransactionsTest.php"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Bank Statement Import",
+      "description": "Implement ImportBankStatement Action to parse and validate CSV/Excel bank statements with preview functionality and duplicate detection.",
+      "tasks": [
+        "TASK-041",
+        "TASK-042",
+        "TASK-043",
+        "TASK-044",
+        "TASK-045",
+        "TASK-046",
+        "TASK-047",
+        "TASK-048",
+        "TASK-049"
+      ],
+      "acceptanceCriteria": [
+        "ImportBankStatement Action validates CSV structure",
+        "Required columns: date, description, amount detected",
+        "Parses multiple date formats (YYYY-MM-DD, DD/MM/YYYY, etc.)",
+        "Auto-detects transaction type from description keywords",
+        "Preview shows validation errors before confirmation",
+        "Duplicate detection by reference and amount",
+        "Custom column mapping supported",
+        "Handles large statements (50,000+ rows) via queue jobs (PERF-002)",
+        "Creates temporary records for review before final import"
+      ],
+      "affectedFiles": [
+        "app/Actions/ImportBankStatement.php",
+        "app/Jobs/ProcessBankStatementImport.php",
+        "tests/Feature/ImportBankStatementTest.php"
+      ]
+    },
+    {
+      "step": 5,
+      "title": "GL Integration Actions",
+      "description": "Create Actions for posting bank transactions to General Ledger with proper journal entries for deposits, withdrawals, transfers, charges, and interest.",
+      "tasks": [
+        "TASK-050",
+        "TASK-051",
+        "TASK-052",
+        "TASK-053",
+        "TASK-054",
+        "TASK-055",
+        "TASK-056",
+        "TASK-057",
+        "TASK-058"
+      ],
+      "acceptanceCriteria": [
+        "PostBankDeposit creates journal entry: Debit Bank, Credit Source",
+        "PostBankWithdrawal creates journal entry: Debit Expense/AP, Credit Bank",
+        "PostBankTransfer handles both accounts with proper entries",
+        "Multi-currency transfers use exchange rates correctly",
+        "PostBankCharge posts bank fees to expense account",
+        "PostBankInterest posts interest income correctly",
+        "All Actions use BCMath for precise calculations",
+        "Journal entries link back to bank transaction via reference",
+        "Posting updates is_posted_to_gl and posted_to_gl_at fields"
+      ],
+      "affectedFiles": [
+        "app/Actions/PostBankDeposit.php",
+        "app/Actions/PostBankWithdrawal.php",
+        "app/Actions/PostBankTransfer.php",
+        "app/Actions/PostBankCharge.php",
+        "app/Actions/PostBankInterest.php",
+        "tests/Feature/BankGLPostingTest.php"
+      ]
+    },
+    {
+      "step": 6,
+      "title": "Payment Gateway Integration",
+      "description": "Integrate Stripe and PayPal payment gateways with webhook processing to auto-create bank transactions for online payments and handle fees.",
+      "tasks": [
+        "TASK-059",
+        "TASK-060",
+        "TASK-061",
+        "TASK-062",
+        "TASK-063",
+        "TASK-064",
+        "TASK-065",
+        "TASK-066",
+        "TASK-067",
+        "TASK-068"
+      ],
+      "acceptanceCriteria": [
+        "payment_gateway_transactions table tracks gateway activity",
+        "Gateway types: stripe, paypal, other supported",
+        "ProcessStripeWebhook Action handles payment.success events",
+        "ProcessPayPalWebhook Action handles payment completion",
+        "Auto-creates BankTransaction for successful payments",
+        "Gateway fees calculated and recorded separately",
+        "Refunds and chargebacks handled correctly",
+        "Webhook retry logic implemented for failures",
+        "Links to bank_transaction_id for reconciliation"
+      ],
+      "affectedFiles": [
+        "database/migrations/YYYY_MM_DD_create_payment_gateway_transactions_table.php",
+        "app/Models/PaymentGatewayTransaction.php",
+        "app/Actions/ProcessStripeWebhook.php",
+        "app/Actions/ProcessPayPalWebhook.php",
+        "routes/webhooks.php",
+        "tests/Feature/PaymentGatewayWebhookTest.php"
+      ]
+    },
+    {
+      "step": 7,
+      "title": "Cheque Management",
+      "description": "Implement Cheque model and management system for tracking cheque books, post-dated cheques (PDC), clearance status, and maturity alerts.",
+      "tasks": [
+        "TASK-069",
+        "TASK-070",
+        "TASK-071",
+        "TASK-072",
+        "TASK-073",
+        "TASK-074",
+        "TASK-075",
+        "TASK-076",
+        "TASK-077",
+        "TASK-078"
+      ],
+      "acceptanceCriteria": [
+        "Cheque model tracks bank_account_id, cheque_number, cheque_date",
+        "Post-dated cheque flag (is_post_dated) and maturity_date present",
+        "Status enum includes pending, cleared, bounced, cancelled",
+        "Links to PaymentVoucher or PaymentReceipt",
+        "UpdateChequeStatus Action updates clearance status",
+        "Scheduled job alerts for PDC maturity dates",
+        "Cheque clearance updates bank reconciliation",
+        "Bounced cheques reverse GL entries correctly"
+      ],
+      "affectedFiles": [
+        "database/migrations/YYYY_MM_DD_create_cheques_table.php",
+        "app/Models/Cheque.php",
+        "app/Actions/UpdateChequeStatus.php",
+        "app/Console/Commands/AlertPDCMaturity.php",
+        "tests/Unit/ChequeModelTest.php"
+      ]
+    },
+    {
+      "step": 8,
+      "title": "Testing and Documentation",
+      "description": "Create comprehensive test suite for banking module covering models, actions, workflows, and integrations. Update architectural documentation.",
+      "tasks": [
+        "TASK-079",
+        "TASK-080",
+        "TASK-081",
+        "TASK-082",
+        "TASK-083",
+        "TASK-084",
+        "TASK-085",
+        "TASK-086",
+        "TASK-087"
+      ],
+      "acceptanceCriteria": [
+        "Unit tests for BankAccount balance calculations pass",
+        "Unit tests for auto-matching algorithm cover all scenarios",
+        "Feature test for bank transaction GL posting verifies journal entries",
+        "Feature test for statement import workflow tests entire process",
+        "Feature test for reconciliation process includes outstanding items",
+        "Feature test for webhook processing covers success and failure cases",
+        "ARCHITECTURAL_DECISIONS.md updated with banking module design",
+        "PROGRESS_CHECKLIST.md reflects completion status",
+        "Banking module documentation created with user guides"
+      ],
+      "affectedFiles": [
+        "tests/Unit/BankAccountTest.php",
+        "tests/Unit/AutoMatchBankTransactionsTest.php",
+        "tests/Feature/BankTransactionGLPostingTest.php",
+        "tests/Feature/BankStatementImportTest.php",
+        "tests/Feature/BankReconciliationTest.php",
+        "tests/Feature/PaymentGatewayWebhookTest.php",
+        "ARCHITECTURAL_DECISIONS.md",
+        "PROGRESS_CHECKLIST.md",
+        "docs/banking-module.md"
+      ]
+    }
+  ]
+}

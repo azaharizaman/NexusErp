@@ -1,0 +1,132 @@
+{
+  "id": "ar-payment-receipt-resource",
+  "title": "Implement PaymentReceipt Filament Resource",
+  "description": "Create complete Filament resource for managing customer payment receipts with payment allocation and GL integration",
+  "tags": ["accounting", "ar", "filament", "payment", "ui"],
+  "dependencies": ["PostPaymentReceipt", "AllocatePaymentToInvoices"],
+  "steps": [
+    {
+      "step": 1,
+      "title": "Create PaymentReceiptResource foundation",
+      "description": "Generate PaymentReceiptResource class with basic form structure following Filament v4.2 patterns. Include company, customer, payment date, amount, currency, and payment method fields.",
+      "tasks": ["TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006", "TASK-007", "TASK-008"],
+      "files": [
+        "app/Filament/Accounting/Resources/PaymentReceiptResource.php",
+        "app/Filament/Accounting/Resources/PaymentReceiptResource/Pages/ListPaymentReceipts.php",
+        "app/Filament/Accounting/Resources/PaymentReceiptResource/Pages/CreatePaymentReceipt.php",
+        "app/Filament/Accounting/Resources/PaymentReceiptResource/Pages/EditPaymentReceipt.php"
+      ],
+      "acceptance": [
+        "Resource class created with proper namespace",
+        "Form method uses Schema pattern: form(Schema $schema): Schema",
+        "All basic payment fields are present and validated",
+        "Customer relationship displays name, not ID"
+      ]
+    },
+    {
+      "step": 2,
+      "title": "Add payment method specific fields",
+      "description": "Implement conditional fields for different payment methods (bank details, cheque info, transaction ID) with visibility rules based on selected payment method.",
+      "tasks": ["TASK-009", "TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014", "TASK-015"],
+      "files": [
+        "app/Filament/Accounting/Resources/PaymentReceiptResource.php"
+      ],
+      "acceptance": [
+        "Bank fields visible only for bank/card payment methods",
+        "Cheque fields visible only for cheque payment method",
+        "Transaction ID visible only for online payment method",
+        "Status field includes all 4 workflow states"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "Implement payment allocation interface",
+      "description": "Create Repeater field for manual invoice allocation with real-time validation. Add calculated fields for allocated and unallocated amounts.",
+      "tasks": ["TASK-016", "TASK-017", "TASK-018", "TASK-019", "TASK-020", "TASK-021", "TASK-022"],
+      "files": [
+        "app/Filament/Accounting/Resources/PaymentReceiptResource.php"
+      ],
+      "acceptance": [
+        "Repeater shows unpaid invoices for selected customer",
+        "Invoice details (number, due date, outstanding) displayed",
+        "Allocated amount validation prevents over-allocation",
+        "Unallocated amount updates in real-time"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Add automatic FIFO allocation action",
+      "description": "Create custom Filament Action to automatically allocate payment to oldest unpaid invoices using FIFO logic via AllocatePaymentToInvoices Action.",
+      "tasks": ["TASK-023"],
+      "files": [
+        "app/Filament/Accounting/Resources/PaymentReceiptResource.php"
+      ],
+      "acceptance": [
+        "Action button visible in form",
+        "Calls AllocatePaymentToInvoices with automatic=true",
+        "Updates allocation repeater after execution",
+        "Shows success notification with allocated amount"
+      ]
+    },
+    {
+      "step": 5,
+      "title": "Configure table and filters",
+      "description": "Setup table columns with proper formatting, relationship displays, and status badges. Add comprehensive filters for status, payment method, date range, and GL posting status.",
+      "tasks": ["TASK-024", "TASK-025", "TASK-026", "TASK-027", "TASK-028", "TASK-029", "TASK-030"],
+      "files": [
+        "app/Filament/Accounting/Resources/PaymentReceiptResource.php"
+      ],
+      "acceptance": [
+        "Table shows customer name, not customer_id",
+        "Amount displays with currency formatting",
+        "Status badges use appropriate colors",
+        "Filters narrow results correctly"
+      ]
+    },
+    {
+      "step": 6,
+      "title": "Implement GL posting action",
+      "description": "Add 'Post to GL' table action that calls PostPaymentReceipt Action with validation. Include authorization checks and error handling.",
+      "tasks": ["TASK-031", "TASK-032"],
+      "files": [
+        "app/Filament/Accounting/Resources/PaymentReceiptResource.php"
+      ],
+      "acceptance": [
+        "Action only visible for cleared, non-posted payments",
+        "Validates payment has allocations before posting",
+        "Creates journal entry: Debit Cash/Bank, Credit AR",
+        "Updates is_posted_to_gl flag and posted_to_gl_at timestamp"
+      ]
+    },
+    {
+      "step": 7,
+      "title": "Create feature tests",
+      "description": "Write comprehensive feature tests for PaymentReceipt CRUD operations, payment allocation (manual and automatic), and GL posting integration.",
+      "tasks": ["TASK-058", "TASK-059", "TASK-060"],
+      "files": [
+        "tests/Feature/PaymentReceiptResourceTest.php"
+      ],
+      "acceptance": [
+        "Tests cover create, read, update, delete operations",
+        "Manual allocation test validates allocation records",
+        "Automatic FIFO allocation test verifies oldest-first logic",
+        "GL posting test confirms journal entry creation"
+      ]
+    },
+    {
+      "step": 8,
+      "title": "Update documentation",
+      "description": "Document PaymentReceiptResource implementation in ARCHITECTURAL_DECISIONS.md and mark as complete in PROGRESS_CHECKLIST.md",
+      "tasks": ["TASK-064", "TASK-065"],
+      "files": [
+        "ARCHITECTURAL_DECISIONS.md",
+        "PROGRESS_CHECKLIST.md"
+      ],
+      "acceptance": [
+        "Implementation details added to architectural decisions",
+        "Progress checklist updated with completion date",
+        "Resource features and capabilities documented"
+      ]
+    }
+  ]
+}

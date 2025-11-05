@@ -25,6 +25,11 @@ class SalesInvoiceResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    /**
+     * Filament v4.2 compatibility: The form method signature now uses Schema $schema instead of Form $form.
+     * This is a breaking change from previous Filament versions.
+     * See: https://filamentphp.com/docs/4.x/releases#v4-2-0
+     */
     public static function form(Schema $schema): Schema
     {
         return $schema

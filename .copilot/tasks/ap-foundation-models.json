@@ -1,0 +1,165 @@
+{
+  "id": "ap-foundation-models",
+  "title": "Implement Accounts Payable Foundation Models",
+  "description": "Create core AP models including PaymentVoucher, SupplierDebitNote, and payment allocation system with GL integration",
+  "tags": ["accounting", "ap", "payable", "models", "foundation"],
+  "dependencies": ["SupplierInvoice", "Account", "JournalEntry"],
+  "steps": [
+    {
+      "step": 1,
+      "title": "Enhance SupplierInvoice for AP integration",
+      "description": "Add payment tracking fields and GL integration to existing SupplierInvoice model from Purchase Module",
+      "tasks": ["TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006", "TASK-007", "TASK-008"],
+      "files": [
+        "database/migrations/YYYY_MM_DD_enhance_supplier_invoices_for_ap.php",
+        "app/Models/SupplierInvoice.php"
+      ],
+      "acceptance": [
+        "Migration adds journal_entry_id, is_posted_to_gl, posted_to_gl_at fields",
+        "Migration adds paid_amount, outstanding_amount, payment_status fields",
+        "calculateOutstanding() method updates outstanding based on allocations",
+        "updatePaymentStatus() transitions between unpaid/partially_paid/paid/overdue",
+        "Helper methods isFullyPaid() and isOverdue() work correctly"
+      ]
+    },
+    {
+      "step": 2,
+      "title": "Create PaymentVoucher model",
+      "description": "Implement PaymentVoucher model with serial numbering, payment methods, and workflow status",
+      "tasks": ["TASK-009", "TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014", "TASK-015", "TASK-016", "TASK-017", "TASK-018"],
+      "files": [
+        "database/migrations/YYYY_MM_DD_create_payment_vouchers_table.php",
+        "app/Models/PaymentVoucher.php",
+        "database/factories/PaymentVoucherFactory.php"
+      ],
+      "acceptance": [
+        "Serial number generates with PV-YYYY-XXXX format using HasSerialNumbering",
+        "All payment methods supported (cash, bank, card, cheque, online, other)",
+        "Status workflow includes draft, approved, paid, cancelled",
+        "Payment hold flag (is_on_hold) implemented",
+        "Audit fields for approval and GL posting present",
+        "Relationships to company, supplier, currency, journal entry configured"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "Implement payment allocation system",
+      "description": "Create PaymentVoucherAllocation model and implement allocation logic with validation",
+      "tasks": ["TASK-019", "TASK-020", "TASK-021", "TASK-022", "TASK-023", "TASK-024", "TASK-025", "TASK-026", "TASK-027", "TASK-028"],
+      "files": [
+        "database/migrations/YYYY_MM_DD_create_payment_voucher_allocations_table.php",
+        "app/Models/PaymentVoucherAllocation.php",
+        "app/Models/PaymentVoucher.php"
+      ],
+      "acceptance": [
+        "Allocation links payment_voucher_id to supplier_invoice_id with amount",
+        "Unique constraint prevents duplicate allocations",
+        "allocateToInvoice() validates amount against invoice outstanding",
+        "recalculateAllocations() updates allocated_amount and unallocated_amount",
+        "Scopes forPayment() and forInvoice() filter correctly"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Create SupplierDebitNote model",
+      "description": "Implement SupplierDebitNote model for purchase returns and adjustments with GL integration",
+      "tasks": ["TASK-029", "TASK-030", "TASK-031", "TASK-032", "TASK-033", "TASK-034", "TASK-035", "TASK-036", "TASK-037", "TASK-038", "TASK-039", "TASK-040"],
+      "files": [
+        "database/migrations/YYYY_MM_DD_create_supplier_debit_notes_table.php",
+        "app/Models/SupplierDebitNote.php",
+        "database/factories/SupplierDebitNoteFactory.php"
+      ],
+      "acceptance": [
+        "Serial number generates with DN-YYYY-XXXX format",
+        "Reason enum includes return, price_adjustment, quality_issue, shipping_error, other",
+        "Status workflow: draft, issued, applied, cancelled",
+        "applyToInvoice() reduces supplier invoice outstanding amount",
+        "Validation prevents debit amount > invoice amount",
+        "GL integration fields present (journal_entry_id, is_posted_to_gl)"
+      ]
+    },
+    {
+      "step": 5,
+      "title": "Create GL posting actions",
+      "description": "Implement Actions for posting supplier invoices, payment vouchers, and debit notes to General Ledger",
+      "tasks": ["TASK-041", "TASK-042", "TASK-043", "TASK-044", "TASK-045", "TASK-046", "TASK-047", "TASK-048", "TASK-049", "TASK-050", "TASK-051", "TASK-052"],
+      "files": [
+        "app/Actions/PostSupplierInvoice.php",
+        "app/Actions/PostPaymentVoucher.php",
+        "app/Actions/PostSupplierDebitNote.php"
+      ],
+      "acceptance": [
+        "PostSupplierInvoice: Debit Expense accounts, Credit AP",
+        "PostSupplierInvoice: Credit Tax Payable if tax included",
+        "PostPaymentVoucher: Debit AP, Credit Cash/Bank",
+        "PostPaymentVoucher: Updates supplier invoice outstanding amounts",
+        "PostSupplierDebitNote: Debit AP, Credit Purchase Returns",
+        "All actions wrapped in database transactions for atomicity",
+        "Validation prevents duplicate posting"
+      ]
+    },
+    {
+      "step": 6,
+      "title": "Implement payment processing actions",
+      "description": "Create Actions for payment allocation, approval workflow, and payment holds",
+      "tasks": ["TASK-053", "TASK-054", "TASK-055", "TASK-056", "TASK-057", "TASK-058", "TASK-059", "TASK-060", "TASK-061", "TASK-062", "TASK-063", "TASK-064"],
+      "files": [
+        "app/Actions/AllocatePaymentToSupplierInvoices.php",
+        "app/Actions/ApprovePaymentVoucher.php",
+        "app/Actions/PlacePaymentOnHold.php"
+      ],
+      "acceptance": [
+        "AllocatePaymentToSupplierInvoices supports manual allocation array",
+        "Automatic FIFO allocation distributes to oldest invoices first",
+        "Payment and invoice amounts update atomically",
+        "ApprovePaymentVoucher validates allocations before approval",
+        "Status transitions to 'approved' with approved_by timestamp",
+        "PlacePaymentOnHold sets is_on_hold flag with reason"
+      ]
+    },
+    {
+      "step": 7,
+      "title": "Implement three-way matching",
+      "description": "Create InvoiceMatching model and ValidateThreeWayMatch Action for PO-GRN-Invoice validation",
+      "tasks": ["TASK-065", "TASK-066", "TASK-067", "TASK-068", "TASK-069", "TASK-070", "TASK-071", "TASK-072", "TASK-073", "TASK-074"],
+      "files": [
+        "database/migrations/YYYY_MM_DD_create_invoice_matching_table.php",
+        "app/Models/InvoiceMatching.php",
+        "app/Actions/ValidateThreeWayMatch.php"
+      ],
+      "acceptance": [
+        "InvoiceMatching links purchase_order_id, grn_id, supplier_invoice_id",
+        "Match status includes matched, quantity_mismatch, price_mismatch, not_matched",
+        "Variance amount and reason captured",
+        "ValidateThreeWayMatch compares PO vs GRN quantities",
+        "ValidateThreeWayMatch compares PO vs invoice prices",
+        "Blocks invoice approval if variance exceeds tolerance threshold"
+      ]
+    },
+    {
+      "step": 8,
+      "title": "Create comprehensive tests",
+      "description": "Write unit and feature tests for all AP models, actions, and workflows",
+      "tasks": ["TASK-075", "TASK-076", "TASK-077", "TASK-078", "TASK-079", "TASK-080", "TASK-081", "TASK-082", "TASK-083"],
+      "files": [
+        "tests/Unit/PaymentVoucherTest.php",
+        "tests/Unit/SupplierDebitNoteTest.php",
+        "tests/Feature/PaymentAllocationTest.php",
+        "tests/Feature/APGLPostingTest.php",
+        "tests/Feature/ThreeWayMatchingTest.php",
+        "tests/Feature/PaymentApprovalTest.php",
+        "ARCHITECTURAL_DECISIONS.md",
+        "PROGRESS_CHECKLIST.md",
+        "docs/ap-module.md"
+      ],
+      "acceptance": [
+        "Unit tests cover model methods and business logic",
+        "Feature tests validate end-to-end workflows",
+        "GL posting tests confirm correct journal entries",
+        "Three-way matching tests cover all mismatch scenarios",
+        "Approval workflow tests verify status transitions",
+        "Documentation updated with AP module implementation details"
+      ]
+    }
+  ]
+}

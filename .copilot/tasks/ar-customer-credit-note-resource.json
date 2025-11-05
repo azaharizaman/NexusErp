@@ -1,0 +1,122 @@
+{
+  "id": "ar-customer-credit-note-resource",
+  "title": "Implement CustomerCreditNote Filament Resource",
+  "description": "Create complete Filament resource for managing customer credit notes with invoice linkage, reason tracking, and GL integration",
+  "tags": ["accounting", "ar", "filament", "credit-note", "ui"],
+  "dependencies": ["PostCreditNote", "SalesInvoice.applyToInvoice"],
+  "steps": [
+    {
+      "step": 1,
+      "title": "Create CustomerCreditNoteResource foundation",
+      "description": "Generate CustomerCreditNoteResource class with basic form structure following Filament v4.2 patterns. Include company, customer, credit note number, date, linked invoice, and reason fields.",
+      "tasks": ["TASK-033", "TASK-034", "TASK-035", "TASK-036", "TASK-037", "TASK-038", "TASK-039", "TASK-040"],
+      "files": [
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource.php",
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource/Pages/ListCustomerCreditNotes.php",
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource/Pages/CreateCustomerCreditNote.php",
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource/Pages/EditCustomerCreditNote.php"
+      ],
+      "acceptance": [
+        "Resource class created with proper namespace",
+        "Form method uses Schema pattern: form(Schema $schema): Schema",
+        "All basic credit note fields present",
+        "Reason select has all 6 options",
+        "Invoice selection filtered by customer"
+      ]
+    },
+    {
+      "step": 2,
+      "title": "Add amount and GL account fields",
+      "description": "Implement credit amount fields with currency support, exchange rate handling, and GL account linkage for return accounting.",
+      "tasks": ["TASK-041", "TASK-042", "TASK-043", "TASK-044", "TASK-045", "TASK-046", "TASK-047", "TASK-048"],
+      "files": [
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource.php"
+      ],
+      "acceptance": [
+        "Credit amount validated as numeric with 4 decimal precision",
+        "Currency selection available with exchange rate",
+        "Base currency amount calculated automatically",
+        "Return account linked to GL Account model",
+        "Status workflow includes all 4 states"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "Configure table and filters",
+      "description": "Setup table columns with proper formatting for credit note number, customer, invoice, amount, reason, and status. Add filters for status, reason, customer, date range, and invoice linkage.",
+      "tasks": ["TASK-049", "TASK-050", "TASK-051", "TASK-052", "TASK-053", "TASK-054", "TASK-055"],
+      "files": [
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource.php"
+      ],
+      "acceptance": [
+        "Table displays customer name and invoice number (not IDs)",
+        "Credit amount formatted with currency symbol",
+        "Reason shown with appropriate badge styling",
+        "Status badges use color coding",
+        "Filters work correctly to narrow results"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Implement GL posting action",
+      "description": "Add 'Post to GL' table action that calls PostCreditNote Action with validation. Ensure proper authorization and error handling.",
+      "tasks": ["TASK-056"],
+      "files": [
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource.php"
+      ],
+      "acceptance": [
+        "Action only visible for issued, non-posted credit notes",
+        "Validates credit note has customer and amount",
+        "Creates journal entry: Debit Sales Returns, Credit AR",
+        "Updates is_posted_to_gl flag and timestamp"
+      ]
+    },
+    {
+      "step": 5,
+      "title": "Add apply to invoice action",
+      "description": "Create custom action to apply credit note to linked sales invoice, reducing the invoice outstanding balance via applyToInvoice() method.",
+      "tasks": ["TASK-057"],
+      "files": [
+        "app/Filament/Accounting/Resources/CustomerCreditNoteResource.php"
+      ],
+      "acceptance": [
+        "Action only visible when credit note has linked invoice",
+        "Action disabled if already applied or cancelled",
+        "Calls CustomerCreditNote.applyToInvoice() method",
+        "Updates credit note status to 'applied'",
+        "Reduces invoice outstanding_amount correctly"
+      ]
+    },
+    {
+      "step": 6,
+      "title": "Create feature tests",
+      "description": "Write comprehensive feature tests for CustomerCreditNote CRUD operations, invoice application, and GL posting integration.",
+      "tasks": ["TASK-061", "TASK-062", "TASK-063"],
+      "files": [
+        "tests/Feature/CustomerCreditNoteResourceTest.php"
+      ],
+      "acceptance": [
+        "Tests cover create, read, update, delete operations",
+        "Application to invoice test validates outstanding reduction",
+        "GL posting test confirms journal entry with correct accounts",
+        "Status transition tests verify workflow compliance"
+      ]
+    },
+    {
+      "step": 7,
+      "title": "Update documentation",
+      "description": "Document CustomerCreditNoteResource implementation in ARCHITECTURAL_DECISIONS.md and mark as complete in PROGRESS_CHECKLIST.md",
+      "tasks": ["TASK-064", "TASK-065"],
+      "files": [
+        "ARCHITECTURAL_DECISIONS.md",
+        "PROGRESS_CHECKLIST.md"
+      ],
+      "acceptance": [
+        "Implementation details added to architectural decisions",
+        "Progress checklist updated with completion date",
+        "Resource features and capabilities documented",
+        "AR module marked as fully complete"
+      ]
+    }
+  ]
+}
