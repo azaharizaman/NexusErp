@@ -185,22 +185,6 @@ class PaymentVoucher extends Model
     }
 
     /**
-     * Journal entry relationship.
-     */
-    public function journalEntry(): BelongsTo
-    {
-        return $this->belongsTo(JournalEntry::class);
-    }
-
-    /**
-     * Payment allocations relationship.
-     */
-    public function allocations(): HasMany
-    {
-        return $this->hasMany(PaymentVoucherAllocation::class);
-    }
-
-    /**
      * Requester relationship.
      */
     public function requester(): BelongsTo
@@ -254,14 +238,6 @@ class PaymentVoucher extends Model
     public function holder(): BelongsTo
     {
         return $this->belongsTo(User::class, 'held_by');
-    }
-
-    /**
-     * Payment allocations relationship.
-     */
-    public function allocations(): HasMany
-    {
-        return $this->hasMany(PaymentVoucherAllocation::class);
     }
 
     /**
@@ -334,32 +310,6 @@ class PaymentVoucher extends Model
     public function canVoid(): bool
     {
         return in_array($this->latestStatus(), ['draft', 'submitted', 'approved']);
-    }
-
-    /**
-     * Get the current status for display purposes.
-     */
-    public function getStatusAttribute(): ?string
-    {
-        return $this->latestStatus();
-    }
-
-    /**
-     * Check if payment is fully allocated.
-     */
-    public function isFullyAllocated(): bool
-    {
-        return bccomp($this->unallocated_amount, '0', 4) <= 0;
-    }
-
-    /**
-     * Calculate total allocated amount from allocations.
-     */
-    public function recalculateAllocations(): void
-    {
-        $this->allocated_amount = $this->allocations()->sum('allocated_amount');
-        $this->unallocated_amount = bcsub($this->amount, $this->allocated_amount, 4);
-        $this->save();
     }
 
     /**

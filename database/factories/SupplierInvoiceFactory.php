@@ -28,7 +28,6 @@ class SupplierInvoiceFactory extends Factory
             'invoice_date' => $this->faker->dateTimeBetween('-3 months', 'now'),
             'due_date' => $this->faker->dateTimeBetween('now', '+60 days'),
             'status' => 'draft',
-            'payment_status' => 'unpaid',
             'subtotal' => $totalAmount,
             'tax_amount' => 0.00,
             'discount_amount' => 0.00,
@@ -37,7 +36,6 @@ class SupplierInvoiceFactory extends Factory
             'outstanding_amount' => $totalAmount - $paidAmount,
             'description' => $this->faker->optional()->sentence(),
             'notes' => $this->faker->optional()->paragraph(),
-            'is_posted_to_gl' => false,
         ];
     }
 
@@ -65,7 +63,6 @@ class SupplierInvoiceFactory extends Factory
             return [
                 'paid_amount' => $paidAmount,
                 'outstanding_amount' => $totalAmount - $paidAmount,
-                'payment_status' => 'partially_paid',
             ];
         });
     }
@@ -81,7 +78,6 @@ class SupplierInvoiceFactory extends Factory
             return [
                 'paid_amount' => $totalAmount,
                 'outstanding_amount' => 0.00,
-                'payment_status' => 'paid',
             ];
         });
     }
@@ -93,7 +89,6 @@ class SupplierInvoiceFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'due_date' => $this->faker->dateTimeBetween('-30 days', '-1 day'),
-            'payment_status' => 'overdue',
         ]);
     }
 
@@ -104,8 +99,6 @@ class SupplierInvoiceFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'journal_entry_id' => \App\Models\JournalEntry::factory(),
-            'is_posted_to_gl' => true,
-            'posted_to_gl_at' => now(),
         ]);
     }
 }
