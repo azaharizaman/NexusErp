@@ -24,7 +24,7 @@ class CalculateSupplierInvoiceTotals
         $invoice->tax_amount = $invoice->items->sum('tax_amount');
         $invoice->total_amount = $invoice->subtotal + $invoice->tax_amount - $invoice->discount_amount;
         $invoice->outstanding_amount = $invoice->total_amount - $invoice->paid_amount;
-        
+
         $invoice->save();
 
         return $invoice;

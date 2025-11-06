@@ -174,9 +174,11 @@ NexusErp/
 
 ## 📚 Documentation
 
+- [System Architecture Specification](spec/architecture-nexus-erp.md) - Complete system architecture and design requirements
 - [Architectural Decisions](ARCHITECTURAL_DECISIONS.md) - Key technical decisions and rationale
 - [Progress Checklist](PROGRESS_CHECKLIST.md) - Development roadmap and completed milestones
-- [Modules Planning](MODULES_PLANNING.md) - Module structure and navigation design
+- [Accounting Module Planning](ACCOUNTING_MODULE_PLANNING.md) - Detailed accounting module implementation plan
+- [Purchase Management Planning](PURCHASE_MANAGEMENT_MODULES_PLANNING.md) - Purchase module development roadmap
 - [Laravel Actions Guide](LARAVEL_ACTIONS_GUIDE.md) - Business logic implementation patterns
 - [Settings Implementation](SETTINGS_IMPLEMENTATION.md) - Application settings management
 - [Company Status Management](COMPANY_STATUS_MANAGEMENT.md) - Status workflow documentation

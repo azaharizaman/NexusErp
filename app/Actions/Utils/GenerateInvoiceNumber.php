@@ -25,7 +25,7 @@ class GenerateInvoiceNumber
         // Format with leading zeros
         $formattedNumber = str_pad($nextNumber, $length, '0', STR_PAD_LEFT);
 
-        return $prefix.$formattedNumber;
+        return $prefix . $formattedNumber;
     }
 
     /**

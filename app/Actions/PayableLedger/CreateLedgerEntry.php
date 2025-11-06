@@ -53,7 +53,7 @@ class CreateLedgerEntry
         // Calculate running balance (excluding current transaction date to avoid including itself)
         $query = PayableLedger::where('supplier_id', $data['supplier_id'])
             ->where('transaction_date', '<', $data['transaction_date']);
-        
+
         $totals = $query->selectRaw('SUM(debit_amount_base) as total_debits, SUM(credit_amount_base) as total_credits')->first();
         $previousBalance = ($totals->total_debits ?? 0) - ($totals->total_credits ?? 0);
         $balance = $previousBalance + $debitBase - $creditBase;
@@ -74,7 +74,7 @@ class CreateLedgerEntry
             'exchange_rate' => $exchangeRate,
             'exchange_rate_date' => $exchangeRateDate,
             'balance_base' => $balance,
-            'balance_foreign' => isset($data['foreign_currency_id']) 
+            'balance_foreign' => isset($data['foreign_currency_id'])
                 ? ($exchangeRate > 0 ? $balance / $exchangeRate : 0)
                 : $debitForeign - $creditForeign,
             'reference_number' => $data['reference_number'] ?? null,

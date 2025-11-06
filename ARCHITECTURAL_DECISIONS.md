@@ -1,5 +1,346 @@
 # Architectural Decisions
 
+## 2025-11-06 Phase 3 - Accounts Receivable Module (AR)
+- **Implemented comprehensive Accounts Receivable system** with full GL integration
+- **Models Created:**
+  - `SalesInvoice` - Customer invoices with status workflow, payment tracking, and GL integration
+  - `SalesInvoiceItem` - Invoice line items with tax and discount calculation
+  - `PaymentReceipt` - Customer payments with multiple payment methods and allocation tracking
+  - `PaymentReceiptAllocation` - Links payments to specific invoices
+  - `CustomerCreditNote` - Credit notes for returns, adjustments, and discounts
+- **SalesInvoice Features:**
+  - **Serial Numbering:** SI-YYYY-XXXX pattern with yearly reset
+  - **Status Workflow:** draft → issued → partially_paid → paid → overdue → cancelled
+  - **Payment Tracking:** Tracks paid_amount and outstanding_amount in real-time
+  - **Multi-currency Support:** Currency and exchange rate tracking
+  - **Tax Calculation:** Automatic tax calculation from line items
+  - **Discount Support:** Invoice-level and line-level discounts
+  - **Addresses:** Billing and shipping address storage
+  - **GL Integration:** journal_entry_id, is_posted_to_gl, posted_to_gl_at fields
+  - **Audit Trail:** Created by, updated by, issued by, cancelled by with timestamps
+  - **Business Methods:**
+    - `calculateTotals()` - Recalculates subtotal, tax, total from line items
+    - `isFullyPaid()` - Checks if invoice is fully paid
+    - `isOverdue()` - Checks if invoice is overdue based on due date
+    - `updatePaymentStatus()` - Updates status based on paid amount
+    - `recordPayment()` - Records a payment and updates outstanding balance
+  - **Relationships:** company, customer, fiscalYear, accountingPeriod, currency, items, journalEntry, paymentAllocations, creditNotes
+  - **Scopes:** draft, issued, partiallyPaid, paid, overdue, unpaid, postedToGl, forCustomer, forCompany
+- **SalesInvoiceItem Features:**
+  - Sortable behavior for line ordering
+  - Item details: code, description, specifications
+  - Quantity with UOM support
+  - Unit price with 4 decimal precision
+  - Discount: percentage or amount
+  - Tax rate and tax amount calculation
+  - Revenue account linkage for GL posting
+  - **Business Methods:**
+    - `calculateLineTotal()` - Calculates line total after discount
+    - `calculateTaxAmount()` - Calculates tax on line total
+    - `calculateAmounts()` - Calculates both line total and tax
+    - `getTotalWithTaxAttribute()` - Returns line total including tax
+  - **Relationships:** salesInvoice, uom, revenueAccount
+- **PaymentReceipt Features:**
+  - **Serial Numbering:** PR-YYYY-XXXX pattern with yearly reset
+  - **Status Workflow:** draft → cleared → bounced → cancelled
+  - **Payment Methods:** cash, bank_transfer, credit_card, debit_card, cheque, online, other
+  - **Payment References:** reference_number, bank details, cheque details, transaction_id
+  - **Allocation Tracking:** allocated_amount and unallocated_amount for advance payments
+  - **Multi-currency Support:** Currency and exchange rate tracking
+  - **GL Integration:** journal_entry_id, is_posted_to_gl, posted_to_gl_at fields
+  - **Business Methods:**
+    - `allocateToInvoice()` - Allocates payment to specific invoice with validation
+    - `isFullyAllocated()` - Checks if entire payment is allocated
+    - `recalculateAllocations()` - Recalculates allocated and unallocated amounts
+  - **Relationships:** company, customer, currency, journalEntry, allocations
+  - **Scopes:** draft, cleared, bounced, unallocated, postedToGl, forCustomer, forCompany, byPaymentMethod
+- **PaymentReceiptAllocation Features:**
+  - Links payment_receipt_id to sales_invoice_id
+  - Tracks allocated_amount per invoice
+  - Unique constraint prevents duplicate allocations
+  - **Scopes:** forPayment, forInvoice
+- **CustomerCreditNote Features:**
+  - **Serial Numbering:** CN-YYYY-XXXX pattern with yearly reset
+  - **Status Workflow:** draft → issued → applied → cancelled
+  - **Reason Types:** return, price_adjustment, discount, error_correction, service_issue, other
+  - **Invoice Linkage:** Optional link to originating sales invoice
+  - **Multi-currency Support:** Currency and exchange rate tracking
+  - **GL Integration:** journal_entry_id, is_posted_to_gl, posted_to_gl_at fields
+  - **Approval Tracking:** approved_by, approved_at fields
+  - **Business Methods:**
+    - `applyToInvoice()` - Applies credit note to linked invoice, reducing outstanding balance
+    - `canBeApplied()` - Validates if credit note can be applied
+  - **Relationships:** company, customer, salesInvoice, fiscalYear, accountingPeriod, currency, journalEntry
+  - **Scopes:** draft, issued, applied, postedToGl, forCustomer, forCompany, forInvoice, byReason
+- **Actions Implemented:**
+  - `PostSalesInvoice` - Creates GL entry: Debit AR, Credit Revenue (per line), Credit Tax Payable
+  - `AllocatePaymentToInvoices` - Allocates payment to invoices with comprehensive validation
+    - Manual allocation with array of invoice_id → amount pairs
+    - Automatic allocation (FIFO) to oldest unpaid invoices
+    - Updates both payment and invoice records atomically
+  - `PostPaymentReceipt` - Creates GL entry: Debit Cash/Bank, Credit AR
+  - `PostCreditNote` - Creates GL entry: Debit Sales Returns, Credit AR
+- **GL Posting Rules:**
+  - **Sales Invoice Posting:**
+    - Debit: Accounts Receivable (1200) - Total invoice amount
+    - Credit: Revenue Accounts (per line item) - Line totals
+    - Credit: Tax Payable (2130) - Total tax amount
+  - **Payment Receipt Posting:**
+    - Debit: Cash/Bank Account (1100) - Payment amount
+    - Credit: Accounts Receivable (1200) - Payment amount
+  - **Credit Note Posting:**
+    - Debit: Sales Returns/Allowances (4100) - Credit note amount
+    - Credit: Accounts Receivable (1200) - Credit note amount
+- **Filament Resources:**
+  - `SalesInvoiceResource` - Full CRUD with:
+    - Line items Repeater with real-time calculation
+    - Automatic due date calculation from credit days
+    - Post to GL action with validation
+    - Status badge coloring
+    - Filters: status, customer, date range, posted to GL, trashed
+    - 4 page files: List, Create, Edit, View
+- **Database Design:**
+  - `sales_invoices` table: invoice_number (unique), customer details, fiscal period, dates, currency, amounts, status, GL integration, addresses, audit fields
+  - `sales_invoice_items` table: item details, quantity, pricing, discounts, tax, revenue_account_id, sort_order
+  - `payment_receipts` table: receipt_number (unique), customer, payment details, payment method, currency, amounts, GL integration, status, audit fields
+  - `payment_receipt_allocations` table: payment-to-invoice linkage with allocated_amount, unique constraint
+  - `customer_credit_notes` table: credit_note_number (unique), customer, invoice linkage, reason, currency, amount, GL integration, approval, audit fields
+  - Comprehensive indexes on company+status, customer+status/date, GL posting flags
+- **Serial Patterns Added:**
+  - salesinvoice: SI-{year}-{number}, start: 1, digits: 4, reset: yearly
+  - paymentreceipt: PR-{year}-{number}, start: 1, digits: 4, reset: yearly
+  - customercreditnote: CN-{year}-{number}, start: 1, digits: 4, reset: yearly
+- **Integration Points:**
+  - Ready for Sales Order integration (sales_order_id field in SalesInvoice)
+  - Ready for Customer Aging Report (using invoice dates and outstanding amounts)
+  - Ready for AR Dashboard Widgets (outstanding by customer, aging buckets)
+  - Ready for Credit Limit checking (customer balance calculation)
+  - Links to BackOffice package: BusinessPartner (customers), Currency, UnitOfMeasure
+- **Payment Allocation Logic:**
+  - Manual allocation: User specifies which invoices to apply payment to
+  - Automatic allocation: FIFO approach (oldest invoices first)
+  - Validations: Same customer, not fully paid, not cancelled, amount limits
+  - Updates both payment (allocated_amount) and invoice (paid_amount, outstanding_amount)
+  - Atomic transaction ensures data consistency
+- **Status Workflows:**
+  - **Invoice:** draft → issued (manual) → partially_paid (auto) → paid (auto) → overdue (auto)
+  - **Payment:** draft → cleared (manual) → bounced (manual if check bounces)
+  - **Credit Note:** draft → issued (manual) → applied (auto when applied to invoice)
+- **Future Considerations:**
+  - Customer credit limit checking before invoice issuance
+  - AR Aging Report (0-30, 31-60, 61-90, 90+ days buckets)
+  - Customer statement generation
+  - Automatic overdue notification emails
+  - Payment reminders based on due date
+  - Customer balance widget for dashboard
+  - Integration with Sales Order module (generate invoice from SO)
+  - Recurring invoice templates (similar to recurring journal entries)
+  - Bulk payment allocation from Excel/CSV
+  - Customer portal for viewing invoices and making payments
+
+## 2025-11-06 Filament v4.2 Compatibility Fixes
+- **Fixed SalesInvoiceResource for Filament v4.2 Schema-based forms**
+- **Key Changes Made:**
+  - Updated form method signature from `public static function form(Form $form): Form` to `public static function form(Schema $schema): Schema`
+  - Changed form implementation from `Form::make()->schema([...])` to `$schema->components([...])`
+  - Updated component usage from `Forms\Components\Section::make()` to `Components\Section::make()`
+  - Fixed import statements to use `Filament\Forms\Components` and `Filament\Tables`
+  - Corrected currency model reference from `\AzahariZaman\Backoffice\Models\Currency` to `\App\Models\Currency`
+  - Fixed number_format type casting issues by casting decimal fields to float
+- **Filament v4.2 Patterns Established:**
+  - Use `Schema $schema` parameter in form methods
+  - Use `$schema->components([...])` instead of `Form::make()->schema([...])`
+  - Import components as `use Filament\Forms\Components;` and use `Components\ClassName::make()`
+  - Import tables as `use Filament\Tables;` and use `Tables\Actions\ActionName::make()`
+- **Validation:** PHP syntax check passed, all compile errors resolved
+
+## 2025-11-05 Phase 2 - General Ledger Management (Journal Entries & GL Posting)
+- **Implemented core double-entry bookkeeping** with comprehensive journal entry system
+- **Models Created:**
+  - `JournalEntry` - Main journal entry model with serial numbering (JE-YYYY-XXXX), status workflow, and full audit trail
+  - `JournalEntryLine` - Individual debit/credit lines with account, cost center, and dimensional tracking
+  - `RecurringJournalTemplate` - Templates for auto-generating recurring journal entries
+- **JournalEntry Features:**
+  - **Serial Numbering:** JE-YYYY-XXXX pattern with yearly reset (added to `config/serial-pattern.php`)
+  - **Entry Types:** manual, automatic, opening, closing, adjusting, reversing, reclassification, intercompany
+  - **Status Workflow:** draft → submitted → posted → cancelled
+  - **Reversal Support:** Full reversal functionality with automatic line swapping (debit ↔ credit)
+  - **Inter-company Support:** Reciprocal entry tracking for inter-company transactions
+  - **Source Tracking:** Polymorphic relationship to source documents (e.g., PurchaseOrder, SalesInvoice)
+  - **Balance Validation:** Built-in `isBalanced()` method validates debits = credits
+  - **Posting Method:** `post()` method updates account balances and prevents duplicate posting
+  - **Multi-currency:** Support for foreign currency transactions with exchange rate tracking
+- **JournalEntryLine Features:**
+  - Debit and credit amounts with 4 decimal precision
+  - Foreign currency support with separate foreign debit/credit fields
+  - Dimensional analytics: cost center, department (future), project (future)
+  - Sortable behavior for maintaining line order
+  - Helper methods: `isDebit()`, `isCredit()`, `getNetAmountAttribute()`
+- **RecurringJournalTemplate Features:**
+  - Frequency options: daily, weekly, biweekly, monthly, quarterly, half-yearly, yearly
+  - Occurrence tracking: max occurrences and actual count
+  - Start/end date management with next generation date calculation
+  - JSON template lines for storing entry structure
+  - `shouldGenerate()` validation method
+  - `generate()` method creates journal entries from template
+  - `calculateNextGenerationDate()` for automatic scheduling
+- **Actions Implemented:**
+  - `PostJournalEntry` - Posts JE to GL, validates balance, updates account balances, prevents duplicate posting
+  - `ReverseJournalEntry` - Creates reversal entry with swapped debits/credits, links to original
+  - `GenerateRecurringJournalEntries` - Batch generates JEs from templates, with dry-run and post-immediately options
+- **GL Posting Engine:**
+  - Atomic transaction-based posting to ensure data integrity
+  - Account balance updates respect account type (Asset/Expense increase with debits, Liability/Equity/Income increase with credits)
+  - Validation of accounting period status (must be open)
+  - Comprehensive error handling with specific exception types
+  - Full audit trail with posting user and timestamp
+- **Filament Resources:**
+  - `JournalEntryResource` - Full CRUD with repeater for lines, real-time balance calculation, status badges
+  - Post action with confirmation
+  - Reverse action for posted entries
+  - Filters: status, entry type, date range, trashed
+  - 4 page files: List, Create, View, Edit
+- **Database Design:**
+  - `journal_entries` table: comprehensive fields for all entry types, audit fields, reversal tracking, inter-company tracking
+  - `journal_entry_lines` table: debit/credit amounts, dimensional tracking, currency support
+  - `recurring_journal_templates` table: template configuration, occurrence tracking, JSON lines storage
+  - Proper indexes on company_id, status, fiscal_year_id, accounting_period_id, entry_date
+- **Integration Points:**
+  - Ready for auto-generation from Purchase Module (supplier invoices, payment vouchers)
+  - Ready for auto-generation from future Sales Module (customer invoices, receipts)
+  - Ready for auto-generation from future Inventory Module (COGS, stock adjustments)
+- **Future Considerations:**
+  - Scheduled job for auto-generating recurring entries (use `GenerateRecurringJournalEntries` action)
+  - Email notifications for posted/reversed entries
+  - Excel/CSV import for bulk journal entry upload
+  - GL account reconciliation functionality
+  - Audit report showing all postings by user/date
+
+## 2025-11-05 Phase 1 - Accounting Module Foundation
+- **Created new Accounting Panel** as a separate Filament panel following the same architecture as Purchase Module
+- **Panel Configuration:**
+  - Panel ID: `accounting`
+  - Panel Path: `/accounting`
+  - Brand Name: "NexusERP - Accounting Module"
+  - Primary Color: Green (to differentiate from Purchase Module's Amber)
+  - 14 navigation groups defined for comprehensive accounting functionality
+  - User menu includes shortcuts to Nexus and Purchase Module panels
+- **Navigation Groups Structure:**
+  1. Chart of Accounts & Setup
+  2. General Ledger
+  3. Accounts Receivable
+  4. Accounts Payable
+  5. Banking & Cash
+  6. Financial Reports
+  7. Budgeting & Planning
+  8. Fixed Assets
+  9. Multi-Currency
+  10. Consolidation
+  11. Dimensions & Analytics
+  12. Tax Management
+  13. Audit & Compliance
+  14. Administration
+- **Phase 1 Models Created (Chart of Accounts & Setup):**
+  - `AccountGroup` - Hierarchical grouping of accounts with sortable behavior
+  - `Account` - Chart of Accounts with full double-entry support, hierarchical structure, and balance tracking
+  - `FiscalYear` - Fiscal year management with status workflow (draft → active → closed)
+  - `AccountingPeriod` - Monthly/quarterly/yearly periods with open/closed/locked status
+  - `CostCenter` - Hierarchical cost center structure for departmental accounting
+- **Account Model Features:**
+  - Comprehensive account types: Asset, Liability, Equity, Income, Expense
+  - Detailed sub-types for each account type (e.g., Current Asset, Fixed Asset, etc.)
+  - Hierarchical account structure with parent-child relationships
+  - Account groups for better organization
+  - Support for group accounts (header accounts) vs ledger accounts
+  - Control account designation for AR/AP
+  - Manual entry permission control
+  - Opening and current balance tracking
+  - Balance type (Debit/Credit) for proper double-entry bookkeeping
+  - Multi-currency support with foreign currency accounts
+  - Company-specific accounts for multi-company setups
+  - Sortable behavior using Spatie EloquentSortable
+  - Soft deletes and full audit trail (created_by, updated_by)
+  - Helper method `updateBalance()` for transaction posting
+  - Scopes for filtering by type, sub-type, active status, company
+  - `getFullPathAttribute()` for hierarchical display (e.g., "Assets > Current Assets > Cash")
+- **AccountGroup Model Features:**
+  - Hierarchical grouping (parent-child relationships)
+  - Type-based organization (Asset, Liability, Equity, Income, Expense)
+  - Sortable behavior for custom ordering
+  - Active/inactive status
+  - Links to accounts within the group
+- **FiscalYear Model Features:**
+  - Company-specific fiscal years
+  - Start and end date management
+  - Status workflow integration via Spatie ModelStatus (draft, active, closed)
+  - Default fiscal year designation
+  - Locking mechanism to prevent changes to closed years
+  - Automatic relationship with accounting periods
+  - Closure tracking (closed_on, closed_by)
+  - Unique code per company
+- **AccountingPeriod Model Features:**
+  - Belongs to fiscal year
+  - Support for monthly, quarterly, half-yearly, yearly periods
+  - Period numbering (1-12 for monthly, 1-4 for quarterly)
+  - Status management (open, closed, locked)
+  - Adjusting period flag for year-end adjustments
+  - Closure tracking
+  - `isCurrent()` helper method to check if today falls within period
+  - Scopes for filtering by status and period type
+- **CostCenter Model Features:**
+  - Hierarchical structure (parent-child relationships)
+  - Company-specific cost centers
+  - Prepared for future integration with Department and Project models (relationships commented)
+  - Group vs leaf cost center designation
+  - Sortable behavior for custom ordering
+  - Active/inactive status
+  - `getFullPathAttribute()` for hierarchical display
+- **Database Schema Design:**
+  - All tables include soft deletes for data integrity
+  - Comprehensive audit fields (created_by, updated_by) on all tables
+  - Foreign key constraints with proper cascade/set null rules
+  - Strategic indexes on frequently queried columns
+  - Multi-company support baked into schema design
+  - Unique constraints where appropriate (account_code, fiscal year code per company)
+- **Integration Points:**
+  - Currency and ExchangeRate models reused from Purchase Module
+  - Company model reused from backoffice package
+  - User model for audit trail tracking
+  - TaxRule model will be shared with Purchase Module for tax configurations
+- **Future Considerations (Marked in Code):**
+  - Department and Project relationships prepared but commented out in CostCenter and Account models
+  - Foreign key constraints deferred for department_id and project_id until those models exist
+  - Journal Entry model will use these accounts for double-entry bookkeeping
+  - General Ledger posting engine will update account current_balance
+- **Filament Resource (Partial Implementation):**
+  - Created AccountResource as example implementation
+  - Form includes dynamic sub-type options based on account type selection
+  - Comprehensive form sections: Account Information, Properties, Balance Information
+  - Table with filterable columns, search, and soft delete support
+  - View, Create, Edit, List pages scaffolded
+  - Note: Full Filament v4 compatibility requires database connection for generation
+- **Panel Provider Registration:**
+  - `AccountingPanelProvider` registered in `bootstrap/providers.php`
+  - Panel configured with resource auto-discovery from `app/Filament/Accounting/Resources`
+  - Widget and page auto-discovery configured
+  - Standard middleware stack applied
+  - Authentication middleware enforced
+- **Architectural Patterns Maintained:**
+  - All models use HasFactory for testing support
+  - SoftDeletes trait on all models for data preservation
+  - Spatie EloquentSortable for user-controlled ordering where applicable
+  - Spatie ModelStatus for workflow management where applicable
+  - Consistent audit field naming (created_by, updated_by)
+  - BelongsTo/HasMany relationships for hierarchies
+  - Eloquent scopes for common queries
+  - Attribute accessors for computed properties
+- **Deferred Items:**
+  - Full Filament resource generation requires database connection (database was not available)
+  - Resources for AccountGroup, FiscalYear, AccountingPeriod, and CostCenter to be generated similarly
+  - Business logic Actions for account management (CreateAccount, UpdateAccountBalance, CloseAccountingPeriod, etc.)
+  - Seeder for standard chart of accounts templates by industry
+  - Foreign key constraints to be added for department_id and project_id when those models exist
+
 ## 2025-11-04 Status Management System Implementation
 - **Implemented comprehensive status management system** based on design document `SPATIE_LARAVEL_MODEL_STATUS_SPECIAL_DESIGN_CHANGE.md`
 - Created centralized system for configuring statuses, transitions, and approval workflows across all models
@@ -396,3 +737,26 @@ Custom Filament page for quotation comparison (optional enhancement)
 Auto-generation of recommendations from selected quotations (can be implemented as an action)
 Factory implementations for testing
 The foundation for requisition management is now complete with a fully functional RFQ system that can track quotations from multiple suppliers, compare them, and generate purchase recommendations.
+
+## 2025-11-06 GitHub Copilot Collection Integration
+- **Enhanced Development Workflow** with comprehensive GitHub Copilot collection integration
+- **Project Planning & Management Collection** - Downloaded and installed all 17 relevant prompts from the "Project Planning & Management" collection
+- **Local Prompt Repository** - Created `.github/prompts/` directory structure for organized prompt storage and version control
+- **Specification Document Creation Workflow** - Installed prompts for automated generation of:
+  - Implementation plans (`create-implementation-plan.prompt.md`, `update-implementation-plan.prompt.md`)
+  - GitHub issues from specifications (`create-github-issues-feature-from-specification.prompt.md`, `create-github-issues-feature-from-implementation-plan.prompt.md`)
+  - GitHub workflow automation (`create-github-action-workflow-specification.prompt.md`, `gen-specs-as-issues.prompt.md`)
+  - LLMs.txt file management (`create-llms.prompt.md`, `update-llms.prompt.md`)
+  - Feature breakdown and planning (`breakdown-feature-implementation.prompt.md`, `breakdown-plan.prompt.md`)
+  - Test planning and quality assurance (`breakdown-test.prompt.md`)
+  - Specification management (`create-specification.prompt.md`, `update-specification.prompt.md`)
+  - README generation (`readme-blueprint-generator.prompt.md`)
+  - AGENTS.md creation (`create-agentsmd.prompt.md`)
+- **Workflow Enhancement Benefits:**
+  - **Automated Specification Writing** - Consistent, comprehensive specification documents
+  - **GitHub Integration** - Direct creation of issues, PRs, and workflows from specifications
+  - **Quality Assurance Planning** - ISTQB and ISO 25010 compliant test strategies
+  - **Documentation Automation** - README and AGENTS.md generation for new projects
+  - **Project Planning** - Structured implementation plans and feature breakdowns
+- **Version Control Strategy** - All prompts committed to repository for team availability and version tracking
+- **Future Extensibility** - Framework in place for adding additional Copilot collections as needed

@@ -25,7 +25,7 @@ class PerformThreeWayMatching
         $this->checkTolerance($matching);
         $this->identifyMismatches($matching);
         $this->determineMatchingStatus($matching);
-        
+
         $matching->save();
 
         return $matching;
@@ -37,8 +37,8 @@ class PerformThreeWayMatching
     protected function calculateVariances(InvoiceMatching $matching): void
     {
         $matching->total_variance = abs($matching->invoice_total - $matching->po_total);
-        $matching->variance_percentage = $matching->po_total > 0 
-            ? ($matching->total_variance / $matching->po_total) * 100 
+        $matching->variance_percentage = $matching->po_total > 0
+            ? ($matching->total_variance / $matching->po_total) * 100
             : 0;
     }
 

@@ -52,7 +52,7 @@ class ManageUserPermissionCommand extends Command
                 return 1;
             }
         } catch (\Exception $e) {
-            $this->error("Failed to {$action} permission: ".$e->getMessage());
+            $this->error("Failed to {$action} permission: " . $e->getMessage());
 
             return 1;
         }

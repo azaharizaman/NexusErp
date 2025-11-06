@@ -10,29 +10,29 @@ Here's the high-level grouping you should aim for:
 
 (*for configuration, master data, and accounting structure*)
 
-* **Chart of Accounts (CoA)**
-  * $\square$ Create hierarchical, tree-view structure
-  * $\square$ Implement customizable account types (Asset, Liability, Equity, Income, Expense)
-  * $\square$ Add preloaded templates for different industries
-  * $\square$ Build account group management
-  * $\square$ Enable account code validation and formatting
-* **Account Groups**
-  * $\square$ Define standard account groups (Current Assets, Fixed Assets, etc.)
-  * $\square$ Support custom group creation and nesting
-* **Fiscal Years & Periods**
-  * $\square$ Create fiscal year model with start/end dates
-  * $\square$ Auto-generate accounting periods (monthly/quarterly)
-  * $\square$ Implement period closing functionality
-  * $\square$ Lock/unlock periods for data integrity
-* **Cost Centers**
-  * $\square$ Create cost center model and structure
-  * $\square$ Enable hierarchical cost center organization
-  * $\square$ Link cost centers to departments/projects
-* **Tax Configurations**
-  * $\square$ Reuse tax rules from Purchase Module
-  * $\square$ Configure tax templates for sales and purchases
-  * $\square$ Support regional taxes (GST, VAT, TDS)
-  * $\square$ Enable tax-inclusive/exclusive pricing options
+* **Chart of Accounts (CoA)** ✅ *Completed 2025-11-05*
+  * ✅ Create hierarchical, tree-view structure (Account model with parent_account_id, level tracking)
+  * ✅ Implement customizable account types (Asset, Liability, Equity, Income, Expense with sub-types)
+  * ⏸️ Add preloaded templates for different industries *[On Hold: Requires seeder implementation]*
+  * ✅ Build account group management (AccountGroup model with hierarchical structure)
+  * ✅ Enable account code validation and formatting (unique constraint, validation in forms)
+* **Account Groups** ✅ *Completed 2025-11-05*
+  * ✅ Define standard account groups (Current Assets, Fixed Assets, etc. - via type and sub_type fields)
+  * ✅ Support custom group creation and nesting (AccountGroup model with parent-child relationships)
+* **Fiscal Years & Periods** ✅ *Completed 2025-11-05*
+  * ✅ Create fiscal year model with start/end dates (FiscalYear model with status workflow)
+  * ⏸️ Auto-generate accounting periods (monthly/quarterly) *[On Hold: Requires Action implementation]*
+  * ✅ Implement period closing functionality (AccountingPeriod model with status: open/closed/locked)
+  * ✅ Lock/unlock periods for data integrity (is_locked field on FiscalYear, status on AccountingPeriod)
+* **Cost Centers** ✅ *Completed 2025-11-05*
+  * ✅ Create cost center model and structure (CostCenter model with hierarchical organization)
+  * ✅ Enable hierarchical cost center organization (parent-child relationships, level tracking)
+  * ⏸️ Link cost centers to departments/projects *[On Hold: Waiting for Department and Project models from backoffice/project modules]*
+* **Tax Configurations** ⏸️ *On Hold*
+  * ✅ Reuse tax rules from Purchase Module (TaxRule model already available)
+  * ⏸️ Configure tax templates for sales and purchases *[On Hold: Requires tax authority setup and GL account mapping]*
+  * ⏸️ Support regional taxes (GST, VAT, TDS) *[On Hold: Requires tax configuration implementation]*
+  * ⏸️ Enable tax-inclusive/exclusive pricing options *[On Hold: Part of Phase 2 Journal Entry implementation]*
 
 ---
 
@@ -40,61 +40,73 @@ Here's the high-level grouping you should aim for:
 
 (*core double-entry bookkeeping and journal entries*)
 
-* **Journal Entries**
-  * $\square$ Create journal entry model with JE- prefix
-  * $\square$ Implement double-entry validation (debit = credit)
-  * $\square$ Support multi-line journal entries
-  * $\square$ Add posting date and transaction date
-  * $\square$ Enable reference number and description
-  * $\square$ Implement status workflow (draft → submitted → posted → cancelled)
-  * $\square$ Add reversal entry functionality
-  * $\square$ Support inter-company journal entries
-* **Auto Recurring Entries**
-  * $\square$ Create recurring template model
-  * $\square$ Implement frequency options (daily, weekly, monthly, yearly)
-  * $\square$ Build scheduled job for auto-generation
-  * $\square$ Add start date, end date, and occurrence limits
-* **General Ledger (GL)**
-  * $\square$ Create GL posting engine for automatic entries
-  * $\square$ Build integration hooks from Sales, Purchase, Inventory modules
-  * $\square$ Implement audit trail for all GL postings
-  * $\square$ Create GL account balance aggregation
+* **Journal Entries** ✅ *Completed 2025-11-05*
+  * ✅ Create journal entry model with JE- prefix (JournalEntry model with HasSerialNumbering)
+  * ✅ Implement double-entry validation (debit = credit) (isBalanced() method with bccomp)
+  * ✅ Support multi-line journal entries (JournalEntryLine model with Repeater in Filament)
+  * ✅ Add posting date and transaction date (entry_date and posting_date fields)
+  * ✅ Enable reference number and description (reference_number, description, notes fields)
+  * ✅ Implement status workflow (draft → submitted → posted → cancelled) (status field with workflow)
+  * ✅ Add reversal entry functionality (ReverseJournalEntry Action, reversed_entry_id, reversal_entry_id)
+  * ✅ Support inter-company journal entries (is_intercompany, related_company_id, reciprocal_entry_id)
+* **Auto Recurring Entries** ✅ *Completed 2025-11-05*
+  * ✅ Create recurring template model (RecurringJournalTemplate model)
+  * ✅ Implement frequency options (daily, weekly, monthly, yearly) (frequency enum with 7 options)
+  * ✅ Build scheduled job for auto-generation (GenerateRecurringJournalEntries Action)
+  * ✅ Add start date, end date, and occurrence limits (start_date, end_date, max_occurrences, occurrences_count)
+* **General Ledger (GL)** ✅ *Completed 2025-11-05*
+  * ✅ Create GL posting engine for automatic entries (PostJournalEntry Action with account balance updates)
+  * ⏸️ Build integration hooks from Sales, Purchase, Inventory modules *[On Hold: Awaiting Sales and Inventory modules; Purchase Module ready]*
+  * ✅ Implement audit trail for all GL postings (created_by, posted_by, submitted_by, cancelled_by with timestamps)
+  * ✅ Create GL account balance aggregation (current_balance field updated on posting, total_debit/total_credit)
 
 ---
 
-### 3️⃣ Accounts Receivable (AR) (Transactional models need to implement Controlled Serial Numbering by extending azaharizaman/laravel-serial-numbering package)
+### 3️⃣ Accounts Receivable (AR) ✅ (Transactional models need to implement Controlled Serial Numbering by extending azaharizaman/laravel-serial-numbering package)
 
 (*managing customer invoices and payments*)
 
-* **Customer Invoices**
-  * $\square$ Create sales invoice model with SI- prefix
-  * $\square$ Link to customer (Business Partner with is_customer flag)
-  * $\square$ Implement line items with tax calculation
-  * $\square$ Support multiple payment terms
-  * $\square$ Add due date calculation
-  * $\square$ Implement status workflow (draft → issued → partially_paid → paid → overdue → cancelled)
-  * $\square$ Generate PDF invoices
-* **Customer Payments / Receipts**
-  * $\square$ Create payment receipt model with PR- prefix
-  * $\square$ Support multiple payment methods (cash, bank, card, cheque)
-  * $\square$ Implement payment allocation to invoices
-  * $\square$ Handle partial payments and advance payments
-  * $\square$ Add payment reconciliation
-* **Credit Notes (Customer)**
-  * $\square$ Create credit note model with CN- prefix
-  * $\square$ Link to original sales invoice
-  * $\square$ Support full or partial credit
-  * $\square$ Auto-adjust customer outstanding balance
-* **Customer Credit Management**
-  * $\square$ Add credit limit field to Business Partner
-  * $\square$ Implement credit limit checking on invoice creation
-  * $\square$ Create credit limit alert notifications
-  * $\square$ Add credit approval workflow
-* **Receivable Aging & Follow-up**
-  * $\square$ Build aging report (0-30, 31-60, 61-90, 90+ days)
-  * $\square$ Create automated reminder emails
-  * $\square$ Implement follow-up task scheduling
-  * $\square$ Add customer payment history view
+* **Customer Invoices** ✅
+  * ✅ Create sales invoice model with SI- prefix
+  * ✅ Link to customer (Business Partner with is_customer flag)
+  * ✅ Implement line items with tax calculation
+  * ✅ Support multiple payment terms
+  * ✅ Add due date calculation
+  * ✅ Implement status workflow (draft → issued → partially_paid → paid → overdue → cancelled)
+  * ✅ Create Filament Resource with Post to GL action
+  * $\square$ Generate PDF invoices (future enhancement)
+* **Customer Payments / Receipts** ✅
+  * ✅ Create payment receipt model with PR- prefix
+  * ✅ Support multiple payment methods (cash, bank, card, cheque, online, other)
+  * ✅ Implement payment allocation to invoices (manual and automatic FIFO)
+  * ✅ Handle partial payments and advance payments (unallocated_amount tracking)
+  * ✅ Create AllocatePaymentToInvoices Action
+  * ✅ Create PostPaymentReceipt Action for GL integration
+  * $\square$ Create PaymentReceiptResource (future - use CLI for now)
+  * $\square$ Add payment reconciliation (future enhancement)
+* **Credit Notes (Customer)** ✅
+  * ✅ Create credit note model with CN- prefix
+  * ✅ Link to original sales invoice
+  * ✅ Support full or partial credit
+  * ✅ Auto-adjust customer outstanding balance (applyToInvoice method)
+  * ✅ Create PostCreditNote Action for GL integration
+  * ✅ Implement reason tracking (return, price_adjustment, discount, error_correction, service_issue, other)
+  * $\square$ Create CustomerCreditNoteResource (future - use CLI for now)
+* **GL Integration** ✅
+  * ✅ PostSalesInvoice Action (Debit AR, Credit Revenue, Credit Tax Payable)
+  * ✅ PostPaymentReceipt Action (Debit Cash/Bank, Credit AR)
+  * ✅ PostCreditNote Action (Debit Sales Returns, Credit AR)
+  * ✅ All models have journal_entry_id, is_posted_to_gl, posted_to_gl_at fields
+* **Customer Credit Management** ⏸️
+  * $\square$ Add credit limit field to Business Partner (future)
+  * $\square$ Implement credit limit checking on invoice creation (future)
+  * $\square$ Create credit limit alert notifications (future)
+  * $\square$ Add credit approval workflow (future)
+* **Receivable Aging & Follow-up** ⏸️
+  * $\square$ Build aging report (0-30, 31-60, 61-90, 90+ days) (future)
+  * $\square$ Create automated reminder emails (future)
+  * $\square$ Implement follow-up task scheduling (future)
+  * $\square$ Add customer payment history view (future)
 
 ---
 

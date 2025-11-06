@@ -231,3 +231,56 @@ Or updated automatically in the project README or issue tracker using Copilot Ag
     - Updated ARCHITECTURAL_DECISIONS.md with implementation details
     - Updated PROGRESS_CHECKLIST.md to track completion
 
+---
+
+## 🔧 TECHNICAL FIXES & IMPROVEMENTS
+
+### Filament v4.2 Compatibility Updates
+* [x] **SalesInvoiceResource Filament v4.2 Migration** — ✅ Completed on 2025-11-06
+  - [x] Updated form method signature to `form(Schema $schema): Schema`
+  - [x] Changed form implementation to use `$schema->components([...])` pattern
+  - [x] Fixed component imports and usage (`Components\Section::make()` instead of `Forms\Components\Section::make()`)
+  - [x] Corrected table action imports (`Tables\Actions\EditAction::make()`)
+  - [x] Fixed currency model reference (`\App\Models\Currency`)
+  - [x] Resolved number_format type casting issues for decimal fields
+  - [x] Validated with PHP syntax check - no errors detected
+  - [x] Established Filament v4.2 patterns for future resource development
+
+### GitHub Copilot Collection Integration
+* [x] **Project Planning & Management Prompts Installation** — ✅ Completed on 2025-11-06
+  - [x] Downloaded and installed all 17 relevant prompts from "Project Planning & Management" collection
+  - [x] Created local copies in `.github/prompts/` directory for enhanced specification document creation workflow
+  - [x] Installed prompts for: implementation plans, GitHub issues/PRs, LLMs.txt files, feature breakdowns, and testing strategies
+  - [x] Prompts now available for automated project planning, specification writing, and GitHub integration
+
+---
+
+## 📊 ACCOUNTS RECEIVABLE (AR) MODULE STATUS
+
+### Phase 3 — Accounts Receivable Implementation
+* [x] **Customer Invoices (SalesInvoice)** — ✅ Completed
+  - [x] SalesInvoice model with SI- prefix serial numbering
+  - [x] Line items with tax calculations and currency handling
+  - [x] Status workflow: draft → issued → partially_paid → paid → overdue → cancelled
+  - [x] SalesInvoiceResource with Filament v4.2 compatibility fixes
+  - [x] Post to GL integration (Debit AR, Credit Revenue, Credit Tax Payable)
+* [x] **Customer Payments/Receipts (PaymentReceipt)** — ✅ Models & Actions Completed
+  - [x] PaymentReceipt model with PR- prefix serial numbering
+  - [x] Multiple payment methods support (cash, bank, card, cheque, online, other)
+  - [x] Payment allocation to invoices (manual and automatic FIFO)
+  - [x] Partial payments and advance payments handling
+  - [x] AllocatePaymentToInvoices and PostPaymentReceipt Actions
+  - [ ] PaymentReceiptResource — ⏳ Pending Filament Resource implementation
+* [x] **Credit Notes (CustomerCreditNote)** — ✅ Models & Actions Completed
+  - [x] CustomerCreditNote model with CN- prefix serial numbering
+  - [x] Link to original sales invoices with full/partial credit support
+  - [x] Reason tracking (return, price_adjustment, discount, error_correction, service_issue, other)
+  - [x] Auto-adjust customer outstanding balance
+  - [x] PostCreditNote Action for GL integration
+  - [ ] CustomerCreditNoteResource — ⏳ Pending Filament Resource implementation
+* [x] **GL Integration for AR Transactions** — ✅ Completed
+  - [x] PostSalesInvoice Action implemented
+  - [x] PostPaymentReceipt Action implemented
+  - [x] PostCreditNote Action implemented
+  - [x] All AR models have journal_entry_id, is_posted_to_gl, posted_to_gl_at fields
+

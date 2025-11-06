@@ -12,6 +12,7 @@
         "azaharizaman/laravel-backoffice": "^1.0",
         "azaharizaman/laravel-serial-numbering": "*",
         "azaharizaman/laravel-uom-management": "dev-main",
+        "composer-phar/phpcbf": "^4.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.1",
         "flowframe/laravel-trend": "^0.4.0",
@@ -33,7 +34,8 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3"
+        "phpunit/phpunit": "^11.5.3",
+        "squizlabs/php_codesniffer": "^4.0"
     },
     "autoload": {
         "psr-4": {

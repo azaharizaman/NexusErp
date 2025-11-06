@@ -37,7 +37,7 @@ class GenerateInvoiceNumberCommand extends Command
             $this->info("Generated invoice number: {$number}");
         } else {
             // Generate multiple numbers
-            $action = new GenerateInvoiceNumber;
+            $action = new GenerateInvoiceNumber();
             $numbers = $action->handleBatch($count, $prefix, $length, $from);
 
             $this->info("Generated {$count} invoice numbers:");
