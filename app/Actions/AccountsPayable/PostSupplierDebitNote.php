@@ -145,7 +145,7 @@ class PostSupplierDebitNote
                 $invoice->save();
 
                 // Update invoice status if fully credited
-                if ($invoice->outstanding_amount <= 0) {
+                if (bccomp($invoice->outstanding_amount, '0', 4) <= 0) {
                     $invoice->setStatus('paid', 'Invoice fully credited via debit note');
                 }
             }
