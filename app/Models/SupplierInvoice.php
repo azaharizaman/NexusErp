@@ -50,9 +50,6 @@ class SupplierInvoice extends Model
         'posted_to_gl_at',
         'approved_by',
         'approved_at',
-        'journal_entry_id',
-        'is_posted_to_gl',
-        'posted_to_gl_at',
         'created_by',
         'updated_by',
     ];
