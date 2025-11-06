@@ -74,5 +74,5 @@ Issues have the following dependencies:
 
 - [Implementation Plan](./implementation-plan.md) - Full technical specification
 - [GitHub Issues Breakdown](./github-issues.md) - Detailed issue descriptions
-- [Accounting Module Planning](/ACCOUNTING_MODULE_PLANNING.md) - Overall accounting module plan
-- [Progress Checklist](/PROGRESS_CHECKLIST.md) - Project-wide progress tracking
+- [Accounting Module Planning](../../../../ACCOUNTING_MODULE_PLANNING.md) - Overall accounting module plan
+- [Progress Checklist](../../../../PROGRESS_CHECKLIST.md) - Project-wide progress tracking
