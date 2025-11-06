@@ -264,8 +264,14 @@ class Phase7ThreeWayMatchingTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        // Update invoice total
-        $invoice->update(['total_amount' => 1030.00]);
+        // Update invoice total with tax to keep overall variance within tolerance
+        // Subtotal: 1030, Tax (10%): 103, Total: 1133
+        // Variance from PO total (1100): 33/1100 = 3% which is within 5% tolerance
+        $invoice->update([
+            'subtotal' => 1030.00,
+            'tax_amount' => 103.00,
+            'total_amount' => 1133.00,
+        ]);
 
         $matching = ValidateThreeWayMatch::run($invoice, 5.0);
 
