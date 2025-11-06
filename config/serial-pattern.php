@@ -133,7 +133,15 @@ return [
             'delimiters' => ['-'],
         ],
         'supplierinvoice' => [
-            'pattern' => 'SI-AP-{year}-{number}',
+            'pattern' => 'SINV-{year}-{number}',
+            'start' => 1,
+            'digits' => 4,
+            'reset' => 'yearly',
+            'interval' => 1,
+            'delimiters' => ['-'],
+        ],
+        'supplierdebitnote' => [
+            'pattern' => 'DN-{year}-{number}',
             'start' => 1,
             'digits' => 4,
             'reset' => 'yearly',
