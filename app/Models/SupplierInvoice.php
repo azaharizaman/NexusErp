@@ -46,6 +46,9 @@ class SupplierInvoice extends Model
         'internal_notes',
         'approved_by',
         'approved_at',
+        'journal_entry_id',
+        'is_posted_to_gl',
+        'posted_to_gl_at',
         'created_by',
         'updated_by',
     ];
@@ -60,6 +63,8 @@ class SupplierInvoice extends Model
         'paid_amount' => 'decimal:2',
         'outstanding_amount' => 'decimal:2',
         'approved_at' => 'datetime',
+        'is_posted_to_gl' => 'boolean',
+        'posted_to_gl_at' => 'datetime',
     ];
 
     /**
@@ -119,6 +124,14 @@ class SupplierInvoice extends Model
     }
 
     /**
+     * Journal entry relationship.
+     */
+    public function journalEntry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class);
+    }
+
+    /**
      * Approver relationship.
      */
     public function approver(): BelongsTo
@@ -164,6 +177,14 @@ class SupplierInvoice extends Model
     public function scopePaid($query)
     {
         return $query->currentStatus('paid');
+    }
+
+    /**
+     * Scope for invoices posted to GL.
+     */
+    public function scopePostedToGl($query)
+    {
+        return $query->where('is_posted_to_gl', true);
     }
 
     /**

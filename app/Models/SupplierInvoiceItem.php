@@ -28,6 +28,7 @@ class SupplierInvoiceItem extends Model implements Sortable
         'tax_amount',
         'discount_percent',
         'discount_amount',
+        'expense_account_id',
         'notes',
         'sort_order',
     ];
@@ -77,6 +78,14 @@ class SupplierInvoiceItem extends Model implements Sortable
     public function uom(): BelongsTo
     {
         return $this->belongsTo(\AzahariZaman\Uom\Models\Uom::class);
+    }
+
+    /**
+     * Expense account relationship.
+     */
+    public function expenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'expense_account_id');
     }
 
     /**
