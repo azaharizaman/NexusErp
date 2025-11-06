@@ -1,5 +1,41 @@
 # Architectural Decisions
 
+## 2025-11-06 AP Foundation Phase 2 - Payment Voucher Model
+- **Implemented PaymentVoucher model** for supplier payment management with allocation tracking
+- **Models Created:**
+  - `PaymentVoucher` - Supplier payment vouchers with status workflow, allocation tracking, and GL integration
+  - `PaymentVoucherAllocation` - Links payment vouchers to supplier invoices for payment tracking
+- **PaymentVoucher Features:**
+  - **Serial Numbering:** PV-YYYY-XXXX pattern with yearly reset (configured in config/serial-pattern.php)
+  - **Status Workflow:** draft → approved → paid → cancelled (using Spatie ModelStatus)
+  - **Payment Methods:** cash, bank_transfer, credit_card, debit_card, cheque, online, other (matching PaymentReceipt)
+  - **Payment References:** reference_number, bank_name, bank_account_number, cheque_number, cheque_date, transaction_id
+  - **Allocation Tracking:** allocated_amount and unallocated_amount (decimal 20,4) for tracking payments to invoices
+  - **Multi-currency Support:** Currency and exchange_rate (decimal 20,6) tracking
+  - **Hold Flag:** is_on_hold boolean for temporary payment holds
+  - **GL Integration:** journal_entry_id, is_posted_to_gl, posted_to_gl_at fields for accounting integration
+  - **Audit Trail:** created_by, updated_by, requested_by, approved_by, approved_at, paid_by, paid_at, voided_by, voided_at
+  - **Business Methods:**
+    - `allocateToInvoice()` - Allocates payment to a supplier invoice with validation
+    - `isFullyAllocated()` - Checks if payment is fully allocated using bccomp with 4 decimal precision
+    - `recalculateAllocations()` - Recalculates total allocated amount from allocation records
+    - `canApprove()`, `canPay()`, `canVoid()` - Status transition guards
+  - **Relationships:** company, supplier, supplierInvoice, currency, journalEntry, allocations, requester, approver, payer, voider, creator, updater
+  - **Scopes:** draft, submitted, approved, paid, voided (using Spatie ModelStatus scopes)
+- **PaymentVoucherAllocation Features:**
+  - Links payment vouchers to supplier invoices
+  - Tracks allocated_amount per invoice (decimal 20,4 for consistency)
+  - Audit fields: created_by, updated_by with timestamps
+  - **Relationships:** paymentVoucher, supplierInvoice, creator, updater
+  - **Scopes:** forPayment, forInvoice
+- **Design Decisions:**
+  - Used decimal(20,4) for all amount fields to match PaymentReceipt precision
+  - Used decimal(20,6) for exchange_rate for better currency precision
+  - Temporarily removed foreign key constraint for supplier_invoice_id as supplier_invoices table doesn't exist yet
+  - Added fallback in allocateToInvoice() method for missing recordPayment() on SupplierInvoice model
+  - Used consistent payment method enum values across PaymentReceipt and PaymentVoucher
+  - Followed same allocation pattern as Accounts Receivable for consistency
+
 ## 2025-11-06 Phase 3 - Accounts Receivable Module (AR)
 - **Implemented comprehensive Accounts Receivable system** with full GL integration
 - **Models Created:**
