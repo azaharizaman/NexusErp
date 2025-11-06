@@ -35,6 +35,7 @@ class SupplierInvoice extends Model
         'invoice_date',
         'due_date',
         'status',
+        'payment_status',
         'subtotal',
         'tax_amount',
         'discount_amount',
@@ -44,6 +45,9 @@ class SupplierInvoice extends Model
         'description',
         'notes',
         'internal_notes',
+        'journal_entry_id',
+        'is_posted_to_gl',
+        'posted_to_gl_at',
         'approved_by',
         'approved_at',
         'created_by',
@@ -60,6 +64,8 @@ class SupplierInvoice extends Model
         'paid_amount' => 'decimal:2',
         'outstanding_amount' => 'decimal:2',
         'approved_at' => 'datetime',
+        'is_posted_to_gl' => 'boolean',
+        'posted_to_gl_at' => 'datetime',
     ];
 
     /**
@@ -125,6 +131,12 @@ class SupplierInvoice extends Model
     {
         return $this->hasMany(PaymentVoucherAllocation::class);
     }
+      /** Journal entry relationship.
+     */
+    public function journalEntry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class);
+    }
 
     /**
      * Approver relationship.
@@ -180,5 +192,100 @@ class SupplierInvoice extends Model
     public function calculateTotals(): self
     {
         return \App\Actions\SupplierInvoice\CalculateSupplierInvoiceTotals::run($this);
+    }
+
+    /**
+     * Calculate outstanding amount.
+     */
+    public function calculateOutstanding(): void
+    {
+        $this->outstanding_amount = $this->total_amount - $this->paid_amount;
+        $this->save();
+    }
+
+    /**
+     * Update payment status based on paid amount and due date.
+     */
+    public function updatePaymentStatus(): void
+    {
+        if ($this->isFullyPaid()) {
+            $this->payment_status = 'paid';
+        } elseif ($this->isOverdue()) {
+            $this->payment_status = 'overdue';
+        } elseif ($this->paid_amount > 0) {
+            $this->payment_status = 'partially_paid';
+        } else {
+            $this->payment_status = 'unpaid';
+        }
+        $this->save();
+    }
+
+    /**
+     * Check if invoice is fully paid.
+     */
+    public function isFullyPaid(): bool
+    {
+        return bccomp($this->paid_amount, $this->total_amount, 2) >= 0;
+    }
+
+    /**
+     * Check if invoice is overdue.
+     */
+    public function isOverdue(): bool
+    {
+        // An invoice is overdue if it's not paid and past the due date
+        return ! $this->isFullyPaid() &&
+               $this->due_date !== null &&
+               now()->gt($this->due_date);
+    }
+
+    /**
+     * Record a payment against this invoice.
+     */
+    public function recordPayment(float $amount): void
+    {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Payment amount must be positive');
+        }
+
+        $this->paid_amount += $amount;
+        $this->calculateOutstanding();
+        $this->updatePaymentStatus();
+    }
+
+    /**
+     * Scope for unpaid invoices.
+     */
+    public function scopeUnpaid($query)
+    {
+        return $query->where('payment_status', 'unpaid');
+    }
+
+    /**
+     * Scope for partially paid invoices.
+     */
+    public function scopePartiallyPaid($query)
+    {
+        return $query->where('payment_status', 'partially_paid');
+    }
+
+    /**
+     * Scope for overdue invoices.
+     */
+    public function scopeOverdue($query)
+    {
+        return $query->where('payment_status', 'overdue')
+            ->orWhere(function ($q) {
+                $q->whereIn('payment_status', ['unpaid', 'partially_paid'])
+                    ->where('due_date', '<', now());
+            });
+    }
+
+    /**
+     * Scope for posted to GL invoices.
+     */
+    public function scopePostedToGl($query)
+    {
+        return $query->where('is_posted_to_gl', true);
     }
 }
