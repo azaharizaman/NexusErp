@@ -845,6 +845,109 @@ The foundation for requisition management is now complete with a fully functiona
   - **Project Planning** - Structured implementation plans and feature breakdowns
 - **Version Control Strategy** - All prompts committed to repository for team availability and version tracking
 - **Future Extensibility** - Framework in place for adding additional Copilot collections as needed
+## 2025-11-06 AP Foundation Phase 3 - Payment Voucher Allocation System
+- **Implemented comprehensive payment allocation system** linking payment vouchers to supplier invoices
+- **Prerequisite Migrations Created:**
+  - `supplier_invoices` table - AP invoice tracking with full audit trail
+  - `supplier_invoice_items` table - Line items with sortable behavior
+- **Models Created:**
+  - `PaymentVoucherAllocation` - Links payment vouchers to supplier invoices with allocated amounts
+- **SupplierInvoice Features:**
+  - **Serial Numbering:** SI-AP-YYYY-XXXX pattern with yearly reset
+  - **Multi-currency Support:** Currency tracking with exchange rate support
+  - **Payment Tracking:** paid_amount and outstanding_amount fields
+  - **Status Workflow:** Integrated with Spatie ModelStatus for draft → approved → partially_paid → paid
+  - **Document References:** Links to purchase orders and goods received notes (nullable for future integration)
+  - **Tax and Discounts:** Subtotal, tax_amount, discount_amount, total_amount tracking
+  - **Audit Trail:** created_by, updated_by, approved_by with timestamps
+  - **Relationships:** company, supplier, purchaseOrder, goodsReceivedNote, currency, items, allocations, approver, creator, updater
+  - **Scopes:** draft, approved, paid (using Spatie ModelStatus currentStatus)
+  - **Business Methods:**
+    - `calculateTotals()` - Recalculates invoice totals from line items using CalculateSupplierInvoiceTotals action
+- **SupplierInvoiceItem Features:**
+  - Sortable behavior for line ordering using Spatie EloquentSortable
+  - Item details: code, description
+  - Quantity with UOM support (3 decimal precision)
+  - Unit price with 2 decimal precision
+  - Tax rate and tax amount calculation
+  - Discount: percentage or amount
+  - **Relationships:** supplierInvoice, purchaseOrderItem, goodsReceivedNoteItem, uom
+  - **Business Methods:**
+    - `calculateTotals()` - Calculates line totals using CalculateSupplierInvoiceItemTotals action
+- **PaymentVoucherAllocation Features:**
+  - **Database Schema:**
+    - Unique constraint on (payment_voucher_id, supplier_invoice_id) to prevent duplicate allocations
+    - Decimal(15,4) precision for allocated_amount
+    - Proper foreign key constraints with cascade on delete
+    - Indexed for optimal query performance
+  - **Relationships:**
+    - belongsTo PaymentVoucher
+    - belongsTo SupplierInvoice
+  - **Query Scopes:**
+    - `forPayment($paymentVoucherId)` - Filter allocations by payment voucher
+    - `forInvoice($supplierInvoiceId)` - Filter allocations by supplier invoice
+  - **Business Methods:**
+    - `allocateToInvoice()` - Static method to allocate payment to invoice with comprehensive validation:
+      - ✅ Validates amount is positive
+      - ✅ Validates currencies match between voucher and invoice
+      - ✅ Prevents total allocations from exceeding payment voucher amount using BCMath
+      - ✅ Prevents allocation from exceeding invoice outstanding amount
+      - ✅ Auto-updates or creates allocation using updateOrCreate
+      - ✅ Triggers automatic recalculation of invoice amounts
+      - ⚠️ Throws `\InvalidArgumentException` with detailed context on validation failures
+    - `recalculateAllocations()` - Static method to recalculate invoice payment status:
+      - ✅ Sums allocations only from paid payment vouchers (filters by status)
+      - ✅ Updates invoice paid_amount from total allocations
+      - ✅ Calculates outstanding_amount using BCMath subtraction
+      - ✅ Auto-updates invoice status to 'paid' when fully paid
+      - ✅ Auto-updates invoice status to 'partially_paid' when partially paid
+      - ✅ Uses BCMath for precise decimal calculations (4 decimal precision)
+- **Updated Models:**
+  - **PaymentVoucher:**
+    - Added `allocations()` HasMany relationship
+    - Enables tracking all invoice allocations for a payment
+  - **SupplierInvoice:**
+    - Added `allocations()` HasMany relationship
+    - Enables tracking all payment allocations to an invoice
+- **Test Coverage:**
+  - 13 comprehensive tests with 32 assertions - ALL PASSING ✅
+  - **CRUD Tests:**
+    - ✅ Can create payment voucher allocation
+    - ✅ Has proper relationships (PaymentVoucher, SupplierInvoice)
+  - **Query Scope Tests:**
+    - ✅ Can scope by payment voucher (forPayment)
+    - ✅ Can scope by supplier invoice (forInvoice)
+  - **Allocation Method Tests:**
+    - ✅ Can allocate payment to invoice with automatic recalculation
+    - ✅ Validates allocation amount is positive
+    - ✅ Validates currencies match between voucher and invoice
+    - ✅ Validates total allocation does not exceed payment amount
+    - ✅ Validates allocation does not exceed invoice outstanding
+  - **Recalculation Tests:**
+    - ✅ Can recalculate allocations from multiple payments
+    - ✅ Only counts paid vouchers in recalculation (ignores draft/approved)
+  - **Relationship Tests:**
+    - ✅ PaymentVoucher has allocations relationship
+    - ✅ SupplierInvoice has allocations relationship
+- **Configuration Updates:**
+  - Added `supplierinvoice` serial numbering pattern to `config/serial-pattern.php`
+  - Pattern: SI-AP-{year}-{number} with yearly reset
+- **Database Migration Fixes:**
+  - Updated `payment_vouchers` and `supplier_invoices` migrations to use `backoffice_companies` table
+  - Made goods_received_note references nullable without foreign keys (for future GRN implementation)
+- **Precision and Accuracy:**
+  - Uses BCMath for all monetary calculations to ensure decimal precision
+  - Allocated amounts stored with 4 decimal places for accuracy
+  - Validation messages include formatted amounts with context
+- **Status Integration:**
+  - Properly integrated with Spatie ModelStatus package
+  - Uses `currentStatus()` for querying payment vouchers in recalculation
+  - Auto-updates invoice status based on payment allocation
+- **Future Enhancements:**
+  - Filament Resource for managing allocations (UI)
+  - Bulk allocation actions
+  - FIFO/LIFO allocation strategies
+  - Allocation reports and analytics
 ## 2025-11-06 AP Foundation Phase 1 - Supplier Invoice Integration
 - **Enhanced SupplierInvoice model from Purchase Module for Accounts Payable integration**
 - **SupplierInvoice Enhancements:**

@@ -125,6 +125,21 @@ class SupplierInvoice extends Model
     }
 
     /**
+     * Supplier debit notes relationship.
+     */
+    public function debitNotes(): HasMany
+    {
+        return $this->hasMany(SupplierDebitNote::class);
+    } 
+      /**
+     * Journal entry relationship.
+     * Payment allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
+    }
+    /**
      * Journal entry relationship.
      */
     public function journalEntry(): BelongsTo
