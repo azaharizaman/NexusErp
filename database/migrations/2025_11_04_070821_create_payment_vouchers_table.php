@@ -33,12 +33,12 @@ return new class extends Migration
                 'other',
             ])->nullable();
             $table->string('reference_number')->nullable();
-            $table->decimal('amount', 15, 2);
+            $table->decimal('amount', 20, 4);
             $table->decimal('exchange_rate', 20, 6)->default(1);
             
             // Allocation tracking (similar to PaymentReceipt)
-            $table->decimal('allocated_amount', 15, 2)->default(0);
-            $table->decimal('unallocated_amount', 15, 2)->default(0);
+            $table->decimal('allocated_amount', 20, 4)->default(0);
+            $table->decimal('unallocated_amount', 20, 4)->default(0);
             
             $table->text('description')->nullable();
             $table->text('notes')->nullable();

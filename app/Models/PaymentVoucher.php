@@ -63,10 +63,10 @@ class PaymentVoucher extends Model
     protected $casts = [
         'payment_date' => 'date',
         'cheque_date' => 'date',
-        'amount' => 'decimal:2',
+        'amount' => 'decimal:4',
         'exchange_rate' => 'decimal:6',
-        'allocated_amount' => 'decimal:2',
-        'unallocated_amount' => 'decimal:2',
+        'allocated_amount' => 'decimal:4',
+        'unallocated_amount' => 'decimal:4',
         'is_on_hold' => 'boolean',
         'is_posted_to_gl' => 'boolean',
         'posted_to_gl_at' => 'datetime',
@@ -77,6 +77,8 @@ class PaymentVoucher extends Model
 
     /**
      * Allocate payment to a supplier invoice.
+     *
+     * @throws \InvalidArgumentException
      */
     public function allocateToInvoice(SupplierInvoice $invoice, float $allocationAmount): PaymentVoucherAllocation
     {
@@ -97,7 +99,15 @@ class PaymentVoucher extends Model
         $this->unallocated_amount = $this->amount - $this->allocated_amount;
         $this->save();
 
-        $invoice->recordPayment($allocationAmount);
+        // Update invoice paid amount
+        // TODO: Consider extracting this to SupplierInvoice::recordPayment() method
+        if (method_exists($invoice, 'recordPayment')) {
+            $invoice->recordPayment($allocationAmount);
+        } else {
+            $invoice->paid_amount += $allocationAmount;
+            $invoice->outstanding_amount -= $allocationAmount;
+            $invoice->save();
+        }
 
         return $allocation;
     }
@@ -107,7 +117,7 @@ class PaymentVoucher extends Model
      */
     public function isFullyAllocated(): bool
     {
-        return bccomp($this->unallocated_amount, '0', 2) <= 0;
+        return bccomp($this->unallocated_amount, '0', 4) <= 0;
     }
 
     /**

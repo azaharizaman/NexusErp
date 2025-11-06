@@ -20,7 +20,7 @@ return new class extends Migration
             // $table->foreignId('supplier_invoice_id')->constrained('supplier_invoices')->cascadeOnDelete();
             $table->unsignedBigInteger('supplier_invoice_id');
             
-            $table->decimal('allocated_amount', 15, 2);
+            $table->decimal('allocated_amount', 20, 4);
             $table->text('notes')->nullable();
             
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();

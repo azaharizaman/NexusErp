@@ -20,7 +20,7 @@ class PaymentVoucherAllocation extends Model
     ];
 
     protected $casts = [
-        'allocated_amount' => 'decimal:2',
+        'allocated_amount' => 'decimal:4',
     ];
 
     // Relationships
