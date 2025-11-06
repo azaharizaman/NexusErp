@@ -131,7 +131,8 @@ class SupplierInvoice extends Model
     {
         return $this->hasMany(SupplierDebitNote::class);
     } 
-      /* Journal entry relationship.
+      /**
+     * Journal entry relationship.
      * Payment allocations relationship.
      */
     public function allocations(): HasMany
