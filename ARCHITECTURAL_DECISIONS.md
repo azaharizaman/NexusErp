@@ -1,5 +1,42 @@
 # Architectural Decisions
 
+## 2025-11-06 Phase 8 - AP Testing and Documentation (AP)
+- **Implemented comprehensive testing suite** for the Accounts Payable module
+- **Unit Tests Created:**
+  - `PaymentVoucherTest` - 20 test cases covering:
+    - Payment allocation to invoices with validation
+    - Fully allocated check functionality
+    - Allocation recalculation
+    - Status transition checks (canApprove, canPay, canVoid)
+    - Status scopes (draft, submitted, approved, paid, voided, on_hold, unallocated, posted_to_gl)
+    - Relationships (company, supplier, currency, allocations)
+    - GL posting status tracking
+  - `SupplierDebitNoteTest` - 20 test cases covering:
+    - Debit note application to invoices
+    - Application validation (status, invoice linkage, amount checks)
+    - canBeApplied() business logic
+    - Status scopes (draft, issued, applied, cancelled)
+    - Filtering scopes (forSupplier, forCompany, forInvoice, byReason)
+    - Relationships (company, supplier, currency, supplierInvoice)
+    - GL posting status tracking
+- **Code Quality Improvements:**
+  - Fixed duplicate method definitions in PaymentVoucher model
+  - Removed duplicate migrations (allocation fields and GL integration)
+  - Fixed SupplierInvoiceFactory to align with database schema
+  - Standardized use of Spatie ModelStatus for status tracking
+- **Documentation Created:**
+  - Comprehensive AP module documentation in `docs/accounts-payable.md`
+  - Detailed coverage of workflows, three-way matching, GL integration
+  - API reference with model scopes and relationships
+  - Practical examples for common operations
+  - Best practices and troubleshooting guide
+- **Test Coverage:** 85% passing rate (34/40 tests) with remaining failures related to Supplier Invoice payment status integration
+- **Technical Decisions:**
+  - Used PHPUnit test attributes instead of doc-comment metadata (PSR-19)
+  - Followed repository custom instructions for exception handling (InvalidArgumentException, LogicException)
+  - Maintained consistency with existing test patterns and naming conventions
+  - Used RefreshDatabase trait for isolated test execution
+
 ## 2025-11-06 Phase 7 - Three-Way Matching for Invoice Approval (AP)
 - **Implemented comprehensive three-way matching validation** for supplier invoice approval
 - **Models Enhanced/Created:**
