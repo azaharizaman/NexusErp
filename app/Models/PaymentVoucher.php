@@ -102,10 +102,11 @@ class PaymentVoucher extends Model
         // Update invoice paid amount
         // TODO: Consider extracting this to SupplierInvoice::recordPayment() method
         if (method_exists($invoice, 'recordPayment')) {
-            $invoice->recordPayment($allocationAmount);
+            $invoice->recordPayment(round($allocationAmount, 2));
         } else {
-            $invoice->paid_amount += $allocationAmount;
-            $invoice->outstanding_amount -= $allocationAmount;
+            $roundedAllocation = round($allocationAmount, 2);
+            $invoice->paid_amount = round($invoice->paid_amount + $roundedAllocation, 2);
+            $invoice->outstanding_amount = round($invoice->outstanding_amount - $roundedAllocation, 2);
             $invoice->save();
         }
 
