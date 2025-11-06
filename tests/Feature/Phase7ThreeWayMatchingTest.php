@@ -22,6 +22,11 @@ class Phase7ThreeWayMatchingTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Standard tax rate for test scenarios (10%)
+     */
+    private const TAX_RATE = 0.10;
+
     protected Company $company;
     protected Currency $currency;
     protected BusinessPartner $supplier;
@@ -267,10 +272,11 @@ class Phase7ThreeWayMatchingTest extends TestCase
         // Update invoice total with tax to keep overall variance within tolerance
         // Subtotal: 1030, Tax (10%): 103, Total: 1133
         // Variance from PO total (1100): 33/1100 = 3% which is within 5% tolerance
+        $taxAmount = $invoice->subtotal * self::TAX_RATE;
         $invoice->update([
             'subtotal' => 1030.00,
-            'tax_amount' => 103.00,
-            'total_amount' => 1133.00,
+            'tax_amount' => $taxAmount,
+            'total_amount' => 1030.00 + $taxAmount,
         ]);
 
         $matching = ValidateThreeWayMatch::run($invoice, 5.0);
