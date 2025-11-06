@@ -232,6 +232,13 @@ class ValidateThreeWayMatch
      */
     protected function determineMatchingStatus(InvoiceMatching $matching): void
     {
+        // If within tolerance, always consider it matched
+        if ($matching->is_within_tolerance) {
+            $matching->matching_status = InvoiceMatching::STATUS_MATCHED;
+            return;
+        }
+
+        // If no mismatches found, it's matched
         if (empty($matching->mismatches)) {
             $matching->matching_status = InvoiceMatching::STATUS_MATCHED;
             return;
@@ -250,7 +257,7 @@ class ValidateThreeWayMatch
             }
         }
 
-        // Determine primary status
+        // Determine primary status based on mismatch types
         if ($hasQuantityMismatch && $hasPriceMismatch) {
             // Both mismatches exist, prioritize based on variance size
             $matching->matching_status = $matching->quantity_variance > $matching->price_variance
@@ -262,11 +269,6 @@ class ValidateThreeWayMatch
             $matching->matching_status = InvoiceMatching::STATUS_PRICE_MISMATCH;
         } else {
             $matching->matching_status = InvoiceMatching::STATUS_NOT_MATCHED;
-        }
-
-        // Override to matched if within tolerance
-        if ($matching->is_within_tolerance) {
-            $matching->matching_status = InvoiceMatching::STATUS_MATCHED;
         }
     }
 }

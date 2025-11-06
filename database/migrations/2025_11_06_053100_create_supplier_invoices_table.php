@@ -74,7 +74,7 @@ return new class extends Migration
             $table->string('item_description');
             
             $table->decimal('quantity', 15, 3);
-            $table->foreignId('uom_id')->nullable()->constrained('uoms')->nullOnDelete();
+            $table->foreignId('uom_id')->nullable()->constrained('uom_units')->nullOnDelete();
             
             $table->decimal('unit_price', 15, 2);
             $table->decimal('line_total', 15, 2);

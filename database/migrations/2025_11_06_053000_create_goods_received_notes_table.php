@@ -58,7 +58,7 @@ return new class extends Migration
             $table->decimal('ordered_quantity', 15, 3);
             $table->decimal('received_quantity', 15, 3);
             $table->decimal('rejected_quantity', 15, 3)->default(0);
-            $table->foreignId('uom_id')->nullable()->constrained('uoms')->nullOnDelete();
+            $table->foreignId('uom_id')->nullable()->constrained('uom_units')->nullOnDelete();
             
             // Batch and serial tracking
             $table->string('batch_number')->nullable();
