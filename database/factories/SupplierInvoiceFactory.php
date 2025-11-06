@@ -16,27 +16,96 @@ class SupplierInvoiceFactory extends Factory
      */
     public function definition(): array
     {
+        $totalAmount = $this->faker->randomFloat(2, 100, 10000);
+        $paidAmount = 0.00;
+        
         return [
+            'invoice_number' => 'SI-' . now()->year . '-' . str_pad($this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
             'company_id' => \App\Models\Company::factory(),
-            'supplier_id' => \AzahariZaman\Backoffice\Models\BusinessPartner::factory()->state(['is_supplier' => true]),
+            'supplier_id' => \App\Models\BusinessPartner::factory(['is_supplier' => true]),
             'currency_id' => \App\Models\Currency::factory(),
-            'supplier_invoice_number' => 'SI-' . $this->faker->unique()->numberBetween(1000, 9999),
-            'invoice_date' => now(),
-            'due_date' => now()->addDays(30),
-            'subtotal' => $this->faker->randomFloat(2, 100, 10000),
-            'tax_amount' => function (array $attributes) {
-                return $attributes['subtotal'] * 0.10;
-            },
-            'discount_amount' => 0.00,
-            'total_amount' => function (array $attributes) {
-                return $attributes['subtotal'] + $attributes['tax_amount'] - $attributes['discount_amount'];
-            },
-            'paid_amount' => 0.00,
-            'outstanding_amount' => function (array $attributes) {
-                return $attributes['total_amount'];
-            },
+            'supplier_invoice_number' => 'SUPP-' . $this->faker->unique()->numerify('INV-####'),
+            'invoice_date' => $this->faker->dateTimeBetween('-3 months', 'now'),
+            'due_date' => $this->faker->dateTimeBetween('now', '+60 days'),
             'status' => 'draft',
+            'payment_status' => 'unpaid',
+            'subtotal' => $totalAmount,
+            'tax_amount' => 0.00,
+            'discount_amount' => 0.00,
+            'total_amount' => $totalAmount,
+            'paid_amount' => $paidAmount,
+            'outstanding_amount' => $totalAmount - $paidAmount,
+            'description' => $this->faker->optional()->sentence(),
+            'notes' => $this->faker->optional()->paragraph(),
             'is_posted_to_gl' => false,
         ];
+    }
+
+    /**
+     * Indicate that the invoice is approved.
+     */
+    public function approved(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'approved',
+            'approved_by' => \App\Models\User::factory(),
+            'approved_at' => now(),
+        ]);
+    }
+
+    /**
+     * Indicate that the invoice is partially paid.
+     */
+    public function partiallyPaid(): static
+    {
+        return $this->state(function (array $attributes) {
+            $totalAmount = $attributes['total_amount'];
+            $paidAmount = $totalAmount * 0.5; // 50% paid
+            
+            return [
+                'paid_amount' => $paidAmount,
+                'outstanding_amount' => $totalAmount - $paidAmount,
+                'payment_status' => 'partially_paid',
+            ];
+        });
+    }
+
+    /**
+     * Indicate that the invoice is fully paid.
+     */
+    public function paid(): static
+    {
+        return $this->state(function (array $attributes) {
+            $totalAmount = $attributes['total_amount'];
+            
+            return [
+                'paid_amount' => $totalAmount,
+                'outstanding_amount' => 0.00,
+                'payment_status' => 'paid',
+            ];
+        });
+    }
+
+    /**
+     * Indicate that the invoice is overdue.
+     */
+    public function overdue(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'due_date' => $this->faker->dateTimeBetween('-30 days', '-1 day'),
+            'payment_status' => 'overdue',
+        ]);
+    }
+
+    /**
+     * Indicate that the invoice is posted to GL.
+     */
+    public function postedToGl(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'journal_entry_id' => \App\Models\JournalEntry::factory(),
+            'is_posted_to_gl' => true,
+            'posted_to_gl_at' => now(),
+        ]);
     }
 }

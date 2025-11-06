@@ -16,8 +16,17 @@ class FiscalYearFactory extends Factory
      */
     public function definition(): array
     {
+        $year = $this->faker->year();
+        $startDate = \Carbon\Carbon::parse($year . '-01-01');
+        
         return [
-            //
+            'name' => 'FY ' . $year,
+            'code' => 'FY' . $year,
+            'start_date' => $startDate,
+            'end_date' => $startDate->copy()->endOfYear(),
+            'company_id' => \App\Models\Company::factory(),
+            'is_default' => false,
+            'is_locked' => false,
         ];
     }
 }
