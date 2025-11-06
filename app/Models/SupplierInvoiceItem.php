@@ -77,7 +77,7 @@ class SupplierInvoiceItem extends Model implements Sortable
      */
     public function uom(): BelongsTo
     {
-        return $this->belongsTo(\AzahariZaman\Uom\Models\Uom::class);
+        return $this->belongsTo(\Azaharizaman\LaravelUomManagement\Models\UomUnit::class, 'uom_id');
     }
 
     /**

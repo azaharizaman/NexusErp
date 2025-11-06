@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use AzahariZaman\UomManagement\Models\Uom;
+use Azaharizaman\LaravelUomManagement\Models\UomUnit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,7 +68,7 @@ class PurchaseOrderItem extends Model implements Sortable
      */
     public function uom(): BelongsTo
     {
-        return $this->belongsTo(Uom::class);
+        return $this->belongsTo(UomUnit::class, 'uom_id');
     }
 
     /**
