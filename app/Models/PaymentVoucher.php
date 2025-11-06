@@ -56,6 +56,9 @@ class PaymentVoucher extends Model
         'voided_by',
         'voided_at',
         'void_reason',
+        'journal_entry_id',
+        'is_posted_to_gl',
+        'posted_to_gl_at',
         'created_by',
         'updated_by',
     ];
@@ -73,6 +76,8 @@ class PaymentVoucher extends Model
         'approved_at' => 'datetime',
         'paid_at' => 'datetime',
         'voided_at' => 'datetime',
+        'is_posted_to_gl' => 'boolean',
+        'posted_to_gl_at' => 'datetime',
     ];
 
     /**
@@ -180,6 +185,14 @@ class PaymentVoucher extends Model
     }
 
     /**
+     * Journal entry relationship.
+     */
+    public function journalEntry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class);
+    }
+
+    /**
      * Requester relationship.
      */
     public function requester(): BelongsTo
@@ -265,6 +278,14 @@ class PaymentVoucher extends Model
     public function scopeVoided($query)
     {
         return $query->currentStatus('voided');
+    }
+
+    /**
+     * Scope for vouchers posted to GL.
+     */
+    public function scopePostedToGl($query)
+    {
+        return $query->where('is_posted_to_gl', true);
     }
 
     /**

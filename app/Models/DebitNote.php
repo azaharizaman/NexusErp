@@ -34,6 +34,9 @@ class DebitNote extends Model
         'status',
         'description',
         'notes',
+        'journal_entry_id',
+        'is_posted_to_gl',
+        'posted_to_gl_at',
         'approved_by',
         'approved_at',
         'created_by',
@@ -44,6 +47,8 @@ class DebitNote extends Model
         'debit_note_date' => 'date',
         'amount' => 'decimal:2',
         'approved_at' => 'datetime',
+        'is_posted_to_gl' => 'boolean',
+        'posted_to_gl_at' => 'datetime',
     ];
 
     /**
@@ -76,6 +81,14 @@ class DebitNote extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * Journal entry relationship.
+     */
+    public function journalEntry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class);
     }
 
     /**
@@ -122,5 +135,13 @@ class DebitNote extends Model
     public function scopeApproved($query)
     {
         return $query->withStatus('approved');
+    }
+
+    /**
+     * Scope for debit notes posted to GL.
+     */
+    public function scopePostedToGl($query)
+    {
+        return $query->where('is_posted_to_gl', true);
     }
 }
