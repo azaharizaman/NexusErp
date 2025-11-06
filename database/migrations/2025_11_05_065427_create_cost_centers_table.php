@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('cost_centers')->onDelete('set null');
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->foreignId('company_id')->constrained('backoffice_companies')->onDelete('cascade');
             
             // Link to departments/projects (optional)
             $table->unsignedBigInteger('department_id')->nullable(); // FK to be added when Department model exists

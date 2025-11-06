@@ -11,27 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_credit_notes', function (Blueprint $table) {
+        Schema::create('supplier_debit_notes', function (Blueprint $table) {
             $table->id();
             
             // Serial numbering
-            $table->string('credit_note_number', 50)->unique();
+            $table->string('debit_note_number', 50)->unique();
             
-            // Customer and company
+            // Company and supplier
             $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('business_partners')->restrictOnDelete();
+            $table->foreignId('supplier_id')->constrained('business_partners')->restrictOnDelete();
             
-            // Related invoice
-            $table->foreignId('sales_invoice_id')->constrained('sales_invoices')->restrictOnDelete();
+            // Related invoice (nullable - debit note can be standalone)
+            $table->foreignId('supplier_invoice_id')->nullable()->constrained('supplier_invoices')->restrictOnDelete();
             
-            // Credit note details
-            $table->date('credit_note_date');
+            // Debit note details
+            $table->date('debit_note_date');
             $table->enum('reason', [
                 'return',
                 'price_adjustment',
-                'discount',
-                'error_correction',
-                'service_issue',
+                'quality_issue',
+                'shipping_error',
                 'other',
             ]);
             
@@ -40,7 +39,7 @@ return new class extends Migration
             $table->decimal('exchange_rate', 20, 6)->default(1);
             
             // Amount
-            $table->decimal('amount', 20, 4);
+            $table->decimal('debit_amount', 20, 4);
             
             // GL integration
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete();
@@ -73,8 +72,8 @@ return new class extends Migration
             
             // Indexes
             $table->index(['company_id', 'status']);
-            $table->index(['customer_id', 'credit_note_date']);
-            $table->index('sales_invoice_id');
+            $table->index(['supplier_id', 'debit_note_date']);
+            $table->index('supplier_invoice_id');
             $table->index('is_posted_to_gl');
         });
     }
@@ -84,6 +83,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_credit_notes');
+        Schema::dropIfExists('supplier_debit_notes');
     }
 };

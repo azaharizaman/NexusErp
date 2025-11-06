@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             
             // Company
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             
             // Entry type
             $table->enum('entry_type', [

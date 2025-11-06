@@ -35,7 +35,7 @@ return new class extends Migration
             ])->nullable();
             $table->foreignId('account_group_id')->nullable()->constrained('account_groups')->onDelete('set null');
             $table->foreignId('parent_account_id')->nullable()->constrained('accounts')->onDelete('set null');
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->foreignId('company_id')->constrained('backoffice_companies')->onDelete('cascade');
             
             // Account properties
             $table->boolean('is_group')->default(false); // For hierarchical grouping

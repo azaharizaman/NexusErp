@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('journal_entry_number', 50)->unique();
             
             // Company and fiscal period
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('fiscal_year_id')->constrained('fiscal_years')->restrictOnDelete();
             $table->foreignId('accounting_period_id')->constrained('accounting_periods')->restrictOnDelete();
             
@@ -58,7 +58,7 @@ return new class extends Migration
             
             // Inter-company tracking
             $table->boolean('is_intercompany')->default(false);
-            $table->foreignId('related_company_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->foreignId('related_company_id')->nullable()->constrained('backoffice_companies')->nullOnDelete();
             $table->foreignId('reciprocal_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete();
             
             // Source tracking (for auto-generated entries)

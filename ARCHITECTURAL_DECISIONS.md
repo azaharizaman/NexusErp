@@ -54,6 +54,90 @@
   - Item-level validation provides granular mismatch details
   - Supports both two-way (PO + Invoice) and three-way (PO + GRN + Invoice) matching
   - UOM package reference corrected: `Azaharizaman\LaravelUomManagement\Models\UomUnit`
+## 2025-11-06 Phase 5 - Accounts Payable Module (AP) GL Integration
+- **Implemented comprehensive GL Integration for Accounts Payable system**
+- **Models Updated with GL Integration Fields:**
+  - `SupplierInvoice` - Supplier invoices with GL posting capability
+  - `SupplierInvoiceItem` - Invoice line items with expense account classification
+  - `PaymentVoucher` - Payment vouchers with GL posting capability
+  - `DebitNote` - Supplier debit notes with GL posting capability
+- **SupplierInvoice GL Features:**
+  - **GL Integration Fields:** journal_entry_id, is_posted_to_gl, posted_to_gl_at
+  - **Status Requirement:** Invoice must be "approved" before posting to GL
+  - **Fiscal Period Validation:** Validates accounting period is open before posting
+  - **Line Item Validation:** Ensures invoice has line items before posting
+  - **Duplicate Posting Prevention:** Checks if already posted to GL
+  - **Relationships:** journalEntry relationship for GL integration
+  - **Scopes:** postedToGl scope for filtering posted invoices
+- **SupplierInvoiceItem GL Features:**
+  - **Expense Account:** expense_account_id field links line items to GL expense accounts
+  - **Account Relationship:** expenseAccount() relationship for GL integration
+  - **Flexible Classification:** Each line item can have its own expense account
+- **PaymentVoucher GL Features:**
+  - **GL Integration Fields:** journal_entry_id, is_posted_to_gl, posted_to_gl_at
+  - **Status Requirement:** Voucher must be "paid" before posting to GL
+  - **Invoice Allocation Requirement:** Must have supplier_invoice_id (no unallocated payments)
+  - **Outstanding Amount Updates:** Updates supplier invoice paid_amount and outstanding_amount
+  - **Status Updates:** Automatically updates invoice status to partially_paid or paid
+  - **Relationships:** journalEntry relationship for GL integration
+  - **Scopes:** postedToGl scope for filtering posted vouchers
+- **DebitNote GL Features:**
+  - **GL Integration Fields:** journal_entry_id, is_posted_to_gl, posted_to_gl_at
+  - **Status Requirement:** Debit note must be "approved" before posting to GL
+  - **Outstanding Amount Updates:** Reduces supplier invoice outstanding_amount
+  - **Status Updates:** Automatically updates invoice status to paid if fully credited
+  - **Flexible Linking:** Can be posted with or without linked supplier invoice
+  - **Relationships:** journalEntry relationship for GL integration
+  - **Scopes:** postedToGl scope for filtering posted debit notes
+- **Actions Implemented:**
+  - `PostSupplierInvoice` - Posts supplier invoice to GL with comprehensive validation
+    - **Journal Entry:** Debit Expense Accounts (per line), Debit Tax Payable (input credit), Credit AP
+    - **Validation:** Approved status, not already posted, has line items, period open
+    - **Transaction Safety:** Wrapped in database transaction for atomicity
+  - `PostPaymentVoucher` - Posts payment voucher to GL with invoice updates
+    - **Journal Entry:** Debit AP, Credit Cash/Bank
+    - **Validation:** Paid status, not already posted, has invoice allocation, period open
+    - **Invoice Updates:** Updates paid_amount, outstanding_amount, status
+    - **Transaction Safety:** Wrapped in database transaction for atomicity
+  - `PostSupplierDebitNote` - Posts debit note to GL with invoice adjustments
+    - **Journal Entry:** Debit AP (reduces liability), Credit Purchase Returns
+    - **Validation:** Approved status, not already posted, period open
+    - **Invoice Updates:** Reduces outstanding_amount, updates status if fully credited
+    - **Transaction Safety:** Wrapped in database transaction for atomicity
+- **GL Posting Rules:**
+  - **Supplier Invoice Posting:**
+    - Debit: Expense Accounts (per line item) - Line totals
+    - Debit: Tax Payable (Input Tax Credit) - Tax amount
+    - Credit: Accounts Payable - Total invoice amount
+  - **Payment Voucher Posting:**
+    - Debit: Accounts Payable - Payment amount
+    - Credit: Cash/Bank Account - Payment amount
+  - **Debit Note Posting:**
+    - Debit: Accounts Payable - Debit note amount (reduces liability)
+    - Credit: Purchase Returns/Allowances - Debit note amount
+- **Database Schema:**
+  - `supplier_invoices` table: Complete invoice management with GL integration fields
+  - `supplier_invoice_items` table: Line items with expense_account_id for GL posting
+  - `debit_notes` table: Complete debit note management with GL integration fields
+  - Migration to add GL fields to existing `payment_vouchers` table
+  - All tables include proper indexes on is_posted_to_gl for efficient querying
+- **Testing:**
+  - Comprehensive test suite with 16 test cases across 3 test files
+  - Factory classes created for SupplierInvoice, SupplierInvoiceItem, DebitNote
+  - Tests cover success scenarios, validation errors, edge cases, and business logic
+  - RefreshDatabase trait for isolated test execution
+- **Integration Points:**
+  - Integrates with existing JournalEntry and Account models from Accounting Module
+  - Uses FiscalYear and AccountingPeriod for period validation
+  - Compatible with existing AP module models (PurchaseOrder, GoodsReceivedNote)
+  - Ready for three-way matching integration (PO → GRN → Invoice)
+- **Future Considerations:**
+  - Payment voucher allocation to multiple invoices (currently one-to-one)
+  - Bulk posting of invoices/vouchers/debit notes
+  - GL posting reversal functionality
+  - Exchange rate difference handling for multi-currency transactions
+  - Integration with cash flow forecasting
+  - Automatic recurring debit notes for adjustments
 
 ## 2025-11-06 Phase 3 - Accounts Receivable Module (AR)
 - **Implemented comprehensive Accounts Receivable system** with full GL integration
@@ -815,3 +899,184 @@ The foundation for requisition management is now complete with a fully functiona
   - **Project Planning** - Structured implementation plans and feature breakdowns
 - **Version Control Strategy** - All prompts committed to repository for team availability and version tracking
 - **Future Extensibility** - Framework in place for adding additional Copilot collections as needed
+## 2025-11-06 AP Foundation Phase 3 - Payment Voucher Allocation System
+- **Implemented comprehensive payment allocation system** linking payment vouchers to supplier invoices
+- **Prerequisite Migrations Created:**
+  - `supplier_invoices` table - AP invoice tracking with full audit trail
+  - `supplier_invoice_items` table - Line items with sortable behavior
+- **Models Created:**
+  - `PaymentVoucherAllocation` - Links payment vouchers to supplier invoices with allocated amounts
+- **SupplierInvoice Features:**
+  - **Serial Numbering:** SI-AP-YYYY-XXXX pattern with yearly reset
+  - **Multi-currency Support:** Currency tracking with exchange rate support
+  - **Payment Tracking:** paid_amount and outstanding_amount fields
+  - **Status Workflow:** Integrated with Spatie ModelStatus for draft → approved → partially_paid → paid
+  - **Document References:** Links to purchase orders and goods received notes (nullable for future integration)
+  - **Tax and Discounts:** Subtotal, tax_amount, discount_amount, total_amount tracking
+  - **Audit Trail:** created_by, updated_by, approved_by with timestamps
+  - **Relationships:** company, supplier, purchaseOrder, goodsReceivedNote, currency, items, allocations, approver, creator, updater
+  - **Scopes:** draft, approved, paid (using Spatie ModelStatus currentStatus)
+  - **Business Methods:**
+    - `calculateTotals()` - Recalculates invoice totals from line items using CalculateSupplierInvoiceTotals action
+- **SupplierInvoiceItem Features:**
+  - Sortable behavior for line ordering using Spatie EloquentSortable
+  - Item details: code, description
+  - Quantity with UOM support (3 decimal precision)
+  - Unit price with 2 decimal precision
+  - Tax rate and tax amount calculation
+  - Discount: percentage or amount
+  - **Relationships:** supplierInvoice, purchaseOrderItem, goodsReceivedNoteItem, uom
+  - **Business Methods:**
+    - `calculateTotals()` - Calculates line totals using CalculateSupplierInvoiceItemTotals action
+- **PaymentVoucherAllocation Features:**
+  - **Database Schema:**
+    - Unique constraint on (payment_voucher_id, supplier_invoice_id) to prevent duplicate allocations
+    - Decimal(15,4) precision for allocated_amount
+    - Proper foreign key constraints with cascade on delete
+    - Indexed for optimal query performance
+  - **Relationships:**
+    - belongsTo PaymentVoucher
+    - belongsTo SupplierInvoice
+  - **Query Scopes:**
+    - `forPayment($paymentVoucherId)` - Filter allocations by payment voucher
+    - `forInvoice($supplierInvoiceId)` - Filter allocations by supplier invoice
+  - **Business Methods:**
+    - `allocateToInvoice()` - Static method to allocate payment to invoice with comprehensive validation:
+      - ✅ Validates amount is positive
+      - ✅ Validates currencies match between voucher and invoice
+      - ✅ Prevents total allocations from exceeding payment voucher amount using BCMath
+      - ✅ Prevents allocation from exceeding invoice outstanding amount
+      - ✅ Auto-updates or creates allocation using updateOrCreate
+      - ✅ Triggers automatic recalculation of invoice amounts
+      - ⚠️ Throws `\InvalidArgumentException` with detailed context on validation failures
+    - `recalculateAllocations()` - Static method to recalculate invoice payment status:
+      - ✅ Sums allocations only from paid payment vouchers (filters by status)
+      - ✅ Updates invoice paid_amount from total allocations
+      - ✅ Calculates outstanding_amount using BCMath subtraction
+      - ✅ Auto-updates invoice status to 'paid' when fully paid
+      - ✅ Auto-updates invoice status to 'partially_paid' when partially paid
+      - ✅ Uses BCMath for precise decimal calculations (4 decimal precision)
+- **Updated Models:**
+  - **PaymentVoucher:**
+    - Added `allocations()` HasMany relationship
+    - Enables tracking all invoice allocations for a payment
+  - **SupplierInvoice:**
+    - Added `allocations()` HasMany relationship
+    - Enables tracking all payment allocations to an invoice
+- **Test Coverage:**
+  - 13 comprehensive tests with 32 assertions - ALL PASSING ✅
+  - **CRUD Tests:**
+    - ✅ Can create payment voucher allocation
+    - ✅ Has proper relationships (PaymentVoucher, SupplierInvoice)
+  - **Query Scope Tests:**
+    - ✅ Can scope by payment voucher (forPayment)
+    - ✅ Can scope by supplier invoice (forInvoice)
+  - **Allocation Method Tests:**
+    - ✅ Can allocate payment to invoice with automatic recalculation
+    - ✅ Validates allocation amount is positive
+    - ✅ Validates currencies match between voucher and invoice
+    - ✅ Validates total allocation does not exceed payment amount
+    - ✅ Validates allocation does not exceed invoice outstanding
+  - **Recalculation Tests:**
+    - ✅ Can recalculate allocations from multiple payments
+    - ✅ Only counts paid vouchers in recalculation (ignores draft/approved)
+  - **Relationship Tests:**
+    - ✅ PaymentVoucher has allocations relationship
+    - ✅ SupplierInvoice has allocations relationship
+- **Configuration Updates:**
+  - Added `supplierinvoice` serial numbering pattern to `config/serial-pattern.php`
+  - Pattern: SI-AP-{year}-{number} with yearly reset
+- **Database Migration Fixes:**
+  - Updated `payment_vouchers` and `supplier_invoices` migrations to use `backoffice_companies` table
+  - Made goods_received_note references nullable without foreign keys (for future GRN implementation)
+- **Precision and Accuracy:**
+  - Uses BCMath for all monetary calculations to ensure decimal precision
+  - Allocated amounts stored with 4 decimal places for accuracy
+  - Validation messages include formatted amounts with context
+- **Status Integration:**
+  - Properly integrated with Spatie ModelStatus package
+  - Uses `currentStatus()` for querying payment vouchers in recalculation
+  - Auto-updates invoice status based on payment allocation
+- **Future Enhancements:**
+  - Filament Resource for managing allocations (UI)
+  - Bulk allocation actions
+  - FIFO/LIFO allocation strategies
+  - Allocation reports and analytics
+## 2025-11-06 AP Foundation Phase 1 - Supplier Invoice Integration
+- **Enhanced SupplierInvoice model from Purchase Module for Accounts Payable integration**
+- **SupplierInvoice Enhancements:**
+  - **GL Integration Fields:**
+    - `journal_entry_id` - Links to journal entry when posted to GL
+    - `is_posted_to_gl` - Boolean flag to track GL posting status
+    - `posted_to_gl_at` - Timestamp when invoice was posted to GL
+  - **Payment Status Field:**
+    - `payment_status` - Enum field with values: unpaid, partially_paid, paid, overdue
+    - Separate from Spatie ModelStatus `status` field for document workflow
+  - **Payment Tracking:**
+    - `paid_amount` - Tracks total amount paid against invoice (already existed)
+    - `outstanding_amount` - Tracks remaining amount due (already existed)
+  - **Business Methods:**
+    - `calculateOutstanding()` - Calculates and saves outstanding_amount = total_amount - paid_amount
+    - `updatePaymentStatus()` - Automatically updates payment_status based on:
+      - `paid` if paid_amount >= total_amount
+      - `partially_paid` if paid_amount > 0 but < total_amount
+      - `overdue` if unpaid and past due_date
+      - `unpaid` otherwise
+    - `isFullyPaid()` - Returns true when paid_amount >= total_amount (uses bccomp for decimal precision)
+    - `isOverdue()` - Returns true when invoice is not fully paid and past due_date
+    - `recordPayment($amount)` - Records a payment, recalculates outstanding, and updates payment status
+  - **New Relationship:**
+    - `journalEntry()` - BelongsTo relationship to JournalEntry model
+  - **New Scopes:**
+    - `unpaid()` - Filters invoices with payment_status = 'unpaid'
+    - `partiallyPaid()` - Filters invoices with payment_status = 'partially_paid'
+    - `overdue()` - Filters invoices with payment_status = 'overdue' or past due date
+    - `postedToGl()` - Filters invoices where is_posted_to_gl = true
+  - **Existing Relationships Preserved:**
+    - company, supplier, purchaseOrder, goodsReceivedNote, currency, items, invoiceMatching, approver, creator, updater
+  - **Existing Scopes Preserved:**
+    - draft(), approved(), paid() - using Spatie ModelStatus
+- **Database Migrations:**
+  - Created `supplier_invoices` table with:
+    - Serial numbering support (invoice_number)
+    - Foreign keys to backoffice_companies, business_partners, purchase_orders, currencies, journal_entries
+    - Payment tracking fields: paid_amount, outstanding_amount, payment_status
+    - GL integration fields: journal_entry_id, is_posted_to_gl, posted_to_gl_at
+    - Document fields: supplier_invoice_number, invoice_date, due_date, description, notes, internal_notes
+    - Amount fields: subtotal, tax_amount, discount_amount, total_amount (all decimal 20,2)
+    - Approval tracking: approved_by, approved_at
+    - Audit fields: created_by, updated_by, timestamps, soft deletes
+    - Indexes for performance: company_id+status, supplier_id+payment_status, invoice/due dates, is_posted_to_gl, payment_status
+  - Created `supplier_invoice_items` table with:
+    - Foreign key to supplier_invoices (cascade delete)
+    - Optional links to purchase_order_items and goods_received_note_items
+    - Item details: item_code, item_description
+    - Pricing: quantity, uom_id, unit_price, line_total
+    - Discounts: discount_percent, discount_amount
+    - Tax: tax_rate, tax_amount
+    - Sort order support (Spatie Sortable)
+    - Timestamps
+- **Testing:**
+  - Created comprehensive unit test suite (14 tests, all passing):
+    - Creation and basic operations
+    - calculateOutstanding() method
+    - isFullyPaid() verification with bccomp precision
+    - isOverdue() logic for various scenarios
+    - updatePaymentStatus() for all status transitions
+    - recordPayment() workflow
+    - All relationship methods (company, supplier, currency, journalEntry)
+    - GL posting status tracking
+    - Query scopes (unpaid, partiallyPaid, postedToGl)
+  - Created SupplierInvoiceFactory with states: approved, partiallyPaid, paid, overdue, postedToGl
+  - Created/Enhanced supporting factories: JournalEntryFactory, FiscalYearFactory, AccountingPeriodFactory
+- **Design Pattern Consistency:**
+  - Followed exact patterns from SalesInvoice model for AR/AP symmetry
+  - Used bccomp() for decimal comparisons (2 decimal places for currency)
+  - Separated payment_status (enum) from document status (Spatie ModelStatus)
+  - Used same field naming conventions and data types
+  - Maintained audit trail patterns (created_by, updated_by)
+- **Future Integration Points:**
+  - Ready for AP posting actions similar to AR PostSalesInvoice
+  - Payment status field prepared for payment voucher integration
+  - GL fields ready for journal entry creation and reversal
+  - Outstanding amount tracking ready for aging reports

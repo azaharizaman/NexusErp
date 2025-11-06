@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('code')->unique(); // e.g., "FY2025"
             $table->date('start_date');
             $table->date('end_date');
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->foreignId('company_id')->constrained('backoffice_companies')->onDelete('cascade');
             
             // Status
             $table->enum('status', ['draft', 'active', 'closed'])->default('draft');
