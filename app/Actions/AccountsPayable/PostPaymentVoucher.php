@@ -153,7 +153,7 @@ class PostPaymentVoucher
                 $invoice->save();
 
                 // Update invoice status based on payment
-                if ($invoice->outstanding_amount <= 0) {
+                if (bccomp($invoice->outstanding_amount, '0', 4) <= 0) {
                     $invoice->setStatus('paid', 'Invoice fully paid');
                 } elseif ($invoice->paid_amount > 0) {
                     $invoice->setStatus('partially_paid', 'Invoice partially paid');
