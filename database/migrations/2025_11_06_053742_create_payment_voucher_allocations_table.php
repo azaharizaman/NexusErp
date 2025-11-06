@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             
             $table->foreignId('payment_voucher_id')->constrained('payment_vouchers')->cascadeOnDelete();
-            $table->foreignId('supplier_invoice_id')->constrained('supplier_invoices')->cascadeOnDelete();
+            // Foreign key constraint commented out until supplier_invoices table is created
+            // TODO: Uncomment when supplier_invoices migration is added
+            // $table->foreignId('supplier_invoice_id')->constrained('supplier_invoices')->cascadeOnDelete();
+            $table->unsignedBigInteger('supplier_invoice_id');
             
             $table->decimal('allocated_amount', 15, 2);
             $table->text('notes')->nullable();
