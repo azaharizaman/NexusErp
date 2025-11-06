@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_vouchers', function (Blueprint $table) {
             $table->id();
             $table->string('voucher_number')->unique();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->cascadeOnDelete();
             // Foreign key constraint commented out until supplier_invoices table is created
             // TODO: Uncomment when supplier_invoices migration is added
