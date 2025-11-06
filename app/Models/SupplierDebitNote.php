@@ -7,13 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\ModelStatus\HasStatuses;
 
 class SupplierDebitNote extends Model
 {
     use HasFactory;
     use HasSerialNumbering;
-    use HasStatuses;
     use SoftDeletes;
 
     /**
@@ -65,7 +63,7 @@ class SupplierDebitNote extends Model
      */
     public function applyToInvoice(): void
     {
-        if ($this->latestStatus() !== 'issued') {
+        if ($this->status !== 'issued') {
             throw new \LogicException('Only issued debit notes can be applied to invoices');
         }
 
@@ -88,7 +86,8 @@ class SupplierDebitNote extends Model
             $invoice->updatePaymentStatus();
         }
 
-        $this->setStatus('applied', 'Applied to invoice');
+        $this->status = 'applied';
+        $this->save();
     }
 
     /**
@@ -96,7 +95,7 @@ class SupplierDebitNote extends Model
      */
     public function canBeApplied(): bool
     {
-        return $this->latestStatus() === 'issued' &&
+        return $this->status === 'issued' &&
                $this->supplier_invoice_id !== null &&
                $this->debit_amount > 0;
     }
@@ -154,22 +153,22 @@ class SupplierDebitNote extends Model
 
     public function scopeDraft($query)
     {
-        return $query->currentStatus('draft');
+        return $query->where('status', 'draft');
     }
 
     public function scopeIssued($query)
     {
-        return $query->currentStatus('issued');
+        return $query->where('status', 'issued');
     }
 
     public function scopeApplied($query)
     {
-        return $query->currentStatus('applied');
+        return $query->where('status', 'applied');
     }
 
     public function scopeCancelled($query)
     {
-        return $query->currentStatus('cancelled');
+        return $query->where('status', 'cancelled');
     }
 
     public function scopeForSupplier($query, int $supplierId)

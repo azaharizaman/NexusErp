@@ -114,7 +114,8 @@ class SupplierDebitNoteTest extends TestCase
         ]);
 
         // Set status to issued so it can be applied
-        $debitNote->setStatus('issued', 'Issued to supplier');
+        $debitNote->status = 'issued';
+        $debitNote->save();
 
         $debitNote->applyToInvoice();
 
@@ -125,7 +126,7 @@ class SupplierDebitNoteTest extends TestCase
         $this->assertEquals(9000.00, $invoice->outstanding_amount);
         
         // Check that debit note status is now 'applied'
-        $this->assertEquals('applied', $debitNote->latestStatus());
+        $this->assertEquals('applied', $debitNote->fresh()->status);
     }
 
     /** @test */
@@ -157,7 +158,9 @@ class SupplierDebitNoteTest extends TestCase
         ]);
 
         // Set status to issued so it can be applied
-        $debitNote->setStatus('issued', 'Issued to supplier');
+        $debitNote->status = 'issued';
+        $debitNote->save();
+        $debitNote->refresh();
 
         $debitNote->applyToInvoice();
     }
@@ -216,7 +219,9 @@ class SupplierDebitNoteTest extends TestCase
         ]);
 
         // Set status to issued
-        $debitNote->setStatus('issued', 'Issued to supplier');
+        $debitNote->status = 'issued';
+        $debitNote->save();
+        $debitNote->refresh();
 
         $debitNote->applyToInvoice();
     }
@@ -250,7 +255,8 @@ class SupplierDebitNoteTest extends TestCase
         $this->assertFalse($debitNote->canBeApplied());
 
         // Set status to issued
-        $debitNote->setStatus('issued', 'Issued to supplier');
+        $debitNote->status = 'issued';
+        $debitNote->save();
         $debitNote->refresh();
 
         // Now should be applicable
@@ -294,7 +300,8 @@ class SupplierDebitNoteTest extends TestCase
             'debit_amount' => 500.00,
             'description' => 'Issued note',
         ]);
-        $issuedNote->setStatus('issued', 'Issued');
+        $issuedNote->status = 'issued';
+        $issuedNote->save();
 
         // Test draft scope
         $draftNotes = SupplierDebitNote::draft()->get();

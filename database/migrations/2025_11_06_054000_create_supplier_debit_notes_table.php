@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('debit_note_number', 50)->unique();
             
             // Company and supplier
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->restrictOnDelete();
             
             // Related invoice (nullable - debit note can be standalone)
