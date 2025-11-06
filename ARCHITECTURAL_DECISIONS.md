@@ -1,5 +1,90 @@
 # Architectural Decisions
 
+## 2025-11-06 Phase 5 - Accounts Payable Module (AP) GL Integration
+- **Implemented comprehensive GL Integration for Accounts Payable system**
+- **Models Updated with GL Integration Fields:**
+  - `SupplierInvoice` - Supplier invoices with GL posting capability
+  - `SupplierInvoiceItem` - Invoice line items with expense account classification
+  - `PaymentVoucher` - Payment vouchers with GL posting capability
+  - `DebitNote` - Supplier debit notes with GL posting capability
+- **SupplierInvoice GL Features:**
+  - **GL Integration Fields:** journal_entry_id, is_posted_to_gl, posted_to_gl_at
+  - **Status Requirement:** Invoice must be "approved" before posting to GL
+  - **Fiscal Period Validation:** Validates accounting period is open before posting
+  - **Line Item Validation:** Ensures invoice has line items before posting
+  - **Duplicate Posting Prevention:** Checks if already posted to GL
+  - **Relationships:** journalEntry relationship for GL integration
+  - **Scopes:** postedToGl scope for filtering posted invoices
+- **SupplierInvoiceItem GL Features:**
+  - **Expense Account:** expense_account_id field links line items to GL expense accounts
+  - **Account Relationship:** expenseAccount() relationship for GL integration
+  - **Flexible Classification:** Each line item can have its own expense account
+- **PaymentVoucher GL Features:**
+  - **GL Integration Fields:** journal_entry_id, is_posted_to_gl, posted_to_gl_at
+  - **Status Requirement:** Voucher must be "paid" before posting to GL
+  - **Invoice Allocation Requirement:** Must have supplier_invoice_id (no unallocated payments)
+  - **Outstanding Amount Updates:** Updates supplier invoice paid_amount and outstanding_amount
+  - **Status Updates:** Automatically updates invoice status to partially_paid or paid
+  - **Relationships:** journalEntry relationship for GL integration
+  - **Scopes:** postedToGl scope for filtering posted vouchers
+- **DebitNote GL Features:**
+  - **GL Integration Fields:** journal_entry_id, is_posted_to_gl, posted_to_gl_at
+  - **Status Requirement:** Debit note must be "approved" before posting to GL
+  - **Outstanding Amount Updates:** Reduces supplier invoice outstanding_amount
+  - **Status Updates:** Automatically updates invoice status to paid if fully credited
+  - **Flexible Linking:** Can be posted with or without linked supplier invoice
+  - **Relationships:** journalEntry relationship for GL integration
+  - **Scopes:** postedToGl scope for filtering posted debit notes
+- **Actions Implemented:**
+  - `PostSupplierInvoice` - Posts supplier invoice to GL with comprehensive validation
+    - **Journal Entry:** Debit Expense Accounts (per line), Debit Tax Payable (input credit), Credit AP
+    - **Validation:** Approved status, not already posted, has line items, period open
+    - **Transaction Safety:** Wrapped in database transaction for atomicity
+  - `PostPaymentVoucher` - Posts payment voucher to GL with invoice updates
+    - **Journal Entry:** Debit AP, Credit Cash/Bank
+    - **Validation:** Paid status, not already posted, has invoice allocation, period open
+    - **Invoice Updates:** Updates paid_amount, outstanding_amount, status
+    - **Transaction Safety:** Wrapped in database transaction for atomicity
+  - `PostSupplierDebitNote` - Posts debit note to GL with invoice adjustments
+    - **Journal Entry:** Debit AP (reduces liability), Credit Purchase Returns
+    - **Validation:** Approved status, not already posted, period open
+    - **Invoice Updates:** Reduces outstanding_amount, updates status if fully credited
+    - **Transaction Safety:** Wrapped in database transaction for atomicity
+- **GL Posting Rules:**
+  - **Supplier Invoice Posting:**
+    - Debit: Expense Accounts (per line item) - Line totals
+    - Debit: Tax Payable (Input Tax Credit) - Tax amount
+    - Credit: Accounts Payable - Total invoice amount
+  - **Payment Voucher Posting:**
+    - Debit: Accounts Payable - Payment amount
+    - Credit: Cash/Bank Account - Payment amount
+  - **Debit Note Posting:**
+    - Debit: Accounts Payable - Debit note amount (reduces liability)
+    - Credit: Purchase Returns/Allowances - Debit note amount
+- **Database Schema:**
+  - `supplier_invoices` table: Complete invoice management with GL integration fields
+  - `supplier_invoice_items` table: Line items with expense_account_id for GL posting
+  - `debit_notes` table: Complete debit note management with GL integration fields
+  - Migration to add GL fields to existing `payment_vouchers` table
+  - All tables include proper indexes on is_posted_to_gl for efficient querying
+- **Testing:**
+  - Comprehensive test suite with 16 test cases across 3 test files
+  - Factory classes created for SupplierInvoice, SupplierInvoiceItem, DebitNote
+  - Tests cover success scenarios, validation errors, edge cases, and business logic
+  - RefreshDatabase trait for isolated test execution
+- **Integration Points:**
+  - Integrates with existing JournalEntry and Account models from Accounting Module
+  - Uses FiscalYear and AccountingPeriod for period validation
+  - Compatible with existing AP module models (PurchaseOrder, GoodsReceivedNote)
+  - Ready for three-way matching integration (PO → GRN → Invoice)
+- **Future Considerations:**
+  - Payment voucher allocation to multiple invoices (currently one-to-one)
+  - Bulk posting of invoices/vouchers/debit notes
+  - GL posting reversal functionality
+  - Exchange rate difference handling for multi-currency transactions
+  - Integration with cash flow forecasting
+  - Automatic recurring debit notes for adjustments
+
 ## 2025-11-06 Phase 3 - Accounts Receivable Module (AR)
 - **Implemented comprehensive Accounts Receivable system** with full GL integration
 - **Models Created:**
