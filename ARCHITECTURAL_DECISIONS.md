@@ -760,3 +760,81 @@ The foundation for requisition management is now complete with a fully functiona
   - **Project Planning** - Structured implementation plans and feature breakdowns
 - **Version Control Strategy** - All prompts committed to repository for team availability and version tracking
 - **Future Extensibility** - Framework in place for adding additional Copilot collections as needed
+## 2025-11-06 AP Foundation Phase 1 - Supplier Invoice Integration
+- **Enhanced SupplierInvoice model from Purchase Module for Accounts Payable integration**
+- **SupplierInvoice Enhancements:**
+  - **GL Integration Fields:**
+    - `journal_entry_id` - Links to journal entry when posted to GL
+    - `is_posted_to_gl` - Boolean flag to track GL posting status
+    - `posted_to_gl_at` - Timestamp when invoice was posted to GL
+  - **Payment Status Field:**
+    - `payment_status` - Enum field with values: unpaid, partially_paid, paid, overdue
+    - Separate from Spatie ModelStatus `status` field for document workflow
+  - **Payment Tracking:**
+    - `paid_amount` - Tracks total amount paid against invoice (already existed)
+    - `outstanding_amount` - Tracks remaining amount due (already existed)
+  - **Business Methods:**
+    - `calculateOutstanding()` - Calculates and saves outstanding_amount = total_amount - paid_amount
+    - `updatePaymentStatus()` - Automatically updates payment_status based on:
+      - `paid` if paid_amount >= total_amount
+      - `partially_paid` if paid_amount > 0 but < total_amount
+      - `overdue` if unpaid and past due_date
+      - `unpaid` otherwise
+    - `isFullyPaid()` - Returns true when paid_amount >= total_amount (uses bccomp for decimal precision)
+    - `isOverdue()` - Returns true when invoice is not fully paid and past due_date
+    - `recordPayment($amount)` - Records a payment, recalculates outstanding, and updates payment status
+  - **New Relationship:**
+    - `journalEntry()` - BelongsTo relationship to JournalEntry model
+  - **New Scopes:**
+    - `unpaid()` - Filters invoices with payment_status = 'unpaid'
+    - `partiallyPaid()` - Filters invoices with payment_status = 'partially_paid'
+    - `overdue()` - Filters invoices with payment_status = 'overdue' or past due date
+    - `postedToGl()` - Filters invoices where is_posted_to_gl = true
+  - **Existing Relationships Preserved:**
+    - company, supplier, purchaseOrder, goodsReceivedNote, currency, items, invoiceMatching, approver, creator, updater
+  - **Existing Scopes Preserved:**
+    - draft(), approved(), paid() - using Spatie ModelStatus
+- **Database Migrations:**
+  - Created `supplier_invoices` table with:
+    - Serial numbering support (invoice_number)
+    - Foreign keys to backoffice_companies, business_partners, purchase_orders, currencies, journal_entries
+    - Payment tracking fields: paid_amount, outstanding_amount, payment_status
+    - GL integration fields: journal_entry_id, is_posted_to_gl, posted_to_gl_at
+    - Document fields: supplier_invoice_number, invoice_date, due_date, description, notes, internal_notes
+    - Amount fields: subtotal, tax_amount, discount_amount, total_amount (all decimal 20,2)
+    - Approval tracking: approved_by, approved_at
+    - Audit fields: created_by, updated_by, timestamps, soft deletes
+    - Indexes for performance: company_id+status, supplier_id+payment_status, invoice/due dates, is_posted_to_gl, payment_status
+  - Created `supplier_invoice_items` table with:
+    - Foreign key to supplier_invoices (cascade delete)
+    - Optional links to purchase_order_items and goods_received_note_items
+    - Item details: item_code, item_description
+    - Pricing: quantity, uom_id, unit_price, line_total
+    - Discounts: discount_percent, discount_amount
+    - Tax: tax_rate, tax_amount
+    - Sort order support (Spatie Sortable)
+    - Timestamps
+- **Testing:**
+  - Created comprehensive unit test suite (14 tests, all passing):
+    - Creation and basic operations
+    - calculateOutstanding() method
+    - isFullyPaid() verification with bccomp precision
+    - isOverdue() logic for various scenarios
+    - updatePaymentStatus() for all status transitions
+    - recordPayment() workflow
+    - All relationship methods (company, supplier, currency, journalEntry)
+    - GL posting status tracking
+    - Query scopes (unpaid, partiallyPaid, postedToGl)
+  - Created SupplierInvoiceFactory with states: approved, partiallyPaid, paid, overdue, postedToGl
+  - Created/Enhanced supporting factories: JournalEntryFactory, FiscalYearFactory, AccountingPeriodFactory
+- **Design Pattern Consistency:**
+  - Followed exact patterns from SalesInvoice model for AR/AP symmetry
+  - Used bccomp() for decimal comparisons (2 decimal places for currency)
+  - Separated payment_status (enum) from document status (Spatie ModelStatus)
+  - Used same field naming conventions and data types
+  - Maintained audit trail patterns (created_by, updated_by)
+- **Future Integration Points:**
+  - Ready for AP posting actions similar to AR PostSalesInvoice
+  - Payment status field prepared for payment voucher integration
+  - GL fields ready for journal entry creation and reversal
+  - Outstanding amount tracking ready for aging reports
