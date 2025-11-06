@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payable_ledgers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->cascadeOnDelete();
             $table->foreignId('supplier_invoice_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('payment_voucher_id')->nullable()->constrained()->nullOnDelete();

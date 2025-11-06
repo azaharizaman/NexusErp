@@ -33,6 +33,12 @@ class PaymentVoucher extends Model
         'payment_method',
         'reference_number',
         'amount',
+        'allocated_amount',
+        'unallocated_amount',
+        'is_on_hold',
+        'hold_reason',
+        'held_by',
+        'held_at',
         'description',
         'notes',
         'internal_notes',
@@ -55,9 +61,13 @@ class PaymentVoucher extends Model
     protected $casts = [
         'payment_date' => 'date',
         'amount' => 'decimal:2',
+        'allocated_amount' => 'decimal:2',
+        'unallocated_amount' => 'decimal:2',
+        'is_on_hold' => 'boolean',
         'approved_at' => 'datetime',
         'paid_at' => 'datetime',
         'voided_at' => 'datetime',
+        'held_at' => 'datetime',
     ];
 
     /**
@@ -149,6 +159,22 @@ class PaymentVoucher extends Model
     }
 
     /**
+     * Holder relationship.
+     */
+    public function holder(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'held_by');
+    }
+
+    /**
+     * Payment allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
+    }
+
+    /**
      * Scope for draft vouchers using Spatie ModelStatus.
      */
     public function scopeDraft($query)
@@ -218,5 +244,47 @@ class PaymentVoucher extends Model
     public function getStatusAttribute(): ?string
     {
         return $this->latestStatus();
+    }
+
+    /**
+     * Check if payment is fully allocated.
+     */
+    public function isFullyAllocated(): bool
+    {
+        return bccomp($this->unallocated_amount, '0', 4) <= 0;
+    }
+
+    /**
+     * Calculate total allocated amount from allocations.
+     */
+    public function recalculateAllocations(): void
+    {
+        $this->allocated_amount = $this->allocations()->sum('allocated_amount');
+        $this->unallocated_amount = $this->amount - $this->allocated_amount;
+        $this->save();
+    }
+
+    /**
+     * Scope for vouchers on hold.
+     */
+    public function scopeOnHold($query)
+    {
+        return $query->where('is_on_hold', true);
+    }
+
+    /**
+     * Scope for vouchers not on hold.
+     */
+    public function scopeNotOnHold($query)
+    {
+        return $query->where('is_on_hold', false);
+    }
+
+    /**
+     * Scope for unallocated vouchers.
+     */
+    public function scopeUnallocated($query)
+    {
+        return $query->where('unallocated_amount', '>', 0);
     }
 }

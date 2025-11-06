@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_vouchers', function (Blueprint $table) {
             $table->id();
             $table->string('voucher_number')->unique();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->cascadeOnDelete();
             $table->foreignId('supplier_invoice_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('currency_id')->constrained()->cascadeOnDelete();
