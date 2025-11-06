@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PaymentVoucherAllocation extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentVoucherAllocationFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -124,9 +124,7 @@ class PaymentVoucherAllocation extends Model
         // Sum all allocations for this invoice from paid payment vouchers
         $totalAllocated = static::forInvoice($supplierInvoice->id)
             ->whereHas('paymentVoucher', function ($query) {
-                $query->where(function ($q) {
-                    $q->currentStatus('paid');
-                });
+                $query->currentStatus('paid');
             })
             ->sum('allocated_amount');
 

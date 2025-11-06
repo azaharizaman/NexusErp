@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->cascadeOnDelete();
             $table->foreignId('purchase_order_id')->nullable()->constrained()->nullOnDelete();
-            $table->unsignedBigInteger('goods_received_note_id')->nullable(); // FK will be added when GRN table exists
+            // TODO: Add foreign key when GRN table is created - tracked in Phase 5 implementation
+            $table->unsignedBigInteger('goods_received_note_id')->nullable();
             $table->foreignId('currency_id')->constrained()->cascadeOnDelete();
             
             $table->string('supplier_invoice_number')->nullable();
