@@ -119,6 +119,14 @@ class SupplierInvoice extends Model
     }
 
     /**
+     * Supplier debit notes relationship.
+     */
+    public function debitNotes(): HasMany
+    {
+        return $this->hasMany(SupplierDebitNote::class);
+    }
+
+    /**
      * Approver relationship.
      */
     public function approver(): BelongsTo
