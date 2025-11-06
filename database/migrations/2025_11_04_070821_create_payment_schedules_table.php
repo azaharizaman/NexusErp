@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_schedules', function (Blueprint $table) {
             $table->id();
             $table->string('schedule_number')->unique();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->cascadeOnDelete();
             $table->foreignId('purchase_order_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('supplier_invoice_id')->nullable()->constrained()->nullOnDelete();

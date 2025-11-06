@@ -17,18 +17,19 @@ return new class extends Migration
             // Serial numbering
             $table->string('invoice_number', 50)->unique();
             
-            // Company and supplier
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            // Supplier and company
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained('business_partners')->restrictOnDelete();
             
             // Related documents
             $table->foreignId('purchase_order_id')->nullable()->constrained('purchase_orders')->nullOnDelete();
-            $table->foreignId('goods_received_note_id')->nullable(); // Pending GRN implementation
+            $table->foreignId('goods_received_note_id')->nullable(); // Will be constrained when GRN table exists
             
             // Invoice details
-            $table->string('supplier_invoice_number')->nullable(); // Supplier's own invoice number
+            $table->string('supplier_invoice_number')->nullable();
             $table->date('invoice_date');
             $table->date('due_date');
+            $table->string('payment_terms')->nullable();
             
             // Currency
             $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
@@ -36,19 +37,11 @@ return new class extends Migration
             
             // Amounts
             $table->decimal('subtotal', 20, 4)->default(0);
-            $table->decimal('tax_amount', 20, 4)->default(0);
             $table->decimal('discount_amount', 20, 4)->default(0);
+            $table->decimal('tax_amount', 20, 4)->default(0);
             $table->decimal('total_amount', 20, 4)->default(0);
             $table->decimal('paid_amount', 20, 4)->default(0);
             $table->decimal('outstanding_amount', 20, 4)->default(0);
-            
-            // Status - using Spatie ModelStatus, this is for display/query purposes
-            $table->string('status', 50)->default('draft');
-            
-            // GL integration
-            $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete();
-            $table->boolean('is_posted_to_gl')->default(false);
-            $table->timestamp('posted_to_gl_at')->nullable();
             
             // Additional info
             $table->text('description')->nullable();
@@ -65,10 +58,10 @@ return new class extends Migration
             $table->softDeletes();
             
             // Indexes
-            $table->index(['company_id', 'status']);
-            $table->index(['supplier_id', 'status']);
+            $table->index(['company_id']);
+            $table->index(['supplier_id', 'invoice_date']);
             $table->index(['invoice_date', 'due_date']);
-            $table->index('is_posted_to_gl');
+            $table->index('supplier_invoice_number');
         });
     }
 

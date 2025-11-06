@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('invoice_number', 50)->unique();
             
             // Customer and company
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('backoffice_companies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('business_partners')->restrictOnDelete();
             
             // Related documents

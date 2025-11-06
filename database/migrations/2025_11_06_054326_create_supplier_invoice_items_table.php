@@ -17,42 +17,42 @@ return new class extends Migration
             // Parent invoice
             $table->foreignId('supplier_invoice_id')->constrained('supplier_invoices')->cascadeOnDelete();
             
-            // Related documents
-            $table->foreignId('purchase_order_item_id')->nullable()->constrained('purchase_order_items')->nullOnDelete();
-            $table->foreignId('goods_received_note_item_id')->nullable(); // Pending GRN implementation
-            
             // Item details
             $table->string('item_code')->nullable();
             $table->text('item_description');
-            $table->decimal('quantity', 20, 3);
-            $table->foreignId('uom_id')->nullable()->constrained('uoms')->nullOnDelete();
+            $table->text('specifications')->nullable();
             
-            // Pricing
+            // Quantity and pricing
+            $table->decimal('quantity', 20, 4);
+            $table->foreignId('uom_id')->nullable()->constrained('uoms')->restrictOnDelete();
             $table->decimal('unit_price', 20, 4);
             $table->decimal('line_total', 20, 4);
+            
+            // Discounts
+            $table->decimal('discount_percent', 5, 2)->default(0);
+            $table->decimal('discount_amount', 20, 4)->default(0);
             
             // Tax
             $table->decimal('tax_rate', 5, 2)->default(0);
             $table->decimal('tax_amount', 20, 4)->default(0);
             
-            // Discount
-            $table->decimal('discount_percent', 5, 2)->default(0);
-            $table->decimal('discount_amount', 20, 4)->default(0);
-            
-            // GL Account for expense classification
+            // GL account for expense recognition
             $table->foreignId('expense_account_id')->nullable()->constrained('accounts')->nullOnDelete();
             
-            // Additional info
+            // Notes
             $table->text('notes')->nullable();
             
-            // Sortable
+            // Sort order
             $table->unsignedInteger('sort_order')->default(0);
+            
+            // Audit fields
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             
             $table->timestamps();
             
             // Indexes
-            $table->index('supplier_invoice_id');
-            $table->index('sort_order');
+            $table->index(['supplier_invoice_id', 'sort_order']);
         });
     }
 

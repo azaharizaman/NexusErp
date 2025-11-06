@@ -196,11 +196,50 @@ class SupplierInvoice extends Model
     }
 
     /**
-     * Scope for invoices posted to GL.
+     * Scope to filter invoices with outstanding amounts (unpaid or partially paid).
      */
-    public function scopePostedToGl($query)
+    public function scopeUnpaid($query)
     {
-        return $query->where('is_posted_to_gl', true);
+        return $query->where('outstanding_amount', '>', 0);
+    }
+
+    /**
+     * Check if invoice is fully paid.
+     */
+    public function isFullyPaid(): bool
+    {
+        return bccomp($this->outstanding_amount, '0', 4) <= 0;
+    }
+
+    /**
+     * Update payment status based on paid amount.
+     */
+    public function updatePaymentStatus(): void
+    {
+        if ($this->isFullyPaid()) {
+            $this->setStatus('paid', 'Invoice fully paid');
+        } elseif (bccomp($this->paid_amount, '0', 4) > 0) {
+            $this->setStatus('partially_paid', 'Invoice partially paid');
+        }
+    }
+
+    /**
+     * Record a payment against this invoice.
+     */
+    public function recordPayment(float $amount): void
+    {
+        $this->paid_amount = bcadd($this->paid_amount, $amount, 4);
+        $this->outstanding_amount = bcsub($this->total_amount, $this->paid_amount, 4);
+        $this->save();
+        $this->updatePaymentStatus();
+    }
+
+    /**
+     * Payment allocations relationship.
+     */
+    public function paymentAllocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
     }
 
     /**

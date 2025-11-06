@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('recommendation_number')->unique(); // Serial prefix: PR-REC-
             $table->foreignId('request_for_quotation_id')->constrained('request_for_quotations')->cascadeOnDelete();
             $table->foreignId('recommended_quotation_id')->constrained('quotations')->cascadeOnDelete();
-            $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->foreignId('company_id')->nullable()->constrained('backoffice_companies')->nullOnDelete();
             $table->date('recommendation_date');
             $table->string('status')->default('draft'); // draft, submitted, approved, rejected
             $table->text('justification')->nullable(); // Why this supplier was recommended

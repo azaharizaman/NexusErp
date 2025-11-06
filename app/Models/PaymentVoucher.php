@@ -249,6 +249,22 @@ class PaymentVoucher extends Model
     }
 
     /**
+     * Holder relationship.
+     */
+    public function holder(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'held_by');
+    }
+
+    /**
+     * Payment allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
+    }
+
+    /**
      * Scope for draft vouchers using Spatie ModelStatus.
      */
     public function scopeDraft($query)
@@ -326,5 +342,47 @@ class PaymentVoucher extends Model
     public function getStatusAttribute(): ?string
     {
         return $this->latestStatus();
+    }
+
+    /**
+     * Check if payment is fully allocated.
+     */
+    public function isFullyAllocated(): bool
+    {
+        return bccomp($this->unallocated_amount, '0', 4) <= 0;
+    }
+
+    /**
+     * Calculate total allocated amount from allocations.
+     */
+    public function recalculateAllocations(): void
+    {
+        $this->allocated_amount = $this->allocations()->sum('allocated_amount');
+        $this->unallocated_amount = bcsub($this->amount, $this->allocated_amount, 4);
+        $this->save();
+    }
+
+    /**
+     * Scope for vouchers on hold.
+     */
+    public function scopeOnHold($query)
+    {
+        return $query->where('is_on_hold', true);
+    }
+
+    /**
+     * Scope for vouchers not on hold.
+     */
+    public function scopeNotOnHold($query)
+    {
+        return $query->where('is_on_hold', false);
+    }
+
+    /**
+     * Scope for unallocated vouchers.
+     */
+    public function scopeUnallocated($query)
+    {
+        return $query->where('unallocated_amount', '>', 0);
     }
 }
