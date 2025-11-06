@@ -203,7 +203,7 @@ class SupplierInvoice extends Model
     {
         if ($this->isFullyPaid()) {
             $this->setStatus('paid', 'Invoice fully paid');
-        } elseif ($this->paid_amount > 0) {
+        } elseif (bccomp($this->paid_amount, '0', 4) > 0) {
             $this->setStatus('partially_paid', 'Invoice partially paid');
         }
     }
