@@ -181,7 +181,7 @@ class SupplierInvoice extends Model
     }
 
     /**
-     * Scope for unpaid invoices (with outstanding amount).
+     * Scope to filter invoices with outstanding amounts (unpaid or partially paid).
      */
     public function scopeUnpaid($query)
     {
