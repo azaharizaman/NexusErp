@@ -164,7 +164,7 @@ Implement FilamentPHP v4.1 resources for managing payment vouchers, debit notes,
 ### UI/UX Requirements
 - Display meaningful relationship data (supplier names, not IDs)
 - Use relationship columns: `supplier.name`, `supplierInvoice.invoice_number`
-- Audit fields showing user names: `creator.name`, `updater.name`
+- Audit fields showing user names via relationship methods: `creator.name`, `updater.name` (where `creator()` and `updater()` are relationships to the User model, using `created_by` and `updated_by` columns)
 - Status badges with color coding
 - Currency formatting with proper precision
 - Validation messages and error states
