@@ -132,6 +132,14 @@ class SupplierInvoice extends Model
         return $this->hasMany(SupplierDebitNote::class);
     } 
       /* Journal entry relationship.
+     * Payment allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
+    }
+    /**
+     * Journal entry relationship.
      */
     public function journalEntry(): BelongsTo
     {
@@ -184,6 +192,14 @@ class SupplierInvoice extends Model
     public function scopePaid($query)
     {
         return $query->currentStatus('paid');
+    }
+
+    /**
+     * Scope for invoices posted to GL.
+     */
+    public function scopePostedToGl($query)
+    {
+        return $query->where('is_posted_to_gl', true);
     }
 
     /**
