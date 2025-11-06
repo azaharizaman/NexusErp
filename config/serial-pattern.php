@@ -133,7 +133,7 @@ return [
             'delimiters' => ['-'],
         ],
         'supplierinvoice' => [
-            'pattern' => 'SI-{year}-{number}',
+            'pattern' => 'SINV-{year}-{number}',
             'start' => 1,
             'digits' => 4,
             'reset' => 'yearly',
