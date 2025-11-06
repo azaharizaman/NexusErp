@@ -187,6 +187,14 @@ class SupplierInvoice extends Model
     }
 
     /**
+     * Scope for invoices posted to GL.
+     */
+    public function scopePostedToGl($query)
+    {
+        return $query->where('is_posted_to_gl', true);
+    }
+
+    /**
      * Calculate totals from items using Action.
      */
     public function calculateTotals(): self
