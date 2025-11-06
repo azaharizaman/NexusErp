@@ -20,9 +20,22 @@ return new class extends Migration
             $table->foreignId('currency_id')->constrained()->cascadeOnDelete();
             
             $table->date('payment_date');
-            $table->string('payment_method')->nullable(); // e.g., Bank Transfer, Cash, Cheque, Credit Card
+            $table->enum('payment_method', [
+                'cash',
+                'bank_transfer',
+                'credit_card',
+                'debit_card',
+                'cheque',
+                'online',
+                'other',
+            ])->nullable();
             $table->string('reference_number')->nullable();
             $table->decimal('amount', 15, 2);
+            $table->decimal('exchange_rate', 20, 6)->default(1);
+            
+            // Allocation tracking (similar to PaymentReceipt)
+            $table->decimal('allocated_amount', 15, 2)->default(0);
+            $table->decimal('unallocated_amount', 15, 2)->default(0);
             
             $table->text('description')->nullable();
             $table->text('notes')->nullable();
@@ -32,7 +45,16 @@ return new class extends Migration
             $table->string('bank_name')->nullable();
             $table->string('bank_account_number')->nullable();
             $table->string('cheque_number')->nullable();
+            $table->date('cheque_date')->nullable();
             $table->string('transaction_id')->nullable();
+            
+            // On hold flag
+            $table->boolean('is_on_hold')->default(false);
+            
+            // GL integration
+            $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete();
+            $table->boolean('is_posted_to_gl')->default(false);
+            $table->timestamp('posted_to_gl_at')->nullable();
             
             // Workflow tracking
             $table->foreignId('requested_by')->nullable()->constrained('users')->nullOnDelete();
@@ -54,6 +76,9 @@ return new class extends Migration
             // Indexes
             $table->index('payment_date');
             $table->index(['supplier_id', 'payment_date']);
+            $table->index('is_posted_to_gl');
+            $table->index('payment_method');
+            $table->index('is_on_hold');
         });
     }
 

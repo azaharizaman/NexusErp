@@ -33,13 +33,21 @@ class PaymentVoucher extends Model
         'payment_method',
         'reference_number',
         'amount',
+        'exchange_rate',
+        'allocated_amount',
+        'unallocated_amount',
         'description',
         'notes',
         'internal_notes',
         'bank_name',
         'bank_account_number',
         'cheque_number',
+        'cheque_date',
         'transaction_id',
+        'is_on_hold',
+        'journal_entry_id',
+        'is_posted_to_gl',
+        'posted_to_gl_at',
         'requested_by',
         'approved_by',
         'approved_at',
@@ -54,11 +62,63 @@ class PaymentVoucher extends Model
 
     protected $casts = [
         'payment_date' => 'date',
+        'cheque_date' => 'date',
         'amount' => 'decimal:2',
+        'exchange_rate' => 'decimal:6',
+        'allocated_amount' => 'decimal:2',
+        'unallocated_amount' => 'decimal:2',
+        'is_on_hold' => 'boolean',
+        'is_posted_to_gl' => 'boolean',
+        'posted_to_gl_at' => 'datetime',
         'approved_at' => 'datetime',
         'paid_at' => 'datetime',
         'voided_at' => 'datetime',
     ];
+
+    /**
+     * Allocate payment to a supplier invoice.
+     */
+    public function allocateToInvoice(SupplierInvoice $invoice, float $allocationAmount): PaymentVoucherAllocation
+    {
+        if ($allocationAmount > $this->unallocated_amount) {
+            throw new \InvalidArgumentException('Allocation amount exceeds unallocated payment amount');
+        }
+
+        if ($allocationAmount > $invoice->outstanding_amount) {
+            throw new \InvalidArgumentException('Allocation amount exceeds invoice outstanding amount');
+        }
+
+        $allocation = $this->allocations()->create([
+            'supplier_invoice_id' => $invoice->id,
+            'allocated_amount' => $allocationAmount,
+        ]);
+
+        $this->allocated_amount += $allocationAmount;
+        $this->unallocated_amount = $this->amount - $this->allocated_amount;
+        $this->save();
+
+        $invoice->recordPayment($allocationAmount);
+
+        return $allocation;
+    }
+
+    /**
+     * Check if payment is fully allocated.
+     */
+    public function isFullyAllocated(): bool
+    {
+        return bccomp($this->unallocated_amount, '0', 2) <= 0;
+    }
+
+    /**
+     * Calculate total allocated amount from allocations.
+     */
+    public function recalculateAllocations(): void
+    {
+        $this->allocated_amount = $this->allocations()->sum('allocated_amount');
+        $this->unallocated_amount = $this->amount - $this->allocated_amount;
+        $this->save();
+    }
 
     /**
      * Company relationship.
@@ -93,11 +153,19 @@ class PaymentVoucher extends Model
     }
 
     /**
-     * Payment schedules relationship.
+     * Journal entry relationship.
      */
-    public function paymentSchedules(): HasMany
+    public function journalEntry(): BelongsTo
     {
-        return $this->hasMany(PaymentSchedule::class);
+        return $this->belongsTo(JournalEntry::class);
+    }
+
+    /**
+     * Payment voucher allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
     }
 
     /**
