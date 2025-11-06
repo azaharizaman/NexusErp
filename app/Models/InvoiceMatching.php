@@ -13,6 +13,14 @@ class InvoiceMatching extends Model
     use HasFactory;
     use SoftDeletes;
 
+    /**
+     * Match status constants.
+     */
+    public const STATUS_MATCHED = 'matched';
+    public const STATUS_QUANTITY_MISMATCH = 'quantity_mismatch';
+    public const STATUS_PRICE_MISMATCH = 'price_mismatch';
+    public const STATUS_NOT_MATCHED = 'not_matched';
+
     protected $fillable = [
         'company_id',
         'supplier_invoice_id',
@@ -111,15 +119,51 @@ class InvoiceMatching extends Model
      */
     public function scopeMatched($query)
     {
-        return $query->where('matching_status', 'matched');
+        return $query->where('matching_status', self::STATUS_MATCHED);
     }
 
     /**
-     * Scope for mismatched records.
+     * Scope for mismatched records (any non-matched status).
      */
     public function scopeMismatched($query)
     {
-        return $query->where('matching_status', 'mismatched');
+        return $query->whereIn('matching_status', [
+            self::STATUS_QUANTITY_MISMATCH,
+            self::STATUS_PRICE_MISMATCH,
+            self::STATUS_NOT_MATCHED,
+        ]);
+    }
+
+    /**
+     * Scope for quantity mismatch records.
+     */
+    public function scopeQuantityMismatch($query)
+    {
+        return $query->where('matching_status', self::STATUS_QUANTITY_MISMATCH);
+    }
+
+    /**
+     * Scope for price mismatch records.
+     */
+    public function scopePriceMismatch($query)
+    {
+        return $query->where('matching_status', self::STATUS_PRICE_MISMATCH);
+    }
+
+    /**
+     * Check if the matching is within tolerance.
+     */
+    public function isWithinTolerance(): bool
+    {
+        return $this->is_within_tolerance;
+    }
+
+    /**
+     * Check if approval can be blocked based on matching status.
+     */
+    public function shouldBlockApproval(): bool
+    {
+        return !$this->is_within_tolerance && $this->matching_status !== self::STATUS_MATCHED;
     }
 
     /**

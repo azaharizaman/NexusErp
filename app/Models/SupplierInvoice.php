@@ -173,4 +173,71 @@ class SupplierInvoice extends Model
     {
         return \App\Actions\SupplierInvoice\CalculateSupplierInvoiceTotals::run($this);
     }
+
+    /**
+     * Perform three-way matching validation.
+     *
+     * @param  float  $tolerancePercentage  Tolerance percentage for variances (default: 5%)
+     * @return InvoiceMatching
+     */
+    public function performThreeWayMatching(float $tolerancePercentage = 5.0): InvoiceMatching
+    {
+        return \App\Actions\InvoiceMatching\ValidateThreeWayMatch::run($this, $tolerancePercentage);
+    }
+
+    /**
+     * Check if invoice approval should be blocked due to matching issues.
+     *
+     * @return bool True if approval should be blocked
+     */
+    public function shouldBlockApproval(): bool
+    {
+        // If no PO is linked, no three-way matching is required
+        if (!$this->purchase_order_id) {
+            return false;
+        }
+
+        // Check if matching exists
+        $matching = $this->invoiceMatching;
+
+        if (!$matching) {
+            // No matching performed yet - should block until matching is done
+            return true;
+        }
+
+        // Block approval if matching failed and variance exceeds tolerance
+        return $matching->shouldBlockApproval();
+    }
+
+    /**
+     * Get the matching validation report.
+     *
+     * @return array|null
+     */
+    public function getMatchingReport(): ?array
+    {
+        $matching = $this->invoiceMatching;
+
+        if (!$matching) {
+            return null;
+        }
+
+        return [
+            'status' => $matching->matching_status,
+            'is_within_tolerance' => $matching->is_within_tolerance,
+            'variance_percentage' => $matching->variance_percentage,
+            'tolerance_percentage' => $matching->tolerance_percentage,
+            'mismatches' => $matching->mismatches,
+            'totals' => [
+                'po_total' => $matching->po_total,
+                'grn_total' => $matching->grn_total,
+                'invoice_total' => $matching->invoice_total,
+                'total_variance' => $matching->total_variance,
+            ],
+            'variances' => [
+                'quantity' => $matching->quantity_variance,
+                'price' => $matching->price_variance,
+            ],
+        ];
+    }
 }
