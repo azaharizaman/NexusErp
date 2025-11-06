@@ -26,7 +26,6 @@ return new class extends Migration
             $table->timestamps();
             
             // Indexes
-            $table->index('payment_voucher_id');
             $table->index('supplier_invoice_id');
             $table->unique(['payment_voucher_id', 'supplier_invoice_id']);
         });
