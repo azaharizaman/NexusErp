@@ -272,7 +272,7 @@ class Phase7ThreeWayMatchingTest extends TestCase
         // Update invoice total with tax to keep overall variance within tolerance
         // Subtotal: 1030, Tax (10%): 103, Total: 1133
         // Variance from PO total (1100): 33/1100 = 3% which is within 5% tolerance
-        $taxAmount = $invoice->subtotal * self::TAX_RATE;
+        $taxAmount = 1030.00 * self::TAX_RATE;
         $invoice->update([
             'subtotal' => 1030.00,
             'tax_amount' => $taxAmount,
