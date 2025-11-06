@@ -22,15 +22,42 @@ if [ ! -s "$TEMP_FILE" ]; then
 else
     MILESTONE_NUMBER=$(cat "$TEMP_FILE")
 fi
-echo "Using milestone number: $MILESTONE_NUMBER"
+echo "Using milestone: $MILESTONE (number: $MILESTONE_NUMBER)"
+
+# making sure all labels are exist of create new labeh with gh label create if not exist yet
+echo "Ensuring required labels exist..."
+REQUIRED_LABELS=(
+   "feature"
+   "accounting"
+   "ap"
+   "database"
+   "models"
+   "actions"
+   "business-logic"
+   "filament"
+   "ui"
+   "api"
+   "gl-integration"
+   "testing"
+   "documentation"
+)
+
+# Create labels if they don't exist
+for LABEL in "${REQUIRED_LABELS[@]}"; do
+    if ! gh label list --repo "$REPO" | grep -q "$LABEL"; then
+        echo "Creating label: $LABEL"
+        gh label create "$LABEL" --repo "$REPO"
+    fi
+done
+echo "All required labels are ensured."
 
 # Issue 1: Database Schema & Models
 echo "Creating Issue 1: Database Schema & Models..."
 gh issue create \
-    --repo "$REPO" \
-    --title "Implement Database Schema & Models for AP Module Foundation" \
-    --milestone "$MILESTONE_NUMBER" \
-    --label "feature,accounting,ap,database,models" \
+   --repo "$REPO" \
+   --title "Implement Database Schema & Models for AP Module Foundation" \
+   --milestone "$MILESTONE" \
+   --label "feature,accounting,ap,database,models" \
     --body "Implement the core database schema and Eloquent models for the Accounts Payable (AP) Module as specified in the implementation plan.
 
 ## Requirements
@@ -89,10 +116,10 @@ gh issue create \
 # Issue 2: Business Logic Actions
 echo "Creating Issue 2: Business Logic Actions..."
 gh issue create \
-    --repo "$REPO" \
-    --title "Implement Business Logic Actions for AP Payment Processing" \
-    --milestone "$MILESTONE_NUMBER" \
-    --label "feature,accounting,ap,actions,business-logic" \
+   --repo "$REPO" \
+   --title "Implement Business Logic Actions for AP Payment Processing" \
+   --milestone "$MILESTONE" \
+   --label "feature,accounting,ap,actions,business-logic" \
     --body "Implement Laravel Actions for AP module business logic using lorisleiva/laravel-actions package.
 
 ## Requirements
@@ -153,10 +180,10 @@ gh issue create \
 # Issue 3: Filament Resources
 echo "Creating Issue 3: Filament Resources..."
 gh issue create \
-    --repo "$REPO" \
-    --title "Create Filament Resources for AP Module Management" \
-    --milestone "$MILESTONE_NUMBER" \
-    --label "feature,accounting,ap,filament,ui" \
+   --repo "$REPO" \
+   --title "Create Filament Resources for AP Module Management" \
+   --milestone "$MILESTONE" \
+   --label "feature,accounting,ap,filament,ui" \
     --body "Implement FilamentPHP v4.1 resources for managing payment vouchers, debit notes, and supplier invoice enhancements.
 
 ## Requirements
@@ -219,10 +246,10 @@ gh issue create \
 # Issue 4: API Endpoints
 echo "Creating Issue 4: API Endpoints..."
 gh issue create \
-    --repo "$REPO" \
-    --title "Implement REST API Endpoints for AP Module" \
-    --milestone "$MILESTONE_NUMBER" \
-    --label "feature,accounting,ap,api" \
+   --repo "$REPO" \
+   --title "Implement REST API Endpoints for AP Module" \
+   --milestone "$MILESTONE" \
+   --label "feature,accounting,ap,api" \
     --body "Create RESTful API endpoints for AP module operations with proper authentication and authorization.
 
 ## Requirements
@@ -273,10 +300,10 @@ gh issue create \
 # Issue 5: GL Integration
 echo "Creating Issue 5: GL Integration..."
 gh issue create \
-    --repo "$REPO" \
-    --title "Implement GL Integration for AP Module Transactions" \
-    --milestone "$MILESTONE_NUMBER" \
-    --label "feature,accounting,ap,gl-integration" \
+   --repo "$REPO" \
+   --title "Implement GL Integration for AP Module Transactions" \
+   --milestone "$MILESTONE" \
+   --label "feature,accounting,ap,gl-integration" \
     --body "Integrate AP module transactions with the General Ledger system through automated journal entry creation.
 
 ## Requirements
@@ -325,10 +352,10 @@ gh issue create \
 # Issue 6: Testing & Documentation
 echo "Creating Issue 6: Testing & Documentation..."
 gh issue create \
-    --repo "$REPO" \
-    --title "Comprehensive Testing & Documentation for AP Module" \
-    --milestone "$MILESTONE_NUMBER" \
-    --label "testing,documentation,accounting,ap" \
+   --repo "$REPO" \
+   --title "Comprehensive Testing & Documentation for AP Module" \
+   --milestone "$MILESTONE" \
+   --label "testing,documentation,accounting,ap" \
     --body "Create comprehensive test suite and documentation for the AP Module Foundation.
 
 ## Requirements
