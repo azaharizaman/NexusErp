@@ -101,6 +101,14 @@ class PaymentVoucher extends Model
     }
 
     /**
+     * Payment allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
+    }
+
+    /**
      * Requester relationship.
      */
     public function requester(): BelongsTo

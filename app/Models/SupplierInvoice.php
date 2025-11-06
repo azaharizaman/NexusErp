@@ -119,6 +119,14 @@ class SupplierInvoice extends Model
     }
 
     /**
+     * Payment allocations relationship.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentVoucherAllocation::class);
+    }
+
+    /**
      * Approver relationship.
      */
     public function approver(): BelongsTo

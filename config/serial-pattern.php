@@ -132,6 +132,14 @@ return [
             'interval' => 1,
             'delimiters' => ['-'],
         ],
+        'supplierinvoice' => [
+            'pattern' => 'SI-AP-{year}-{number}',
+            'start' => 1,
+            'digits' => 4,
+            'reset' => 'yearly',
+            'interval' => 1,
+            'delimiters' => ['-'],
+        ],
     ],
 
     /*
