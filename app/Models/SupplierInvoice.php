@@ -204,10 +204,10 @@ class SupplierInvoice extends Model
     {
         if ($this->isFullyPaid()) {
             $this->payment_status = 'paid';
-        } elseif ($this->paid_amount > 0) {
-            $this->payment_status = 'partially_paid';
         } elseif ($this->isOverdue()) {
             $this->payment_status = 'overdue';
+        } elseif ($this->paid_amount > 0) {
+            $this->payment_status = 'partially_paid';
         } else {
             $this->payment_status = 'unpaid';
         }
@@ -238,6 +238,10 @@ class SupplierInvoice extends Model
      */
     public function recordPayment(float $amount): void
     {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Payment amount must be positive');
+        }
+
         $this->paid_amount += $amount;
         $this->calculateOutstanding();
         $this->updatePaymentStatus();

@@ -196,6 +196,57 @@ class SupplierInvoiceTest extends TestCase
         $this->assertEquals('paid', $invoice->payment_status);
     }
 
+    public function test_it_throws_exception_for_negative_payment(): void
+    {
+        $invoice = SupplierInvoice::factory()->create([
+            'company_id' => $this->company->id,
+            'supplier_id' => $this->supplier->id,
+            'currency_id' => $this->currency->id,
+            'total_amount' => 1000.00,
+            'paid_amount' => 0.00,
+        ]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Payment amount must be positive');
+
+        $invoice->recordPayment(-100.00);
+    }
+
+    public function test_it_throws_exception_for_zero_payment(): void
+    {
+        $invoice = SupplierInvoice::factory()->create([
+            'company_id' => $this->company->id,
+            'supplier_id' => $this->supplier->id,
+            'currency_id' => $this->currency->id,
+            'total_amount' => 1000.00,
+            'paid_amount' => 0.00,
+        ]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Payment amount must be positive');
+
+        $invoice->recordPayment(0);
+    }
+
+    public function test_overdue_status_takes_priority_over_partially_paid(): void
+    {
+        // Create a partially paid invoice that is overdue
+        $invoice = SupplierInvoice::factory()->create([
+            'company_id' => $this->company->id,
+            'supplier_id' => $this->supplier->id,
+            'currency_id' => $this->currency->id,
+            'due_date' => now()->subDays(10), // Past due date
+            'total_amount' => 1000.00,
+            'paid_amount' => 500.00, // Partially paid
+        ]);
+
+        $invoice->updatePaymentStatus();
+
+        // Should be 'overdue' not 'partially_paid' because overdue takes priority
+        $this->assertEquals('overdue', $invoice->payment_status);
+    }
+
+
     public function test_it_has_company_relationship(): void
     {
         $invoice = SupplierInvoice::factory()->create([
