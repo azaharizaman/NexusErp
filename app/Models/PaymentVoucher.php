@@ -350,7 +350,7 @@ class PaymentVoucher extends Model
     public function recalculateAllocations(): void
     {
         $this->allocated_amount = $this->allocations()->sum('allocated_amount');
-        $this->unallocated_amount = $this->amount - $this->allocated_amount;
+        $this->unallocated_amount = bcsub($this->amount, $this->allocated_amount, 4);
         $this->save();
     }
 
