@@ -1,5 +1,60 @@
 # Architectural Decisions
 
+## 2025-11-06 Phase 7 - Three-Way Matching for Invoice Approval (AP)
+- **Implemented comprehensive three-way matching validation** for supplier invoice approval
+- **Models Enhanced/Created:**
+  - `InvoiceMatching` - Tracks matching status between PO, GRN, and supplier invoice with tolerance-based approval control
+  - `SupplierInvoice` - Enhanced with three-way matching methods
+  - `GoodsReceivedNote` - Complete implementation with items and relationships
+  - `SupplierInvoiceItem` - Links to PO items and GRN items for validation
+  - `GoodsReceivedNoteItem` - Tracks received quantities with batch/serial tracking
+- **InvoiceMatching Features:**
+  - **Status Enum:** matched, quantity_mismatch, price_mismatch, not_matched
+  - **Item-Level Validation:** Compares quantities and prices at line item level
+  - **Tolerance-Based Approval:** Configurable tolerance percentage (default 5%)
+  - **Variance Tracking:** Quantity variance, price variance, and total variance
+  - **Mismatch Reporting:** Detailed JSON array of all discrepancies found
+  - **Approval Blocking:** `shouldBlockApproval()` prevents approval when variance exceeds tolerance
+  - **Business Methods:**
+    - `performMatching()` - Executes three-way matching validation
+    - `isWithinTolerance()` - Checks if variance is acceptable
+    - `shouldBlockApproval()` - Determines if approval should be blocked
+  - **Relationships:** company, supplierInvoice, purchaseOrder, goodsReceivedNote, approver
+  - **Scopes:** matched, mismatched, quantityMismatch, priceMismatch
+- **ValidateThreeWayMatch Action:**
+  - Validates invoice against PO and GRN at item level
+  - Compares PO quantities with GRN received quantities
+  - Compares PO unit prices with invoice unit prices
+  - Calculates quantity and price variances per item
+  - Generates comprehensive mismatch report with:
+    - Type: quantity_mismatch, price_mismatch, quantity_exceeds_po, item_not_in_po
+    - Details: item code, description, quantities, prices, variances
+    - Messages: Human-readable descriptions of each mismatch
+  - Supports optional GRN validation (falls back to PO-only validation)
+  - Tolerance percentage applied to overall invoice variance
+- **SupplierInvoice Enhanced Methods:**
+  - `performThreeWayMatching()` - Initiates matching process
+  - `shouldBlockApproval()` - Checks if matching blocks approval
+  - `getMatchingReport()` - Returns comprehensive matching report
+- **Database Schema:**
+  - Created `supplier_invoices` table with PO and GRN foreign keys
+  - Created `supplier_invoice_items` table with PO item and GRN item links
+  - Created `goods_received_notes` table with PO and supplier relationships
+  - Created `goods_received_note_items` table with batch and serial tracking
+  - Created `invoice_matchings` table with variance and tolerance fields
+  - Fixed UOM foreign key references (changed from `uoms` to `uom_units`)
+- **Testing:**
+  - Comprehensive test suite with 11 passing tests
+  - Tests cover: exact match, quantity mismatch, price mismatch, tolerance, approval blocking
+  - Tests validate GRN-based and PO-only matching scenarios
+  - Test data uses proper tax calculations for realistic variance scenarios
+- **Technical Notes:**
+  - Uses `InvalidArgumentException` for validation errors (not generic `Exception`)
+  - Tolerance check prioritized in status determination (within tolerance = matched)
+  - Item-level validation provides granular mismatch details
+  - Supports both two-way (PO + Invoice) and three-way (PO + GRN + Invoice) matching
+  - UOM package reference corrected: `Azaharizaman\LaravelUomManagement\Models\UomUnit`
+
 ## 2025-11-06 Phase 3 - Accounts Receivable Module (AR)
 - **Implemented comprehensive Accounts Receivable system** with full GL integration
 - **Models Created:**
